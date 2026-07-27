@@ -26,7 +26,6 @@ class SizeResource extends Resource
 
     protected static ?string $pluralModelLabel = 'bedenler';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Katalog';
 
     protected static ?int $navigationSort = 3;
 

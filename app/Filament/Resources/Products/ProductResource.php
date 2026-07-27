@@ -28,9 +28,8 @@ class ProductResource extends Resource
 
     protected static ?string $pluralModelLabel = 'ürünler';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Katalog';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 6;
 
     public static function form(Schema $schema): Schema
     {

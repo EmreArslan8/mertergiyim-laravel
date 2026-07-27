@@ -19,15 +19,14 @@ class SiteSettingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
-    protected static ?string $navigationLabel = 'Site ayarları';
+    protected static ?string $navigationLabel = 'Site Ayarları';
 
     protected static ?string $modelLabel = 'ayar';
 
     protected static ?string $pluralModelLabel = 'ayarlar';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Site';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 10;
 
     public static function form(Schema $schema): Schema
     {

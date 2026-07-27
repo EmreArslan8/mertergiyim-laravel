@@ -26,9 +26,8 @@ class HeroSlideResource extends Resource
 
     protected static ?string $pluralModelLabel = 'slider';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Site';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 8;
 
     public static function form(Schema $schema): Schema
     {

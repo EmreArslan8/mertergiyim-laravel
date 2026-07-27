@@ -20,15 +20,14 @@ class CurrencyResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
-    protected static ?string $navigationLabel = 'Para birimleri';
+    protected static ?string $navigationLabel = 'Para Birimi';
 
     protected static ?string $modelLabel = 'para birimi';
 
     protected static ?string $pluralModelLabel = 'para birimleri';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Ayarlar';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 5;
 
     public static function form(Schema $schema): Schema
     {

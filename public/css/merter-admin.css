@@ -1,0 +1,148 @@
+/* Merter Giyim — Filament admin teması (statik CSS, vite gerektirmez) */
+
+:root {
+    --merter-blue: #126df5;
+    --merter-blue-dark: #0b5bd8;
+    --merter-ink: #1e242b;
+    --merter-ink-soft: #262e37;
+    --merter-border: #e1e5ea;
+}
+
+/* ---------- Koyu sidebar ---------- */
+.fi-sidebar,
+.fi-sidebar .fi-sidebar-nav,
+.fi-sidebar-header {
+    background-color: var(--merter-ink) !important;
+    border-color: rgba(255, 255, 255, .07) !important;
+}
+
+.fi-sidebar-header {
+    box-shadow: none !important;
+}
+
+.fi-sidebar .fi-sidebar-group-label,
+.fi-sidebar .fi-sidebar-item-label {
+    color: #c6ced8;
+}
+
+.fi-sidebar .fi-sidebar-group-label {
+    color: #8794a3;
+    font-size: .68rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.fi-sidebar .fi-sidebar-item-button {
+    border-radius: .5rem;
+}
+
+.fi-sidebar .fi-sidebar-item-button .fi-icon,
+.fi-sidebar .fi-sidebar-item-icon {
+    color: #93a1b1;
+}
+
+.fi-sidebar .fi-sidebar-item-button:hover {
+    background-color: rgba(255, 255, 255, .06) !important;
+}
+
+.fi-sidebar .fi-sidebar-item-button:hover .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item-button:hover .fi-icon {
+    color: #fff;
+}
+
+.fi-sidebar .fi-sidebar-item-active .fi-sidebar-item-button,
+.fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-button {
+    background-color: var(--merter-blue) !important;
+}
+
+.fi-sidebar .fi-sidebar-item-active .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item-active .fi-icon,
+.fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item.fi-active .fi-icon {
+    color: #fff !important;
+}
+
+/* Sidebar toggle / collapse butonu koyu zeminde görünür kalsın */
+.fi-sidebar-header .fi-icon-btn,
+.fi-topbar .fi-sidebar-open-btn {
+    color: #c6ced8;
+}
+
+/* ---------- Marka bloğu (SIDEBAR_NAV_START render hook) ---------- */
+.merter-brand {
+    display: flex;
+    align-items: center;
+    gap: .625rem;
+    margin: 0 0 .875rem;
+    padding: .75rem .75rem .875rem;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.merter-brand-avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    background: var(--merter-blue);
+    color: #fff;
+    font-weight: 700;
+    font-size: .95rem;
+    box-shadow: 0 4px 12px rgba(18, 109, 245, .35);
+}
+
+.merter-brand-text strong {
+    display: block;
+    color: #fff;
+    font-size: .875rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.merter-brand-text small {
+    display: block;
+    margin-top: .15rem;
+    color: #8794a3;
+    font-size: .7rem;
+}
+
+.fi-sidebar-nav.fi-collapsed .merter-brand,
+.fi-sidebar.fi-collapsed .merter-brand-text {
+    display: none;
+}
+
+/* ---------- Marka logosu ---------- */
+.fi-logo img,
+.fi-logo {
+    max-height: 2.25rem;
+}
+
+/* ---------- Login ekranı ---------- */
+.fi-simple-layout {
+    background: #f4f6f8;
+}
+
+.fi-simple-main {
+    border-radius: 1rem;
+    box-shadow: 0 18px 45px rgba(11, 26, 45, .12);
+}
+
+.fi-simple-header .fi-logo img {
+    max-height: 3rem;
+    margin-inline: auto;
+}
+
+/* ---------- Genel ton ---------- */
+.fi-main-ctn {
+    background-color: #f4f6f8;
+}
+
+.fi-topbar > nav {
+    border-bottom: 1px solid var(--merter-border);
+}
+
+.dark .fi-main-ctn,
+.dark .fi-simple-layout {
+    background-color: inherit;
+}

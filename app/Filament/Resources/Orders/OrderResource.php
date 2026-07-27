@@ -27,9 +27,8 @@ class OrderResource extends Resource
 
     protected static ?string $pluralModelLabel = 'siparişler';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Satış';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 7;
 
     public static function form(Schema $schema): Schema
     {

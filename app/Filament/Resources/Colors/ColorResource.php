@@ -26,7 +26,6 @@ class ColorResource extends Resource
 
     protected static ?string $pluralModelLabel = 'renkler';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Katalog';
 
     protected static ?int $navigationSort = 4;
 

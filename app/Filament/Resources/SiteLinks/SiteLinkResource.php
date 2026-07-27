@@ -20,15 +20,14 @@ class SiteLinkResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLink;
 
-    protected static ?string $navigationLabel = 'Menü bağlantıları';
+    protected static ?string $navigationLabel = 'Site Linkleri';
 
     protected static ?string $modelLabel = 'bağlantı';
 
     protected static ?string $pluralModelLabel = 'bağlantılar';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Site';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 9;
 
     public static function form(Schema $schema): Schema
     {

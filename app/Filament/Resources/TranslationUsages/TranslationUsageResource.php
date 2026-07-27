@@ -24,15 +24,14 @@ class TranslationUsageResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
-    protected static ?string $navigationLabel = 'Çeviri kullanımı';
+    protected static ?string $navigationLabel = 'Çeviri Kullanımı';
 
     protected static ?string $modelLabel = 'çeviri kaydı';
 
     protected static ?string $pluralModelLabel = 'çeviri kayıtları';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Ayarlar';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 11;
 
     public static function canCreate(): bool
     {
