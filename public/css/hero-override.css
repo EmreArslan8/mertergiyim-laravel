@@ -1,0 +1,94 @@
+/* Hero — kaynak index.html ile birebir eşitlendi (Tailwind karşılıkları yorumda). */
+.hero{height:80vh;min-height:80vh}
+/* img.opacity-70 + bg-slate-900 bileşkesi = %30 #0f172a karartma */
+.hero-overlay{background:rgba(15,23,42,.3)}
+/* flex ortalama, ekstra üst boşluk yok; px-4 yan pay */
+.hero-copy{padding:0 16px}
+/* md:text-9xl = 128px/1, font-black italic, letter-spacing normal, mb-8 = 32px */
+.hero-copy h1{margin-bottom:32px;font-size:128px;line-height:1;letter-spacing:normal;white-space:pre-line}
+/* border-2 border-white px-10 py-4 uppercase font-bold + transition (150ms) */
+.hero-copy a{padding:16px 40px;font-weight:700;line-height:1.5;text-transform:uppercase;transition:background-color .15s,color .15s}
+.hero-copy a:hover{background:#fff;color:#000}
+/* nav: bg-gradient-to-b from-black/60 to-transparent (yalnız şeffaf header'da) */
+.site-header:not(.site-header--solid){background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent)}
+/* text-5xl = 48px, Tailwind md kırılımı 768px */
+@media(max-width:767px){.hero-copy h1{font-size:48px}}
+/* Üst header — kaynak index.html nav'ı ile birebir (py-6 px-10, z-50). */
+.site-header{height:auto;padding:24px 40px;z-index:50}
+.site-header .brand{font-size:30px;font-weight:900;font-style:italic;letter-spacing:-.05em;line-height:1.2}
+.main-nav{gap:32px}
+.main-nav a{font-size:14px;line-height:20px;font-weight:700;text-transform:uppercase;transition:color .15s}
+.main-nav a:hover{color:#f97316}
+.main-nav .cart-link{display:inline-flex;align-items:center;gap:8px}
+.product-card-head h3{display:flex;align-items:center}
+.language-bar{display:block;width:100%;padding:12px 24px;border-bottom:1px solid #27272a;background:#18181b;overflow:hidden}
+.language-bar-inner{display:flex;width:min(100%,1280px);margin:0 auto;align-items:center;justify-content:flex-start;gap:12px;overflow-x:auto;white-space:nowrap}
+.language-bar strong{flex:none;margin-right:8px;color:#a1a1aa;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.language-options{display:flex;align-items:center;gap:8px}
+.language-bar a{padding:5px 12px;border:1px solid #3f3f46;border-radius:4px;background:#27272a;color:#d4d4d8;font-size:12px;font-weight:700;line-height:1;text-transform:uppercase;transition:border-color .15s,color .15s,background-color .15s}
+.language-bar a:hover{border-color:#71717a;color:#fff}
+.language-bar a.selected{border-color:#f97316;background:#ea580c;color:#fff}
+.mobile-header-actions{display:none}
+
+/* ---- Ürün kartı — kaynak index.html ile birebir ---- */
+body{background:#f8fafc}                                    /* bg-slate-50 */
+.product-card{box-shadow:0 20px 25px -5px #0000001a,0 8px 10px -6px #0000001a} /* shadow-xl */
+.product-card-body{padding:24px}                            /* p-6, mobilde de aynı */
+.product-card-head{gap:0;margin-bottom:4px}                 /* mb-1 */
+.product-card-head h3{min-height:0;line-height:32px}        /* text-2xl */
+.detail-button{padding:4px 12px;border-radius:6px;background:#dbeafe;color:#1e3a8a;font-size:14px;font-weight:700;line-height:20px;text-transform:uppercase}
+.product-description{font-size:14px;line-height:20px}       /* text-sm, mobilde de 14px */
+.product-card h4{min-height:0;color:#334155;font-size:18px;font-weight:700;line-height:28px}
+.product-divider{border-top-color:#e5e7eb}
+.product-card .price{margin-bottom:16px;color:#ea580c;line-height:36px}
+.buy-button,.whatsapp-button{padding:16px 0;border-radius:8px;font-size:16px;font-weight:700;line-height:24px;text-transform:uppercase}
+.buy-button{margin-bottom:8px;background:#ea580c}
+.whatsapp-button{background:#22c55e}
+
+/* ---- Footer — kaynak index.html ile birebir ---- */
+.site-footer{background:#000}                               /* bg-black */
+.site-footer-inner{width:min(100% - 48px,1152px);padding:80px 0 32px}  /* pt-20 pb-8 px-6, max-w-6xl */
+.site-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:128px;padding-bottom:80px}
+.footer-brand-block{padding-top:8px}                        /* pt-2 */
+.footer-logo{line-height:1.2}                               /* 30px → 36px */
+.footer-brand-block p{max-width:none;margin:16px 0 0;color:#94a3b8;line-height:1.625}
+.footer-info-block h2{margin-bottom:24px;padding-bottom:8px;border-bottom-color:#1e293b;font-size:18px;font-weight:700;line-height:28px}
+.footer-policy-links{gap:12px 24px}
+.footer-policy-links a{color:#94a3b8;line-height:20px;transition:color .3s}
+.footer-policy-links a:hover{color:#f97316;transform:none}
+.site-footer-bottom{padding-top:32px;border-top-color:#0f172a}
+.site-footer-bottom p{color:#475569;font-size:12px;line-height:16px;letter-spacing:.1em}
+
+/* Tailwind md kırılımı 768px: 768–800px arası masaüstü davranışını geri al */
+@media(min-width:768px){
+  .main-nav{display:flex}
+  .language-bar{display:block}
+  .mobile-header-actions{display:none}
+  .category-section{display:block}
+  .product-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}
+  .touch-tip{display:none}
+  .site-footer-inner{width:min(100% - 48px,1152px);padding:80px 0 32px}
+  .site-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:128px;padding-bottom:80px}
+  .footer-policy-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 24px}
+  .footer-logo{font-size:30px}
+}
+@media(max-width:767px){
+  .product-grid{grid-template-columns:1fr;gap:32px}         /* gap-8 */
+  .touch-tip{display:block}
+}
+@media(max-width:767px){
+  .hero{height:80vh;min-height:80vh}
+  .site-header{height:76px;padding:0 5%;overflow:visible}
+  .site-header .brand{max-width:52%;font-size:clamp(20px,6vw,24px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .main-nav{display:none}
+  .language-bar{display:none}
+  .mobile-header-actions{display:flex;align-items:center;gap:10px}
+  .mobile-language-picker{position:relative}
+  .mobile-language-trigger{height:46px;display:flex;align-items:center;gap:9px;padding:0 15px;border:1px solid #ffffff29;border-radius:15px;background:#18181be8;color:#fff;font:800 15px Montserrat,sans-serif;cursor:pointer}
+  .mobile-language-menu{position:absolute;z-index:30;top:54px;right:0;min-width:170px;max-height:280px;padding:7px;border:1px solid #ffffff20;border-radius:13px;background:#18181bf5;box-shadow:0 18px 42px #0006;overflow:auto;backdrop-filter:blur(12px)}
+  .mobile-language-menu a{display:block;padding:10px 12px;border-radius:8px;color:#d4d4d8;font-size:12px;font-weight:700;text-decoration:none}
+  .mobile-language-menu a.selected{background:#ea580c;color:#fff}
+  .mobile-menu-trigger{width:46px;height:46px;display:grid;place-items:center;padding:0;border:0;background:transparent;color:#fff;cursor:pointer}
+  .mobile-main-menu{position:absolute;z-index:25;top:76px;left:0;right:0;display:grid;gap:0;padding:8px 5% 18px;border-top:1px solid #ffffff1f;background:#18181bf5;box-shadow:0 18px 42px #0005;backdrop-filter:blur(14px)}
+  .mobile-main-menu a{display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid #ffffff14;color:#fff;font-size:13px;font-weight:800;text-decoration:none;text-transform:uppercase}
+}
