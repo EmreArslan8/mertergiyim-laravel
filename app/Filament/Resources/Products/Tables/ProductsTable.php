@@ -22,6 +22,8 @@ class ProductsTable
     {
         return $table
             ->defaultSort('created_at', 'desc')
+            // N+1 önlemi: görseller ve kategori tek sorguda gelsin (uzak DB'de her sorgu ~250 ms).
+            ->modifyQueryUsing(fn ($query) => $query->with(['images', 'category']))
             ->columns([
                 ImageColumn::make('primary_image')
                     ->label('Görsel')

@@ -26,7 +26,8 @@ class ProductForm
                     ]),
 
                 Section::make('Ürün bilgileri')
-                    ->columns(2)
+                    // Tek kolon: alanlar alt alta, tarama kolay olsun.
+                    ->columns(1)
                     ->schema([
                         TextInput::make('code')
                             ->label('Ürün kodu')
@@ -63,8 +64,7 @@ class ProductForm
                         TextInput::make('video_url')
                             ->label('Video bağlantısı')
                             ->url()
-                            ->helperText('YouTube bağlantısı; ürün sayfasında gömülü oynatılır.')
-                            ->columnSpanFull(),
+                            ->helperText('YouTube bağlantısı; ürün sayfasında gömülü oynatılır.'),
                         Toggle::make('active')->label('Yayında')->default(true),
                     ]),
             ]);
