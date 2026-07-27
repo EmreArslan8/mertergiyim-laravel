@@ -57,7 +57,7 @@ class ImageUploader
 
         try {
             $manager = new ImageManager(new Driver);
-            $image = $manager->decodeBinary($raw);
+            $image = $manager->read($raw);
 
             $max = (int) config('storefront.upload.max_size', 1600);
             if ($image->width() > $max || $image->height() > $max) {
