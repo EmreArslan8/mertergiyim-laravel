@@ -111,7 +111,7 @@ class Multilingual
 
                     Notification::make()->title('Çeviriler dolduruldu.')->success()->send();
                 }),
-        ])->columnSpanFull();
+        ])->key($key.'_actions')->columnSpanFull();
     }
 
     /**

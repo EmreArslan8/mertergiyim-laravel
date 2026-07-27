@@ -10,6 +10,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -46,13 +47,13 @@ class TranslationUsageResource extends Resource
                 TextColumn::make('created_at')->label('Tarih')->dateTime('d.m.Y H:i')->sortable(),
                 TextColumn::make('model')->label('Model')->badge(),
                 TextColumn::make('prompt_tokens')->label('Girdi token')->numeric()->sortable()->summarize(
-                    \Filament\Tables\Columns\Summarizers\Sum::make()->label('Toplam')
+                    Sum::make()->label('Toplam')
                 ),
                 TextColumn::make('output_tokens')->label('Çıktı token')->numeric()->sortable()->summarize(
-                    \Filament\Tables\Columns\Summarizers\Sum::make()->label('Toplam')
+                    Sum::make()->label('Toplam')
                 ),
                 TextColumn::make('total_tokens')->label('Toplam token')->numeric()->sortable()->summarize(
-                    \Filament\Tables\Columns\Summarizers\Sum::make()->label('Toplam')
+                    Sum::make()->label('Toplam')
                 ),
                 IconColumn::make('ok')->label('Başarılı')->boolean(),
                 TextColumn::make('error')->label('Hata')->placeholder('-')->limit(60)->toggleable(),

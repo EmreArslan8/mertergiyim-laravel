@@ -3,11 +3,12 @@
 namespace App\Services;
 
 use App\Support\UploadTarget;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\ImageManager;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 /**
  * Kaynak projedeki lib/admin/compress-image.ts karşılığı: yükleme öncesi
@@ -20,7 +21,7 @@ class ImageUploader
      * @param  string  $directory  Bucket içindeki klasör ('' olabilir)
      * @return string Bucket'a göreli storage_path
      */
-    public function store(TemporaryUploadedFile $file, string $bucketKey, string $directory = ''): string
+    public function store(UploadedFile $file, string $bucketKey, string $directory = ''): string
     {
         $directory = trim($directory, '/');
         $name = pathinfo($file->getClientOriginalName() ?: 'image', PATHINFO_FILENAME);
@@ -50,20 +51,20 @@ class ImageUploader
     /**
      * @return array{0: string, 1: string} [içerik, uzantı]
      */
-    private function optimize(TemporaryUploadedFile $file): array
+    private function optimize(UploadedFile $file): array
     {
         $raw = $file->get();
 
         try {
             $manager = new ImageManager(new Driver);
-            $image = $manager->read($raw);
+            $image = $manager->decodeBinary($raw);
 
             $max = (int) config('storefront.upload.max_size', 1600);
             if ($image->width() > $max || $image->height() > $max) {
                 $image->scaleDown($max, $max);
             }
 
-            $encoded = (string) $image->toWebp((int) config('storefront.upload.quality', 80));
+            $encoded = (string) $image->encode(new WebpEncoder(quality: (int) config('storefront.upload.quality', 80)));
 
             // Sıkıştırma dosyayı büyüttüyse orijinali koru (kaynaktaki davranış).
             return strlen($encoded) < strlen($raw)

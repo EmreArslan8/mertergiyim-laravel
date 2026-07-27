@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -17,9 +18,7 @@ class AdminPanelSmokeTest extends TestCase
         $this->get('/admin/login')->assertOk();
     }
 
-    /**
-     * @dataProvider panelPages
-     */
+    #[DataProvider('panelPages')]
     public function test_panel_pages_render(string $path): void
     {
         $admin = User::query()->firstOrFail();

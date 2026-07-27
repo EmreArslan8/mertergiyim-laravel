@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Facades\Storage;
+
 /**
  * lib/storefront/utils.ts + lib/currency.ts + lib/format-price.ts karşılığı.
  */
@@ -89,7 +91,7 @@ class Storefront
 
         // S3 anahtarları yokken yüklenen dosyalar lokal yedek diskte durur.
         if (! UploadTarget::usesSupabase()) {
-            $local = \Illuminate\Support\Facades\Storage::disk('local_supabase_stub');
+            $local = Storage::disk('local_supabase_stub');
 
             if ($local->exists($bucket.'/'.ltrim($path, '/'))) {
                 return $local->url($bucket.'/'.ltrim($path, '/'));

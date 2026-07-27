@@ -8,12 +8,22 @@ use Tests\TestCase;
 class ExampleTest extends TestCase
 {
     /**
-     * A basic test example.
+     * Kök adres varsayılan dile yönlenir.
      */
-    public function test_the_application_returns_a_successful_response(): void
+    public function test_the_root_redirects_to_the_default_locale(): void
     {
-        $response = $this->get('/');
+        $this->get('/')->assertRedirect('/'.config('storefront.default_locale'));
+    }
 
-        $response->assertStatus(200);
+    public function test_sitemap_and_robots_are_served(): void
+    {
+        $this->get('/sitemap.xml')
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/xml; charset=UTF-8')
+            ->assertSee('<loc>'.config('storefront.site_url').'/tr</loc>', escape: false);
+
+        $this->get('/robots.txt')
+            ->assertOk()
+            ->assertSee('Sitemap: '.config('storefront.site_url').'/sitemap.xml');
     }
 }
