@@ -86,6 +86,16 @@ class Storefront
         }
 
         $bucket = config('storefront.buckets.'.$bucketKey, $bucketKey);
+
+        // S3 anahtarları yokken yüklenen dosyalar lokal yedek diskte durur.
+        if (! UploadTarget::usesSupabase()) {
+            $local = \Illuminate\Support\Facades\Storage::disk('local_supabase_stub');
+
+            if ($local->exists($bucket.'/'.ltrim($path, '/'))) {
+                return $local->url($bucket.'/'.ltrim($path, '/'));
+            }
+        }
+
         $base = rtrim((string) config('storefront.storage_url'), '/');
 
         return $base.'/'.$bucket.'/'.ltrim($path, '/');

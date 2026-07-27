@@ -47,6 +47,53 @@ return [
             'report' => false,
         ],
 
+        /*
+        | Supabase Storage, S3 uyumlu uç nokta üzerinden kullanılır.
+        | Anahtarlar: Supabase Dashboard -> Storage -> S3 access keys.
+        | Her bucket için ayrı disk gerekir (Flysystem S3 tek bucket'a bağlanır).
+        */
+        'supabase_products' => [
+            'driver' => 's3',
+            'key' => env('SUPABASE_S3_ACCESS_KEY_ID'),
+            'secret' => env('SUPABASE_S3_SECRET_ACCESS_KEY'),
+            'region' => env('SUPABASE_S3_REGION', 'eu-central-1'),
+            'bucket' => env('SUPABASE_BUCKET_PRODUCTS', 'product-images'),
+            'endpoint' => env('SUPABASE_S3_ENDPOINT', 'https://whcylakuagonefgjdqhx.supabase.co/storage/v1/s3'),
+            'url' => env('SUPABASE_STORAGE_URL').'/'.env('SUPABASE_BUCKET_PRODUCTS', 'product-images'),
+            'use_path_style_endpoint' => true,
+            'visibility' => 'public',
+            'throw' => true,
+            'report' => false,
+        ],
+
+        'supabase_site' => [
+            'driver' => 's3',
+            'key' => env('SUPABASE_S3_ACCESS_KEY_ID'),
+            'secret' => env('SUPABASE_S3_SECRET_ACCESS_KEY'),
+            'region' => env('SUPABASE_S3_REGION', 'eu-central-1'),
+            'bucket' => env('SUPABASE_BUCKET_SITE', 'site-media'),
+            'endpoint' => env('SUPABASE_S3_ENDPOINT', 'https://whcylakuagonefgjdqhx.supabase.co/storage/v1/s3'),
+            'url' => env('SUPABASE_STORAGE_URL').'/'.env('SUPABASE_BUCKET_SITE', 'site-media'),
+            'use_path_style_endpoint' => true,
+            'visibility' => 'public',
+            'throw' => true,
+            'report' => false,
+        ],
+
+        /*
+        | S3 anahtarları gelmeden lokal test için yedek disk. Dosyalar
+        | storage/app/public/<bucket>/<path> altına yazılır; böylece
+        | kaydedilen storage_path formatı canlıdakiyle birebir aynı kalır.
+        */
+        'local_supabase_stub' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/supabase'),
+            'url' => env('APP_URL').'/storage/supabase',
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

@@ -26,4 +26,22 @@ return [
 
     // Sorgu cache süresi (saniye). Kaynak Next.js projesindeki revalidate = 3600.
     'cache_ttl' => (int) env('STOREFRONT_CACHE_TTL', 3600),
+
+    // Panelden yapılan görsel yüklemeleri.
+    'upload' => [
+        // 'supabase' -> S3 uyumlu Supabase Storage, aksi halde lokal yedek disk.
+        'target' => env('FILESYSTEM_SUPABASE_DISK', 'local_supabase_stub'),
+
+        // Yükleme öncesi yeniden boyutlandırma (kaynak compress-image.ts ile aynı).
+        'max_size' => (int) env('STOREFRONT_UPLOAD_MAX_SIZE', 1600),
+        'quality' => (int) env('STOREFRONT_UPLOAD_QUALITY', 80),
+    ],
+
+    // Gemini otomatik çeviri.
+    'translation' => [
+        'api_key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL', 'gemini-3.5-flash-lite'),
+        // Kaynak app/api/translate/route.ts ile birebir aynı liste ve sıra.
+        'languages' => ['en', 'ar', 'ru', 'fa', 'uk', 'fr', 'de', 'es', 'it'],
+    ],
 ];
