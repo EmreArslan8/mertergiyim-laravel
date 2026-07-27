@@ -31,6 +31,29 @@ trait TranslatesJsonFields
      */
     abstract protected function translatableJsonFields(): array;
 
+    /**
+     * Kaydın sayfadan değil dışarıdan geldiği durumlar (relation manager
+     * aksiyonları) için geçici kayıt.
+     */
+    protected ?Model $translationRecordOverride = null;
+
+    /**
+     * Relation manager aksiyonları için: ilgili satır kaydı elle verilir.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function fillAutomaticTranslationsFor(array $data, ?Model $record): array
+    {
+        $this->translationRecordOverride = $record;
+
+        try {
+            return $this->fillAutomaticTranslations($data);
+        } finally {
+            $this->translationRecordOverride = null;
+        }
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         return $this->fillAutomaticTranslations($data);
@@ -172,6 +195,10 @@ trait TranslatesJsonFields
      */
     protected function translationRecord(): ?Model
     {
+        if ($this->translationRecordOverride) {
+            return $this->translationRecordOverride;
+        }
+
         return method_exists($this, 'getRecord') ? $this->getRecord() : null;
     }
 }

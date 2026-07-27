@@ -2,6 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\HeroSlide;
+use App\Models\Product;
+use App\Models\SiteLink;
+use App\Models\SiteSetting;
 use App\Models\User;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -47,6 +51,28 @@ class AdminPanelSmokeTest extends TestCase
             '/admin/orders/create',
             '/admin/translation-usages',
         ]);
+    }
+
+    /**
+     * Düzenleme sayfaları relation manager'ları da render ediyor mu?
+     * (Ürün görsellerindeki "Alternatif metin" alanı buradan geçiyor.)
+     */
+    public function test_edit_pages_render(): void
+    {
+        $this->actingAs(User::query()->firstOrFail());
+
+        $paths = array_filter([
+            ($id = Product::query()->value('id')) ? '/admin/products/'.$id.'/edit' : null,
+            ($id = HeroSlide::query()->value('id')) ? '/admin/hero-slides/'.$id.'/edit' : null,
+            ($id = SiteLink::query()->value('id')) ? '/admin/site-links/'.$id.'/edit' : null,
+            ($key = SiteSetting::query()->value('key')) ? '/admin/site-settings/'.$key.'/edit' : null,
+        ]);
+
+        $this->assertNotEmpty($paths);
+
+        foreach ($paths as $path) {
+            $this->get($path)->assertOk();
+        }
     }
 
     public function test_storefront_still_renders(): void

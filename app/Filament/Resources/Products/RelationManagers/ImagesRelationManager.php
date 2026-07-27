@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\RelationManagers;
 
+use App\Filament\Concerns\TranslatesJsonFields;
 use App\Filament\Support\Multilingual;
 use App\Filament\Support\StorageUpload;
 use App\Services\ImageUploader;
@@ -19,12 +20,20 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class ImagesRelationManager extends RelationManager
 {
+    use TranslatesJsonFields;
+
     protected static string $relationship = 'images';
 
     protected static ?string $title = 'Görseller';
+
+    protected function translatableJsonFields(): array
+    {
+        return ['alt' => 'Alternatif metin'];
+    }
 
     public function form(Schema $schema): Schema
     {
@@ -33,7 +42,7 @@ class ImagesRelationManager extends RelationManager
                 ->label('Görsel')
                 ->required()
                 ->columnSpanFull(),
-            Multilingual::tabs('alt', 'Alternatif metin'),
+            Multilingual::turkish('alt', 'Alternatif metin', required: false),
             TextInput::make('sort_order')->label('Sıra')->numeric()->default(0),
             Toggle::make('is_primary')->label('Birincil görsel'),
         ]);
@@ -53,10 +62,13 @@ class ImagesRelationManager extends RelationManager
                 IconColumn::make('is_primary')->label('Birincil')->boolean(),
             ])
             ->headerActions([
-                CreateAction::make()->label('Görsel ekle'),
+                CreateAction::make()
+                    ->label('Görsel ekle')
+                    ->mutateDataUsing(fn (array $data): array => $this->fillAutomaticTranslationsFor($data, null)),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->mutateDataUsing(fn (array $data, ?Model $record): array => $this->fillAutomaticTranslationsFor($data, $record)),
                 // Kayıt silinince dosyayı da bucket'tan kaldır.
                 DeleteAction::make()->before(fn ($record) => app(ImageUploader::class)->delete('products', $record->storage_path)),
             ])

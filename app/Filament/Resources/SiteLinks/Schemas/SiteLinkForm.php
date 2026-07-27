@@ -35,9 +35,9 @@ class SiteLinkForm
                         Toggle::make('active')->label('Aktif')->default(true),
                     ]),
                 Section::make('Etiket')
+                    ->description('Sadece Türkçe girin; kaydettiğinizde diğer 9 dil otomatik çevrilir.')
                     ->schema([
-                        Multilingual::translateAction(['label' => 'Etiket']),
-                        Multilingual::tabs('label', 'Etiket'),
+                        Multilingual::turkish('label', 'Etiket'),
                     ]),
             ]);
     }
