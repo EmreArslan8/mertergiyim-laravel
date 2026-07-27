@@ -25,7 +25,7 @@ class SiteLinksTable
                     ->formatStateUsing(fn ($state) => $state === 'footer' ? 'Alt menü' : 'Üst menü'),
                 TextColumn::make('label')
                     ->label('Etiket')
-                    ->formatStateUsing(fn ($state) => Multilingual::tr($state)),
+                    ->getStateUsing(fn ($record) => Multilingual::tr($record->label)),
                 TextColumn::make('url')->label('URL')->color('gray'),
                 TextColumn::make('sort_order')->label('Sıra'),
                 IconColumn::make('active')->label('Aktif')->boolean(),

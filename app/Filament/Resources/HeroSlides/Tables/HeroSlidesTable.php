@@ -26,10 +26,10 @@ class HeroSlidesTable
                     ->getStateUsing(fn ($record) => Storefront::storageUrl('site', $record->image_path)),
                 TextColumn::make('title')
                     ->label('Başlık')
-                    ->formatStateUsing(fn ($state) => str_replace("\n", ' / ', Multilingual::tr($state))),
+                    ->getStateUsing(fn ($record) => str_replace("\n", ' / ', Multilingual::tr($record->title))),
                 TextColumn::make('button_text')
                     ->label('Buton')
-                    ->formatStateUsing(fn ($state) => Multilingual::tr($state))
+                    ->getStateUsing(fn ($record) => Multilingual::tr($record->button_text))
                     ->description(fn ($record) => $record->button_url),
                 TextColumn::make('sort_order')->label('Sıra'),
                 IconColumn::make('active')->label('Aktif')->boolean(),

@@ -32,7 +32,8 @@ class ProductsTable
                     }),
                 TextColumn::make('name')
                     ->label('Ürün')
-                    ->formatStateUsing(fn ($state) => Multilingual::tr($state))
+                    // jsonb dizi state'ini Filament öğe öğe basıyor; Türkçe'yi kayıttan çek.
+                    ->getStateUsing(fn ($record) => Multilingual::tr($record->name))
                     ->description(fn ($record) => $record->code)
                     ->searchable(query: fn ($query, string $search) => $query
                         ->where('code', 'ilike', "%{$search}%")
