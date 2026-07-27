@@ -10,9 +10,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Assets\Css;
 use Filament\Support\Colors\Color;
-use Filament\Support\Facades\FilamentAsset;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -24,6 +22,9 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
+    /** Tarayıcı önbelleğini kırmak için tema sürümü. */
+    public const THEME_VERSION = '2';
+
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -39,9 +40,23 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::hex('#126df5'),
                 'gray' => Color::Slate,
             ])
+            ->darkMode(false)
+            ->userMenu(false)
+            ->renderHook(
+                PanelsRenderHook::STYLES_AFTER,
+                fn (): string => '<link rel="stylesheet" href="'.asset('css/merter-admin.css').'?v='.static::THEME_VERSION.'" data-navigate-track />',
+            )
             ->renderHook(
                 PanelsRenderHook::SIDEBAR_NAV_START,
                 fn (): string => view('filament.sidebar-brand')->render(),
+            )
+            ->renderHook(
+                PanelsRenderHook::SIDEBAR_FOOTER,
+                fn (): string => view('filament.sidebar-bottom')->render(),
+            )
+            ->renderHook(
+                PanelsRenderHook::TOPBAR_END,
+                fn (): string => view('filament.topbar-user')->render(),
             )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -69,10 +84,4 @@ class AdminPanelProvider extends PanelProvider
             ]);
     }
 
-    public function boot(): void
-    {
-        FilamentAsset::register([
-            Css::make('merter-admin', asset('css/merter-admin.css')),
-        ]);
-    }
 }

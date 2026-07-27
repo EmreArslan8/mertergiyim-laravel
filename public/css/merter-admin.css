@@ -1,131 +1,312 @@
-/* Merter Giyim — Filament admin teması (statik CSS, vite gerektirmez) */
+/* Merter Giyim — Filament v4 admin teması (açık/light, eski Next.js paneline birebir) */
 
 :root {
     --merter-blue: #126df5;
     --merter-blue-dark: #0b5bd8;
-    --merter-ink: #1e242b;
-    --merter-ink-soft: #262e37;
+    --merter-ink: #20262d;
+    --merter-muted: #6e7781;
     --merter-border: #e1e5ea;
+    --merter-canvas: #f4f6f8;
 }
 
-/* ---------- Koyu sidebar ---------- */
-.fi-sidebar,
-.fi-sidebar .fi-sidebar-nav,
-.fi-sidebar-header {
-    background-color: var(--merter-ink) !important;
-    border-color: rgba(255, 255, 255, .07) !important;
+/* ---------------------------------------------------------------
+   Genel zemin
+   --------------------------------------------------------------- */
+.fi-body {
+    background-color: var(--merter-canvas);
+    color: var(--merter-ink);
 }
 
-.fi-sidebar-header {
-    box-shadow: none !important;
+.fi-main-ctn {
+    background-color: var(--merter-canvas);
 }
 
-.fi-sidebar .fi-sidebar-group-label,
-.fi-sidebar .fi-sidebar-item-label {
-    color: #c6ced8;
+/* ---------------------------------------------------------------
+   Yerleşim: sidebar tam yükseklik, topbar sadece içeriğin üstünde
+   (eski panelin .admin-shell + .panel yapısı)
+   --------------------------------------------------------------- */
+@media (min-width: 64rem) {
+    /* Sidebar sayfanın tepesinden itibaren tam yükseklik (fixed) */
+    .fi-body.fi-body-has-navigation.fi-body-has-topbar .fi-sidebar.fi-main-sidebar {
+        /* Filament'in `position: sticky` kuralı 6 sınıflık; !important şart */
+        position: fixed !important;
+        inset-block: 0;
+        inset-inline-start: 0;
+        top: 0;
+        height: 100dvh;
+        width: var(--sidebar-width);
+        translate: none;
+        z-index: 31;
+    }
+
+    /* Sidebar akıştan çıktığı için yerini padding/margin ile ayır */
+    .fi-body-has-topbar > .fi-layout {
+        padding-inline-start: var(--sidebar-width);
+    }
+
+    .fi-body-has-topbar .fi-topbar-ctn {
+        margin-inline-start: var(--sidebar-width);
+    }
+
+    /* Topbar'daki logo eski panelde yok; sol taraf boş kalsın */
+    .fi-topbar-start {
+        display: none;
+    }
+}
+
+/* ---------------------------------------------------------------
+   Sidebar — beyaz zemin, ince sağ çizgi
+   --------------------------------------------------------------- */
+.fi-sidebar.fi-main-sidebar {
+    background-color: #fff;
+    border-inline-end: 1px solid var(--merter-border);
+}
+
+.fi-sidebar .fi-sidebar-nav {
+    row-gap: 1rem;
+    padding-inline: 0.8125rem;
+    padding-block: 1rem 0.75rem;
+}
+
+.fi-sidebar .fi-sidebar-nav-groups {
+    margin-inline: 0;
+    row-gap: 0.25rem;
+}
+
+.fi-sidebar .fi-sidebar-group {
+    row-gap: 0.125rem;
 }
 
 .fi-sidebar .fi-sidebar-group-label {
     color: #8794a3;
-    font-size: .68rem;
-    letter-spacing: .08em;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
-.fi-sidebar .fi-sidebar-item-button {
-    border-radius: .5rem;
+/* Menü öğesi — düz liste, ikon + label */
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn {
+    justify-content: flex-start;
+    column-gap: 0.625rem;
+    border-radius: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    background-color: transparent;
 }
 
-.fi-sidebar .fi-sidebar-item-button .fi-icon,
-.fi-sidebar .fi-sidebar-item-icon {
-    color: #93a1b1;
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn > .fi-sidebar-item-label {
+    color: #3f4851;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
-.fi-sidebar .fi-sidebar-item-button:hover {
-    background-color: rgba(255, 255, 255, .06) !important;
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn > .fi-icon {
+    color: #55616d;
+    width: 1.125rem;
+    height: 1.125rem;
 }
 
-.fi-sidebar .fi-sidebar-item-button:hover .fi-sidebar-item-label,
-.fi-sidebar .fi-sidebar-item-button:hover .fi-icon {
+/* Hover — açık gri zemin */
+.fi-sidebar .fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover {
+    background-color: #f1f3f6;
+}
+
+/* Aktif — dolgulu mavi buton, beyaz metin */
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background-color: var(--merter-blue);
+    box-shadow: 0 4px 10px rgba(18, 109, 245, 0.22);
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn:hover {
+    background-color: var(--merter-blue-dark);
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-icon {
     color: #fff;
 }
 
-.fi-sidebar .fi-sidebar-item-active .fi-sidebar-item-button,
-.fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-button {
-    background-color: var(--merter-blue) !important;
+/* Filament'in kendi sidebar başlığı (logo) — marka bloğu onun yerine geçiyor */
+.fi-sidebar .fi-sidebar-header-ctn {
+    display: none;
 }
 
-.fi-sidebar .fi-sidebar-item-active .fi-sidebar-item-label,
-.fi-sidebar .fi-sidebar-item-active .fi-icon,
-.fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-label,
-.fi-sidebar .fi-sidebar-item.fi-active .fi-icon {
-    color: #fff !important;
-}
-
-/* Sidebar toggle / collapse butonu koyu zeminde görünür kalsın */
-.fi-sidebar-header .fi-icon-btn,
-.fi-topbar .fi-sidebar-open-btn {
-    color: #c6ced8;
-}
-
-/* ---------- Marka bloğu (SIDEBAR_NAV_START render hook) ---------- */
+/* ---------------------------------------------------------------
+   Marka bloğu (SIDEBAR_NAV_START render hook)
+   --------------------------------------------------------------- */
 .merter-brand {
     display: flex;
     align-items: center;
-    gap: .625rem;
-    margin: 0 0 .875rem;
-    padding: .75rem .75rem .875rem;
-    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    gap: 0.625rem;
+    height: 3.25rem;
+    padding: 0 0.1875rem;
+    margin-bottom: 0.25rem;
 }
 
 .merter-brand-avatar {
     display: grid;
     place-items: center;
     flex: none;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2rem;
+    height: 2rem;
     border-radius: 9999px;
-    background: var(--merter-blue);
+    background: #1e242b;
     color: #fff;
     font-weight: 700;
-    font-size: .95rem;
-    box-shadow: 0 4px 12px rgba(18, 109, 245, .35);
+    font-size: 0.875rem;
+    line-height: 1;
 }
 
 .merter-brand-text strong {
     display: block;
-    color: #fff;
-    font-size: .875rem;
-    font-weight: 600;
+    color: var(--merter-ink);
+    font-size: 0.875rem;
+    font-weight: 700;
     line-height: 1.2;
 }
 
 .merter-brand-text small {
     display: block;
-    margin-top: .15rem;
-    color: #8794a3;
-    font-size: .7rem;
+    margin-top: 0.25rem;
+    color: var(--merter-muted);
+    font-size: 0.6875rem;
+    line-height: 1;
 }
 
-.fi-sidebar-nav.fi-collapsed .merter-brand,
-.fi-sidebar.fi-collapsed .merter-brand-text {
+/* ---------------------------------------------------------------
+   Sidebar alt bloğu (SIDEBAR_FOOTER render hook)
+   --------------------------------------------------------------- */
+.merter-sidebar-bottom {
+    margin-top: auto;
+    padding: 0.75rem 0.9375rem 1rem;
+    color: var(--merter-muted);
+    font-size: 0.75rem;
+}
+
+.merter-logout {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 0;
+    border: 0;
+    background: none;
+    color: #cd5d66;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: start;
+    cursor: pointer;
+}
+
+.merter-logout:hover {
+    color: #b23c46;
+}
+
+.merter-logout svg {
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+}
+
+.merter-sidebar-copy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0.5rem 0 0;
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--merter-border);
+    color: var(--merter-muted);
+    font-size: 0.75rem;
+}
+
+.merter-sidebar-copy b {
+    flex: none;
+    border: 1px solid var(--merter-border);
+    border-radius: 0.25rem;
+    padding: 0.125rem 0.3125rem;
+    font-size: 0.625rem;
+    font-weight: 500;
+}
+
+/* Filament'in kendi sidebar footer'ı (kullanıcı menüsü kapalı, boş kalır) */
+.fi-sidebar .fi-sidebar-footer:empty {
     display: none;
 }
 
-/* ---------- Marka logosu ---------- */
-.fi-logo img,
-.fi-logo {
-    max-height: 2.25rem;
+/* ---------------------------------------------------------------
+   Topbar — sağda e-posta + Çıkış (TOPBAR_END render hook)
+   --------------------------------------------------------------- */
+nav.fi-topbar {
+    min-height: 3.25rem;
+    background-color: #fff;
+    border-bottom: 1px solid var(--merter-border);
+    box-shadow: none;
 }
 
-/* ---------- Login ekranı ---------- */
-.fi-simple-layout {
+.merter-topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-inline-start: auto;
+    font-size: 0.8125rem;
+}
+
+.merter-topbar-user span {
+    color: #777;
+    font-size: 0.75rem;
+}
+
+.merter-topbar-user button {
+    border: 1px solid #9aa2a9;
+    border-radius: 0.25rem;
+    background: #fff;
+    color: #3f4851;
+    padding: 0.3125rem 0.5625rem;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.merter-topbar-user button:hover {
     background: #f4f6f8;
 }
 
+@media (max-width: 40rem) {
+    .merter-topbar-user span {
+        display: none;
+    }
+}
+
+/* ---------------------------------------------------------------
+   İçerik — beyaz kartlar, yumuşak gölge (eski .form-card)
+   --------------------------------------------------------------- */
+.fi-main {
+    padding-block: 1.25rem;
+}
+
+.fi-section,
+.fi-ta-ctn {
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(23, 43, 77, 0.06), 0 5px 18px rgba(23, 43, 77, 0.04);
+}
+
+.fi-header-heading {
+    color: var(--merter-ink);
+    letter-spacing: -0.02em;
+}
+
+/* ---------------------------------------------------------------
+   Login ekranı — beyaz kart + logo, mavi buton
+   --------------------------------------------------------------- */
+.fi-simple-layout {
+    background: var(--merter-canvas);
+}
+
 .fi-simple-main {
-    border-radius: 1rem;
-    box-shadow: 0 18px 45px rgba(11, 26, 45, .12);
+    background-color: #fff;
+    border-radius: 0.875rem;
+    box-shadow: 0 18px 45px rgba(11, 26, 45, 0.12);
 }
 
 .fi-simple-header .fi-logo img {
@@ -133,16 +314,10 @@
     margin-inline: auto;
 }
 
-/* ---------- Genel ton ---------- */
-.fi-main-ctn {
-    background-color: #f4f6f8;
-}
-
-.fi-topbar > nav {
-    border-bottom: 1px solid var(--merter-border);
-}
-
-.dark .fi-main-ctn,
-.dark .fi-simple-layout {
-    background-color: inherit;
+/* ---------------------------------------------------------------
+   Marka logosu
+   --------------------------------------------------------------- */
+.fi-logo img,
+.fi-logo {
+    max-height: 2.25rem;
 }
