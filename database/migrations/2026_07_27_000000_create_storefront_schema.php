@@ -15,6 +15,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Güvenlik kilidi: şema zaten kuruluysa (canlı Supabase) hiçbir şey yapma.
+        if (Schema::hasTable('products')) {
+            return;
+        }
+
         Schema::create('categories', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->text('name');
