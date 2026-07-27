@@ -1,0 +1,177 @@
+<?php
+
+namespace App\Filament\Concerns;
+
+use App\Services\TranslateService;
+use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
+use Throwable;
+
+/**
+ * Panelde yalnızca Türkçe alan gösterilir; kayıt anında Türkçe değer(ler)
+ * Gemini ile 9 dile çevrilip jsonb'nin ilgili anahtarlarına yazılır.
+ *
+ * Kurallar:
+ * - Türkçe metin değişmediyse çeviri çağrısı yapılmaz, eski çeviriler korunur.
+ * - Değişen tüm alanlar TEK Gemini isteğinde çevrilir.
+ * - Gemini hatası kaydı bozmaz: tr yazılır, eski çeviriler kalır, kullanıcı uyarılır.
+ *
+ * Varsayılan davranış "kolon -> { locale: metin }" yapısı içindir
+ * (products.name, hero_slides.title ...). Farklı jsonb şekli olan kaynaklar
+ * currentTrValue/originalTrValue/applyTranslatedValues metotlarını ezer.
+ */
+trait TranslatesJsonFields
+{
+    /**
+     * Otomatik çevrilecek alanlar.
+     *
+     * @return array<string, string> alan => panelde görünen etiket
+     */
+    abstract protected function translatableJsonFields(): array;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        return $this->fillAutomaticTranslations($data);
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        return $this->fillAutomaticTranslations($data);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function fillAutomaticTranslations(array $data): array
+    {
+        /** @var array<string, string> $turkish */
+        $turkish = [];
+        /** @var array<string, string> $changed */
+        $changed = [];
+
+        foreach (array_keys($this->translatableJsonFields()) as $field) {
+            $value = $this->currentTrValue($data, $field);
+
+            // Alan bu formda yoksa dokunma.
+            if ($value === null) {
+                continue;
+            }
+
+            $turkish[$field] = $value;
+
+            if ($value !== '' && $value !== $this->originalTrValue($field)) {
+                $changed[$field] = $value;
+            }
+        }
+
+        $translations = $changed === [] ? [] : $this->translate($changed);
+
+        foreach ($turkish as $field => $value) {
+            $data = $this->applyTranslatedValues($data, $field, $value, $translations[$field] ?? []);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param  array<string, string>  $changed
+     * @return array<string, array<string, string>>
+     */
+    protected function translate(array $changed): array
+    {
+        try {
+            return app(TranslateService::class)->translateFields($changed);
+        } catch (Throwable $exception) {
+            Log::warning('Otomatik çeviri yapılamadı.', [
+                'fields' => array_keys($changed),
+                'record' => $this->translationRecord()?->getKey(),
+                'error' => $exception->getMessage(),
+            ]);
+
+            Notification::make()
+                ->title('Otomatik çeviri yapılamadı, metinler Türkçe kaydedildi.')
+                ->body($exception->getMessage())
+                ->warning()
+                ->persistent()
+                ->send();
+
+            return [];
+        }
+    }
+
+    /**
+     * Formdan gelen Türkçe değer. Alan formda yoksa null.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    protected function currentTrValue(array $data, string $field): ?string
+    {
+        if (! Arr::has($data, $field)) {
+            return null;
+        }
+
+        return trim((string) (Arr::get($data, $field.'.tr') ?? ''));
+    }
+
+    /**
+     * Kayıttaki (henüz güncellenmemiş) Türkçe değer. Yeni kayıtta null.
+     */
+    protected function originalTrValue(string $field): ?string
+    {
+        $existing = $this->originalJsonValue($field);
+
+        return isset($existing['tr']) ? trim((string) $existing['tr']) : null;
+    }
+
+    /**
+     * Mevcut çevirileri koruyarak yeni değerleri jsonb'ye yazar.
+     *
+     * Türkçe metin boşaltılsa bile eski çeviriler silinmez; vitrin zaten
+     * tr'ye düştüğü için veri kaybı riski almaya gerek yok.
+     *
+     * @param  array<string, mixed>  $data
+     * @param  array<string, string>  $translations
+     * @return array<string, mixed>
+     */
+    protected function applyTranslatedValues(array $data, string $field, string $tr, array $translations): array
+    {
+        Arr::set($data, $field, array_merge(
+            $this->originalJsonValue($field),
+            $translations,
+            ['tr' => $tr],
+        ));
+
+        return $data;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function originalJsonValue(string $field): array
+    {
+        $record = $this->translationRecord();
+
+        if (! $record) {
+            return [];
+        }
+
+        $value = $record->getOriginal($field);
+
+        if (is_string($value)) {
+            $value = json_decode($value, true);
+        }
+
+        return is_array($value) ? $value : [];
+    }
+
+    /**
+     * Düzenleme sayfasında kayıt, oluşturma sayfasında null.
+     */
+    protected function translationRecord(): ?Model
+    {
+        return method_exists($this, 'getRecord') ? $this->getRecord() : null;
+    }
+}

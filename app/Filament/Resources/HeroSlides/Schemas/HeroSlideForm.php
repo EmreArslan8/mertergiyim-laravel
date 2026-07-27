@@ -23,14 +23,10 @@ class HeroSlideForm
                             ->columnSpanFull(),
                     ]),
                 Section::make('Metinler')
-                    ->description('Başlık iki satırdır; alt satır için satır sonu (Enter) kullanın.')
+                    ->description('Başlık iki satırdır; alt satır için satır sonu (Enter) kullanın. Sadece Türkçe girin; kaydettiğinizde diğer 9 dil otomatik çevrilir.')
                     ->schema([
-                        Multilingual::translateAction([
-                            'title' => 'Başlık',
-                            'button_text' => 'Buton metni',
-                        ]),
-                        Multilingual::tabs('title', 'Başlık', long: true),
-                        Multilingual::tabs('button_text', 'Buton metni'),
+                        Multilingual::turkish('title', 'Başlık', long: true),
+                        Multilingual::turkish('button_text', 'Buton Metni'),
                     ]),
                 Section::make('Ayarlar')
                     ->columns(3)

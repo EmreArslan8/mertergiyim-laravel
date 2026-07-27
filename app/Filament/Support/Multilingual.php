@@ -43,6 +43,17 @@ class Multilingual
     }
 
     /**
+     * Panelde tek Türkçe alan. Diğer 9 dil kayıt anında otomatik doldurulur
+     * (App\Filament\Concerns\TranslatesJsonFields).
+     */
+    public static function turkish(string $field, string $label, bool $long = false, bool $required = true): TextInput|Textarea
+    {
+        return self::input($field.'.tr', $label.' (Türkçe)', $long)
+            ->required($required)
+            ->columnSpanFull();
+    }
+
+    /**
      * Alan başına 10 sekme. tr zorunlu, diğerleri opsiyonel.
      */
     public static function tabs(string $field, string $label, bool $long = false): Tabs

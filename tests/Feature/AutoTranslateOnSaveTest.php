@@ -1,0 +1,162 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Filament\Resources\Products\Pages\CreateProduct;
+use App\Filament\Resources\Products\Pages\EditProduct;
+use App\Models\Product;
+use App\Models\User;
+use App\Services\TranslateService;
+use Livewire\Livewire;
+use Mockery;
+use RuntimeException;
+use Tests\TestCase;
+
+/**
+ * Panelde sadece Türkçe alan var; kayıt anında kalan 9 dil otomatik doldurulur.
+ *
+ * Gemini çağrısı mock'lanır, gerçek istek atılmaz. Testin oluşturduğu geçici
+ * (yayında olmayan) ürün kaydı her testin sonunda silinir.
+ */
+class AutoTranslateOnSaveTest extends TestCase
+{
+    private ?Product $product = null;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->actingAs(User::query()->firstOrFail());
+
+        $suffix = uniqid();
+
+        $this->product = Product::query()->create([
+            'code' => 'PHPUNIT-'.$suffix,
+            'slug' => 'phpunit-'.$suffix,
+            'name' => ['tr' => 'Test Ürün', 'en' => 'Test Product', 'de' => 'Test Produkt'],
+            'description' => ['tr' => 'Test açıklama', 'en' => 'Test description', 'de' => 'Test Beschreibung'],
+            'price' => 1,
+            'currency' => 'TRY',
+            'stock_status' => 'in_stock',
+            'active' => false,
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->product?->delete();
+        $this->product = null;
+
+        // Oluşturma testinin bıraktığı geçici kayıtlar.
+        Product::query()->where('code', 'like', 'PHPUNIT-%')->delete();
+
+        parent::tearDown();
+    }
+
+    public function test_it_translates_a_new_record_on_create(): void
+    {
+        $languages = config('storefront.translation.languages');
+        $suffix = uniqid();
+
+        $this->mock(TranslateService::class, function ($mock) use ($languages) {
+            $mock->shouldReceive('translateFields')
+                ->once()
+                ->andReturn([
+                    'name' => array_combine($languages, array_map(fn ($lang) => 'name-'.$lang, $languages)),
+                    'description' => array_combine($languages, array_map(fn ($lang) => 'desc-'.$lang, $languages)),
+                ]);
+        });
+
+        Livewire::test(CreateProduct::class)
+            ->fillForm([
+                'code' => 'PHPUNIT-'.$suffix,
+                'slug' => 'phpunit-'.$suffix,
+                'name' => ['tr' => 'Yeni Ürün'],
+                'description' => ['tr' => 'Yeni açıklama'],
+                'currency' => 'TRY',
+                'stock_status' => 'in_stock',
+                'active' => false,
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $created = Product::query()->where('code', 'PHPUNIT-'.$suffix)->firstOrFail();
+
+        $this->assertCount(10, $created->name);
+        $this->assertSame('Yeni Ürün', $created->name['tr']);
+        $this->assertSame('name-en', $created->name['en']);
+        $this->assertSame('desc-ar', $created->description['ar']);
+    }
+
+    public function test_it_does_not_translate_when_turkish_text_is_unchanged(): void
+    {
+        $this->mock(TranslateService::class, fn ($mock) => $mock->shouldNotReceive('translateFields'));
+
+        Livewire::test(EditProduct::class, ['record' => $this->product->getKey()])
+            ->fillForm(['price' => 42])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $fresh = $this->product->fresh();
+
+        $this->assertSame('42.00', (string) $fresh->price);
+        $this->assertSame('Test Ürün', $fresh->name['tr']);
+        $this->assertSame('Test Product', $fresh->name['en']);
+        $this->assertSame('Test Beschreibung', $fresh->description['de']);
+    }
+
+    public function test_it_translates_changed_turkish_text_into_all_locales(): void
+    {
+        $languages = config('storefront.translation.languages');
+
+        $this->mock(TranslateService::class, function ($mock) use ($languages) {
+            $mock->shouldReceive('translateFields')
+                ->once()
+                ->with(Mockery::on(fn ($fields) => ($fields['name'] ?? null) === 'Yepyeni Ürün'))
+                ->andReturn([
+                    'name' => array_combine($languages, array_map(fn ($lang) => 'name-'.$lang, $languages)),
+                    'description' => array_combine($languages, array_map(fn ($lang) => 'desc-'.$lang, $languages)),
+                ]);
+        });
+
+        Livewire::test(EditProduct::class, ['record' => $this->product->getKey()])
+            ->fillForm([
+                'name' => ['tr' => 'Yepyeni Ürün'],
+                'description' => ['tr' => 'Yepyeni açıklama'],
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $fresh = $this->product->fresh();
+
+        $this->assertCount(10, $fresh->name);
+        $this->assertCount(10, $fresh->description);
+        $this->assertSame('Yepyeni Ürün', $fresh->name['tr']);
+        $this->assertSame('Yepyeni açıklama', $fresh->description['tr']);
+
+        foreach ($languages as $language) {
+            $this->assertSame('name-'.$language, $fresh->name[$language]);
+            $this->assertSame('desc-'.$language, $fresh->description[$language]);
+        }
+    }
+
+    public function test_it_saves_turkish_and_warns_when_translation_fails(): void
+    {
+        $this->mock(TranslateService::class, function ($mock) {
+            $mock->shouldReceive('translateFields')->once()->andThrow(new RuntimeException('Gemini patladı.'));
+        });
+
+        Livewire::test(EditProduct::class, ['record' => $this->product->getKey()])
+            ->fillForm(['name' => ['tr' => 'Hatalı Çeviri Ürünü']])
+            ->call('save')
+            ->assertHasNoFormErrors()
+            ->assertNotified('Otomatik çeviri yapılamadı, metinler Türkçe kaydedildi.');
+
+        $fresh = $this->product->fresh();
+
+        $this->assertSame('Hatalı Çeviri Ürünü', $fresh->name['tr']);
+        // Eski çeviriler korunur.
+        $this->assertSame('Test Product', $fresh->name['en']);
+        $this->assertSame('Test Produkt', $fresh->name['de']);
+    }
+}

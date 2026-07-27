@@ -18,15 +18,11 @@ class ProductForm
     {
         return $schema
             ->components([
-                Section::make('Çok dilli içerik')
-                    ->description('Türkçe alanları doldurup "Çevir" ile kalan 9 dili otomatik üretebilirsiniz.')
+                Section::make('İçerik')
+                    ->description('Sadece Türkçe girin; kaydettiğinizde diğer 9 dil otomatik çevrilir.')
                     ->schema([
-                        Multilingual::translateAction([
-                            'name' => 'Ürün adı',
-                            'description' => 'Açıklama',
-                        ]),
-                        Multilingual::tabs('name', 'Ürün adı'),
-                        Multilingual::tabs('description', 'Açıklama', long: true),
+                        Multilingual::turkish('name', 'Ürün Adı'),
+                        Multilingual::turkish('description', 'Açıklama', long: true),
                     ]),
 
                 Section::make('Ürün bilgileri')

@@ -2,10 +2,9 @@
 
 namespace App\Filament\Resources\SiteSettings\Schemas;
 
-use App\Filament\Support\Multilingual;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class SiteSettingForm
@@ -13,7 +12,7 @@ class SiteSettingForm
     /**
      * site_settings.value jsonb yapısı: { locale: { alan: değer } }.
      */
-    private const FIELDS = [
+    public const FIELDS = [
         'footerBrand' => 'Alt bilgi marka adı',
         'footerDescription' => 'Alt bilgi açıklaması',
         'footerAddress' => 'Adres',
@@ -30,17 +29,15 @@ class SiteSettingForm
                     ->required()
                     ->disabledOn('edit')
                     ->default('storefront'),
-                Tabs::make('Diller')
-                    ->tabs(array_map(
-                        fn (string $locale) => Tabs\Tab::make(Multilingual::localeLabel($locale))->schema([
-                            TextInput::make('value.'.$locale.'.footerBrand')->label(self::FIELDS['footerBrand']),
-                            Textarea::make('value.'.$locale.'.footerDescription')->label(self::FIELDS['footerDescription'])->rows(3),
-                            Textarea::make('value.'.$locale.'.footerAddress')->label(self::FIELDS['footerAddress'])->rows(2),
-                            TextInput::make('value.'.$locale.'.footerInfoTitle')->label(self::FIELDS['footerInfoTitle']),
-                            TextInput::make('value.'.$locale.'.copyright')->label(self::FIELDS['copyright']),
-                        ]),
-                        Multilingual::locales()
-                    ))
+                Section::make('Alt bilgi metinleri')
+                    ->description('Sadece Türkçe girin; kaydettiğinizde diğer 9 dil otomatik çevrilir.')
+                    ->schema([
+                        TextInput::make('value.tr.footerBrand')->label(self::FIELDS['footerBrand'].' (Türkçe)'),
+                        Textarea::make('value.tr.footerDescription')->label(self::FIELDS['footerDescription'].' (Türkçe)')->rows(3),
+                        Textarea::make('value.tr.footerAddress')->label(self::FIELDS['footerAddress'].' (Türkçe)')->rows(2),
+                        TextInput::make('value.tr.footerInfoTitle')->label(self::FIELDS['footerInfoTitle'].' (Türkçe)'),
+                        TextInput::make('value.tr.copyright')->label(self::FIELDS['copyright'].' (Türkçe)'),
+                    ])
                     ->columnSpanFull(),
             ]);
     }
