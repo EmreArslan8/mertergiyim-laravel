@@ -9,11 +9,17 @@ use Illuminate\Support\Str;
  */
 trait HasUuidKey
 {
-    public $incrementing = false;
-
-    public $timestamps = false;
-
-    protected $keyType = 'string';
+    /**
+     * Laravel her yeni instance'ta çağırır; property'leri burada atamak,
+     * bunları trait'te yeniden tanımlayıp Model'in varsayılanlarıyla
+     * (incrementing=true, keyType='int', timestamps=true) çakışmasını önler.
+     */
+    public function initializeHasUuidKey(): void
+    {
+        $this->incrementing = false;
+        $this->timestamps = false;
+        $this->keyType = 'string';
+    }
 
     protected static function bootHasUuidKey(): void
     {
