@@ -66,6 +66,20 @@ class EditSiteSetting extends EditRecord
         return $value === null ? null : trim((string) $value);
     }
 
+    /**
+     * Eksik dil kontrolü value[locale][field] yapısı üzerinden yapılır.
+     */
+    protected function translatedValueFor(array $data, string $field): mixed
+    {
+        $value = [];
+
+        foreach ((array) ($data['value'] ?? []) as $locale => $fields) {
+            $value[$locale] = (string) (($fields[$field] ?? '') ?: '');
+        }
+
+        return $value;
+    }
+
     protected function applyTranslatedValues(array $data, string $field, string $tr, array $translations): array
     {
         $data['value']['tr'][$field] = $tr;

@@ -40,7 +40,11 @@
                         <span class="touch-tip">{{ $messages['home']['touchTip'] }}</span>
                     @endif
                     @if ($card['primaryImage'])
-                        <img class="main" src="{{ $card['primaryImage'] }}" alt="{{ $name }}" loading="lazy" decoding="async" style="object-fit:cover">
+                        {{-- İlk satır (masaüstünde 3 kart) ekranda açılışta görünür: lazy olmamalı. --}}
+                        <img class="main" src="{{ $card['primaryImage'] }}" alt="{{ $name }}"
+                             loading="{{ $loop->index < 3 ? 'eager' : 'lazy' }}"
+                             @if ($loop->index < 3) fetchpriority="high" @endif
+                             decoding="async" style="object-fit:cover">
                     @endif
                     @if ($card['secondaryImage'])
                         <img class="alt" src="{{ $card['secondaryImage'] }}" alt="" loading="lazy" decoding="async" style="object-fit:cover">

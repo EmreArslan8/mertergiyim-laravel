@@ -16,8 +16,8 @@ class ContentPageController extends Controller
 
         return view('storefront.content-page', [
             'page' => $page,
-            'canonicalPath' => '/'.$locale.'/sayfa/'.$page->slug,
-            'alternatePath' => fn (string $code) => '/'.$code.'/sayfa/'.$page->slug,
+            'canonicalPath' => '/'.$locale.'/'.$page->slug,
+            'alternatePath' => fn (string $code) => '/'.$code.'/'.$page->slug,
         ]);
     }
 }

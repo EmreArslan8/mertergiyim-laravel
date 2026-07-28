@@ -40,6 +40,15 @@
     <link rel="icon" href="/icon.png">
     <link rel="apple-touch-icon" href="/apple-icon.png">
 
+    {{-- Tüm görseller Supabase Storage'dan geliyor: TLS el sıkışmasını öne al. --}}
+    @php ($storageOrigin = parse_url((string) config('storefront.storage_url'), PHP_URL_SCHEME).'://'.parse_url((string) config('storefront.storage_url'), PHP_URL_HOST))
+    <link rel="preconnect" href="{{ $storageOrigin }}" crossorigin>
+
+    {{-- LCP: hero inline background-image olarak basılıyor; preload ile isteği öne çekiyoruz. --}}
+    @if (! empty($heroImage))
+        <link rel="preload" as="image" href="{{ $heroImage }}" fetchpriority="high">
+    @endif
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     {{-- italic ekseni bilerek yok: kaynak index.html ile birebir sahte eğim (synthetic oblique) --}}

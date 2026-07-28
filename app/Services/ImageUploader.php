@@ -32,8 +32,13 @@ class ImageUploader
 
         $path = ($directory !== '' ? $directory.'/' : '').$filename.'.'.$extension;
 
+        // Dosya adı zaman damgalı, yani içerik hiç değişmiyor: uzun cache güvenli.
+        // Bu olmadan Supabase varsayılan olarak cache-control: no-cache döner.
         Storage::disk(UploadTarget::disk($bucketKey))
-            ->put(UploadTarget::pathPrefix($bucketKey).$path, $contents, 'public');
+            ->put(UploadTarget::pathPrefix($bucketKey).$path, $contents, [
+                'visibility' => 'public',
+                'CacheControl' => 'public, max-age=31536000, immutable',
+            ]);
 
         return $path;
     }

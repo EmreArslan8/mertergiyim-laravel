@@ -52,7 +52,7 @@ class SitemapController extends Controller
 
             foreach ($pageSlugs as $slug) {
                 $paths[] = [
-                    'path' => fn (string $locale) => '/'.$locale.'/sayfa/'.$slug,
+                    'path' => fn (string $locale) => '/'.$locale.'/'.$slug,
                     'freq' => 'monthly',
                     'priority' => '0.6',
                 ];

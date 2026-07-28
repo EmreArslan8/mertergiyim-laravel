@@ -59,7 +59,11 @@ class StorageUpload
                     UploadTarget::pathPrefix($bucketKey).trim($directory, '/'),
                     $file,
                     $filename,
-                    ['visibility' => 'public'],
+                    [
+                        'visibility' => 'public',
+                        // Dosya adı zaman damgalı; içerik değişmediği için uzun cache güvenli.
+                        'CacheControl' => 'public, max-age=31536000, immutable',
+                    ],
                 );
 
                 return $path;

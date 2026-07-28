@@ -11,6 +11,23 @@ class Storefront
 {
     private const EXTERNAL_URL_PATTERN = '#^(https?://|mailto:|tel:|\#)#i';
 
+    /**
+     * Bilgilendirme sayfaları /{locale}/{slug} altında yaşıyor. Bu segmentler
+     * routes/web.php'de sabit rotalara ait, sayfa slug'ı olarak kullanılamaz.
+     */
+    public const RESERVED_SLUGS = [
+        'sepet', 'siparis-takibi', 'siparisler', 'siparis-basarili',
+        'multimedya', 'iletisim', 'blog', 'product', 'kategori',
+        'sitemap.xml', 'robots.txt',
+    ];
+
+    public static function isReservedSlug(?string $slug): bool
+    {
+        $slug = mb_strtolower(trim((string) $slug), 'UTF-8');
+
+        return in_array($slug, self::RESERVED_SLUGS, true) || self::hasLocale($slug);
+    }
+
     public static function locales(): array
     {
         return config('storefront.locales');
@@ -101,6 +118,27 @@ class Storefront
         $base = rtrim((string) config('storefront.storage_url'), '/');
 
         return $base.'/'.$bucket.'/'.ltrim($path, '/');
+    }
+
+    /**
+     * storageUrl'ün üstüne Supabase image transformation ekler.
+     *
+     * object/public yerine render/image/public uçlarını kullanır: görsel
+     * istenen genişliğe küçültülür ve tarayıcı Accept başlığına göre webp
+     * döner. Transform ucu ayrıca cache-control: max-age=3600 gönderir,
+     * ham object/public ucu ise no-cache gönderiyor.
+     */
+    public static function imageUrl(string $bucketKey, ?string $path, int $width, int $quality = 75): string
+    {
+        $url = self::storageUrl($bucketKey, $path);
+
+        if (! $url || ! str_contains($url, '/storage/v1/object/public/')) {
+            return $url;
+        }
+
+        $url = str_replace('/storage/v1/object/public/', '/storage/v1/render/image/public/', $url);
+
+        return $url.'?'.http_build_query(['width' => $width, 'quality' => $quality]);
     }
 
     /**

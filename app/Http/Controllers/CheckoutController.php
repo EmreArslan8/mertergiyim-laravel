@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\NotifyStoreOfOrder;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Services\ExchangeRateService;
 use App\Services\OrderCodeService;
+use App\Support\PhoneNumber;
 use App\Support\Storefront;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -28,18 +31,38 @@ class CheckoutController extends Controller
 
         $data = $request->validate([
             'customer_name' => ['required', 'string', 'max:120'],
-            'phone' => ['required', 'string', 'max:30'],
+            'phone' => [
+                'required',
+                'string',
+                'max:30',
+                PhoneNumber::rule($this->copy(
+                    $locale,
+                    'cart.errors.phone',
+                    'Geçerli bir telefon numarası girin. Örnek: 0532 325 97 88',
+                )),
+            ],
             'address' => ['required', 'string', 'max:2000'],
             'note' => ['nullable', 'string', 'max:2000'],
+            'order_key' => ['nullable', 'uuid'],
             'items' => ['required', 'array', 'min:1', 'max:50'],
             'items.*.product_id' => ['required', 'uuid'],
             'items.*.size' => ['nullable', 'string', 'max:80'],
+            'items.*.size_id' => ['nullable', 'uuid'],
             'items.*.color' => ['nullable', 'string', 'max:120'],
+            'items.*.color_id' => ['nullable', 'uuid'],
             'items.*.quantity' => ['required', 'integer', 'min:1', 'max:99'],
         ], [
             'items.required' => $this->copy($locale, 'cart.errors.empty', 'Sepetiniz boş.'),
             'items.min' => $this->copy($locale, 'cart.errors.empty', 'Sepetiniz boş.'),
         ]);
+
+        $orderKey = $data['order_key'] ?? null;
+
+        // Çift tıklama/yenileme: aynı anahtarla gelen ikinci istek yeni sipariş
+        // açmaz, ilk siparişin takip sayfasına gider.
+        if ($existing = $this->existingOrderFor($orderKey)) {
+            return $this->toSuccess($locale, $existing);
+        }
 
         $currency = match ($locale) {
             'tr' => 'TRY',
@@ -51,7 +74,30 @@ class CheckoutController extends Controller
             report: true,
         );
 
-        $order = DB::transaction(function () use ($data, $locale, $currency, $rates): Order {
+        try {
+            $order = $this->createOrder($data, $locale, $currency, $rates, $orderKey);
+        } catch (UniqueConstraintViolationException $exception) {
+            if ($existing = $this->existingOrderFor($orderKey)) {
+                return $this->toSuccess($locale, $existing);
+            }
+
+            throw $exception;
+        }
+
+        // Yanıt gönderildikten sonra çalışır: bildirim yavaşlarsa ya da
+        // başarısız olursa müşteri bekletilmez, sipariş etkilenmez.
+        NotifyStoreOfOrder::dispatch($order)->afterResponse();
+
+        return $this->toSuccess($locale, $order);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  array<string, float>|null  $rates
+     */
+    private function createOrder(array $data, string $locale, string $currency, ?array $rates, ?string $orderKey): Order
+    {
+        return DB::transaction(function () use ($data, $locale, $currency, $rates, $orderKey): Order {
             $productIds = collect($data['items'])->pluck('product_id')->unique()->values();
             $products = Product::query()
                 ->active()
@@ -82,10 +128,7 @@ class CheckoutController extends Controller
 
                 $variant = null;
                 if ($product->variants->isNotEmpty()) {
-                    $variant = $product->variants->first(fn ($candidate) =>
-                        ($candidate->size?->name ?? '') === ($item['size'] ?? '')
-                        && ($candidate->color?->name ?? '') === ($item['color'] ?? '')
-                    );
+                    $variant = $this->matchVariant($product, $item);
 
                     if (! $variant) {
                         throw ValidationException::withMessages([
@@ -111,8 +154,10 @@ class CheckoutController extends Controller
                     'variant_id' => $variant?->id,
                     'product_name' => Storefront::text($product->name, $locale),
                     'product_code' => $product->code,
-                    'size' => ($item['size'] ?? '') ?: null,
-                    'color' => ($item['color'] ?? '') ?: null,
+                    // Panelde okunabilir olsun diye varyantın Türkçe adı yazılır;
+                    // varyantsız üründe müşterinin gördüğü etiket kalır.
+                    'size' => $variant?->size?->name ?? (($item['size'] ?? '') ?: null),
+                    'color' => $variant?->color?->name ?? (($item['color'] ?? '') ?: null),
                     'quantity' => $item['quantity'],
                     'unit_price' => $unitPrice,
                     'line_total' => $lineTotal,
@@ -122,6 +167,7 @@ class CheckoutController extends Controller
             $codes = $this->codes->generate();
             $order = Order::query()->create([
                 ...$codes,
+                'idempotency_key' => $orderKey,
                 'customer_name' => $data['customer_name'],
                 'phone' => $data['phone'],
                 'address' => $data['address'],
@@ -134,7 +180,21 @@ class CheckoutController extends Controller
 
             return $order;
         }, 3);
+    }
 
+    /**
+     * İki istek aynı anda ön kontrolü geçerse ikincisi unique kısıta takılır;
+     * hata göstermek yerine ilk siparişin takip sayfasına gönderilir.
+     */
+    private function existingOrderFor(?string $orderKey): ?Order
+    {
+        return $orderKey
+            ? Order::query()->where('idempotency_key', $orderKey)->first()
+            : null;
+    }
+
+    private function toSuccess(string $locale, Order $order): RedirectResponse
+    {
         return redirect()->route('storefront.order.success', [
             'locale' => $locale,
             'trackingCode' => $order->tracking_code,
@@ -153,6 +213,29 @@ class CheckoutController extends Controller
             'canonicalPath' => '/'.$locale.'/siparis-basarili/'.$trackingCode,
             'alternatePath' => fn (string $code) => '/'.$code.'/siparis-basarili/'.$trackingCode,
         ]);
+    }
+
+    /**
+     * Sepet satırını ürünün varyantlarından biriyle eşler.
+     *
+     * Ürün sayfası beden/renk adını aktif dile çevirerek gösterdiği için ada
+     * göre eşleşme yabancı dillerde çalışmıyordu; öncelik size_id/color_id'de.
+     * Ada göre eşleşme yalnızca bu alanları taşımayan eski sepetler için yedek.
+     *
+     * @param  array<string, mixed>  $item
+     */
+    private function matchVariant(Product $product, array $item): ?ProductVariant
+    {
+        $sizeId = $item['size_id'] ?? null;
+        $colorId = $item['color_id'] ?? null;
+
+        if ($sizeId !== null || $colorId !== null) {
+            return $product->variants->first(fn ($candidate) => $candidate->size_id === $sizeId
+                && $candidate->color_id === $colorId);
+        }
+
+        return $product->variants->first(fn ($candidate) => ($candidate->size?->name ?? '') === ($item['size'] ?? '')
+            && ($candidate->color?->name ?? '') === ($item['color'] ?? ''));
     }
 
     private function copy(string $locale, string $key, string $fallback): string

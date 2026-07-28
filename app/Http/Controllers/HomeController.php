@@ -24,7 +24,9 @@ class HomeController extends Controller
 
         return view('storefront.home', [
             'hero' => $hero,
-            'heroImage' => $hero ? Storefront::storageUrl('site', $hero->image_path) : '',
+            // LCP görseli: tam ekran, 1600px retina dahil her ekrana yeter.
+            // Koyu overlay + büyük başlık altında kaldığı için q65 gözle ayırt edilmiyor.
+            'heroImage' => $hero ? Storefront::imageUrl('site', $hero->image_path, 1600, 65) : '',
             'cards' => $this->cards->make($data['products'], $locale),
             'canonicalPath' => '/'.$locale,
             'alternatePath' => fn (string $code) => '/'.$code,

@@ -2,7 +2,9 @@
 
 namespace App\Filament\Concerns;
 
+use App\Filament\Support\Multilingual;
 use App\Services\TranslateService;
+use App\Support\TranslationStatus;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -96,7 +98,54 @@ trait TranslatesJsonFields
             $data = $this->applyTranslatedValues($data, $field, $value, $translations[$field] ?? []);
         }
 
+        if ($changed !== []) {
+            $this->warnAboutIncompleteTranslations($data, array_keys($changed));
+        }
+
         return $data;
+    }
+
+    /**
+     * Gemini istek başarılı olsa bile bazı dilleri eksik döndürebiliyor.
+     * Kayıt engellenmez ama hangi dillerin eksik kaldığı panelde bildirilir.
+     *
+     * @param  array<string, mixed>  $data
+     * @param  array<int, string>  $fields
+     */
+    protected function warnAboutIncompleteTranslations(array $data, array $fields): void
+    {
+        $labels = $this->translatableJsonFields();
+        $missing = [];
+
+        foreach ($fields as $field) {
+            $locales = TranslationStatus::missingLocales($this->translatedValueFor($data, $field));
+
+            if ($locales !== []) {
+                $missing[] = ($labels[$field] ?? $field).': '
+                    .implode(', ', array_map(Multilingual::localeLabel(...), $locales));
+            }
+        }
+
+        if ($missing === []) {
+            return;
+        }
+
+        Notification::make()
+            ->title('Bazı diller çevrilemedi, kayıt tamamlandı.')
+            ->body(implode(' • ', $missing).' — Kaydı tekrar kaydederek ya da "php artisan translations:check --fix" ile tamamlayabilirsiniz.')
+            ->warning()
+            ->persistent()
+            ->send();
+    }
+
+    /**
+     * Eksik dil kontrolü için alanın kaydedilecek son hâli.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    protected function translatedValueFor(array $data, string $field): mixed
+    {
+        return Arr::get($data, $field);
     }
 
     /**

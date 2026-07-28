@@ -43,6 +43,8 @@
                 <form method="post" action="/{{ $locale }}/siparisler" data-checkout-form>
                     @csrf
                     <input type="hidden" name="cart" data-cart-payload>
+                    {{-- Çift tıklamada aynı anahtar gelir, ikinci sipariş açılmaz. --}}
+                    <input type="hidden" name="order_key" value="{{ old('order_key') ?: (string) \Illuminate\Support\Str::uuid() }}">
 
                     <label>
                         {{ $messages['order']['name'] ?? 'Ad Soyad' }}

@@ -22,6 +22,24 @@ return [
 
     'whatsapp_number' => env('STOREFRONT_WHATSAPP_NUMBER', '905323259788'),
 
+    // Sipariş oluşunca mağazaya WhatsApp bildirimi (Meta Cloud API).
+    // Kimlik bilgileri boşken bildirim sessizce atlanır, sipariş normal kaydedilir.
+    'whatsapp' => [
+        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'token' => env('WHATSAPP_ACCESS_TOKEN'),
+        'api_version' => env('WHATSAPP_API_VERSION', 'v21.0'),
+
+        // Bildirimin gideceği numara; boşsa yukarıdaki mağaza numarası kullanılır.
+        'recipient' => env('WHATSAPP_NOTIFY_NUMBER'),
+
+        // 'template': onaylı şablonla gönderir (24 saat kuralı nedeniyle
+        // varsayılan ve tek güvenilir yol). 'text': düz metin gönderir, yalnızca
+        // mağaza son 24 saat içinde yazmışsa çalışır.
+        'mode' => env('WHATSAPP_MESSAGE_MODE', 'template'),
+        'template' => env('WHATSAPP_TEMPLATE_NAME', 'yeni_siparis'),
+        'template_language' => env('WHATSAPP_TEMPLATE_LANGUAGE', 'tr'),
+    ],
+
     'site_url' => env('STOREFRONT_SITE_URL', 'https://www.mertergiyim.com'),
 
     // Sorgu cache süresi (saniye). Kaynak Next.js projesindeki revalidate = 3600.

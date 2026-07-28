@@ -6,6 +6,7 @@ use App\Filament\Resources\ManagedResource;
 use App\Filament\Resources\ContentPages\Pages\ListContentPages;
 use App\Filament\Support\Multilingual;
 use App\Models\ContentPage;
+use App\Support\Storefront;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -38,7 +39,16 @@ class ContentPageResource extends ManagedResource
                     Multilingual::turkish('title', 'Başlık')
                         ->live(onBlur: true)
                         ->afterStateUpdated(fn ($state, $set) => $set('slug', Str::slug((string) $state))),
-                    TextInput::make('slug')->label('URL kısa adı')->required()->unique(ignoreRecord: true),
+                    TextInput::make('slug')
+                        ->label('URL kısa adı')
+                        ->helperText('Sayfa /tr/{kısa-ad} adresinde yayınlanır.')
+                        ->required()
+                        ->unique(ignoreRecord: true)
+                        ->rule(fn () => function (string $attribute, $value, callable $fail) {
+                            if (Storefront::isReservedSlug($value)) {
+                                $fail('Bu kısa ad sitenin sabit sayfalarına ait, başka bir ad seçin.');
+                            }
+                        }),
                     Multilingual::turkish('content', 'İçerik', long: true),
                     Multilingual::turkish('seo_title', 'SEO başlığı', required: false),
                     Multilingual::turkish('seo_description', 'SEO açıklaması', long: true, required: false),

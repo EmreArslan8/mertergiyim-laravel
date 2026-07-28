@@ -17,6 +17,7 @@ class Order extends Model
     protected $casts = [
         'total' => 'decimal:2',
         'created_at' => 'datetime',
+        'whatsapp_notified_at' => 'datetime',
     ];
 
     public function items(): HasMany

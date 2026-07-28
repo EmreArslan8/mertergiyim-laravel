@@ -64,23 +64,23 @@ class AppServiceProvider extends ServiceProvider
         // yeni/düzenle/sil işlemleri listenin üzerinde modal olarak açılır.
         CreateAction::configureUsing(fn (CreateAction $action) => $action
             ->modal()
-            ->modalWidth(Width::Large)
+            ->modalWidth(Width::FourExtraLarge)
             ->createAnother(false));
 
         EditAction::configureUsing(fn (EditAction $action) => $action
             ->modal()
-            ->modalWidth(Width::Large)
+            ->modalWidth(Width::FourExtraLarge)
             ->button()
             ->label('Düzenle'));
 
         DeleteAction::configureUsing(fn (DeleteAction $action) => $action
             ->modal()
-            ->modalWidth(Width::Medium)
+            ->modalWidth(Width::Large)
             ->button()
             ->label('Sil'));
 
         DeleteBulkAction::configureUsing(fn (DeleteBulkAction $action) => $action
             ->modal()
-            ->modalWidth(Width::Medium));
+            ->modalWidth(Width::Large));
     }
 }

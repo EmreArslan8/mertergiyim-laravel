@@ -29,8 +29,9 @@ class ProductController extends Controller
         $currency = Storefront::resolveCurrency($currencies, $product->currencyForLocale($locale));
         $numericPrice = $product->priceForLocale($locale, $rates);
 
+        // Galeri görseli detay sayfasında büyük gösteriliyor; 1000px retina dahil yeter.
         $gallery = array_values(array_filter(array_map(
-            fn ($image) => Storefront::storageUrl('products', $image->storage_path),
+            fn ($image) => Storefront::imageUrl('products', $image->storage_path, 1000),
             Storefront::sortedImages($product->images),
         )));
 
@@ -39,7 +40,7 @@ class ProductController extends Controller
 
             return [
                 'product' => $item,
-                'image' => Storefront::storageUrl('products', $images[0]->storage_path ?? null),
+                'image' => Storefront::imageUrl('products', $images[0]->storage_path ?? null, 600),
                 'price' => Storefront::formatPrice(
                     $item->priceForLocale($locale, $rates),
                     Storefront::resolveCurrency($currencies, $item->currencyForLocale($locale)),

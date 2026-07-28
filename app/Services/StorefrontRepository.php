@@ -153,9 +153,15 @@ class StorefrontRepository
         usort($sizes, $bySortOrder);
         usort($colors, $bySortOrder);
 
+        // Etiket çevrilir ama sepete/siparişe id gider: farklı dillerde çevrilmiş
+        // ad ile Türkçe veritabanı değeri karşılaştırılınca varyant bulunamıyordu.
         return [
-            'sizes' => array_map(fn ($size) => Storefront::text($size->name_i18n, $locale) ?: $size->name, $sizes),
+            'sizes' => array_map(fn ($size) => [
+                'id' => $size->id,
+                'name' => Storefront::text($size->name_i18n, $locale) ?: $size->name,
+            ], $sizes),
             'colors' => array_map(fn ($color) => [
+                'id' => $color->id,
                 'name' => Storefront::text($color->name_i18n, $locale) ?: $color->name,
                 'hex' => $color->hex,
             ], $colors),
@@ -163,26 +169,26 @@ class StorefrontRepository
     }
 
     /**
-     * track_order RPC'sinin Eloquent karşılığı: sipariş no VEYA takip kodu,
-     * alfanumerik dışı karakterler yok sayılarak eşleştirilir.
+     * track_order RPC'sinin Eloquent karşılığı: sipariş no VEYA takip kodu.
+     *
+     * Müşteri kodu tire/boşluk olmadan da yazabildiği için giriş normalize edilip
+     * kayıtlı biçimlere geri kuruluyor; sorgu order_number ve tracking_code
+     * indeksleri üzerinden tek seferde çalışır (tüm tabloyu çekmez).
      */
     public function trackOrder(string $query): ?array
     {
-        $needle = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $query));
+        $candidates = $this->trackingCandidates($query);
 
-        if ($needle === '') {
+        if ($candidates === []) {
             return null;
         }
 
         $order = Order::query()
             ->with(['items' => fn ($items) => $items->orderBy('created_at')])
-            ->get()
-            ->first(function (Order $candidate) use ($needle) {
-                $number = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', (string) $candidate->order_number));
-                $code = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', (string) $candidate->tracking_code));
-
-                return $number === $needle || ($code !== '' && $code === $needle);
-            });
+            ->where(fn ($builder) => $builder
+                ->whereIn('order_number', $candidates)
+                ->orWhereIn('tracking_code', $candidates))
+            ->first();
 
         if (! $order) {
             return null;
@@ -199,6 +205,34 @@ class StorefrontRepository
             'created_at' => $order->created_at,
             'items' => $order->items->all(),
         ];
+    }
+
+    /**
+     * Kullanıcının yazdığı takip girdisinden aranacak tam değerleri üretir.
+     *
+     * "mg 20260728 a1b2c3", "MG-20260728-A1B2C3" ve "mg20260728a1b2c3" aynı
+     * siparişi bulur; kodlar OrderCodeService'te büyük harf üretildiği için
+     * karşılaştırma büyük harfe çevrilmiş biçimler üzerinden yapılır.
+     *
+     * @return array<int, string>
+     */
+    private function trackingCandidates(string $query): array
+    {
+        $trimmed = trim($query);
+        $bare = strtoupper((string) preg_replace('/[^a-zA-Z0-9]/', '', $trimmed));
+
+        if ($bare === '') {
+            return [];
+        }
+
+        $candidates = [strtoupper($trimmed), $bare];
+
+        // Tiresiz yazılan sipariş numarasını kayıtlı "MG-YYYYAAGG-XXXXXX" biçimine çevir.
+        if (preg_match('/^([A-Z]{2,4})(\d{8})([A-Z0-9]{4,10})$/', $bare, $match)) {
+            $candidates[] = $match[1].'-'.$match[2].'-'.$match[3];
+        }
+
+        return array_values(array_unique($candidates));
     }
 
     /**

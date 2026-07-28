@@ -243,7 +243,12 @@
   }
 
   function cartItemKey(item) {
-    return [item.product_id, item.size || '', item.color || ''].join('|');
+    /* Varyant kimliği varsa onu kullan; eski sepetlerde yalnızca ad bulunur. */
+    return [
+      item.product_id,
+      item.size_id || item.size || '',
+      item.color_id || item.color || ''
+    ].join('|');
   }
 
   function refreshCartCount(items) {
@@ -292,7 +297,9 @@
     var submit = form.querySelector('.whatsapp-order');
     var note = form.querySelector('[data-order-note]');
     var selectedColor = '';
+    var selectedColorId = '';
     var selectedSize = '';
+    var selectedSizeId = '';
     var sizeButtons = all('[data-size]', form);
     var colorButtons = all('[data-color]', form);
 
@@ -305,6 +312,7 @@
     colorButtons.forEach(function (button) {
       button.addEventListener('click', function () {
         selectedColor = button.getAttribute('data-color');
+        selectedColorId = button.getAttribute('data-color-id') || '';
         colorButtons.forEach(function (item) {
           var active = item === button;
           item.classList.toggle('selected', active);
@@ -317,6 +325,7 @@
     sizeButtons.forEach(function (button) {
       button.addEventListener('click', function () {
         selectedSize = button.getAttribute('data-size');
+        selectedSizeId = button.getAttribute('data-size-id') || '';
         sizeButtons.forEach(function (item) {
           var active = item === button;
           item.classList.toggle('selected', active);
@@ -341,7 +350,9 @@
         currency: form.getAttribute('data-product-currency') || 'TRY',
         image: form.getAttribute('data-product-image') || '',
         size: selectedSize,
+        size_id: selectedSizeId,
         color: selectedColor,
+        color_id: selectedColorId,
         quantity: quantity
       };
 
@@ -368,12 +379,27 @@
     var payload = page.querySelector('[data-cart-payload]');
     var submit = page.querySelector('[data-checkout-submit]');
     var template = page.querySelector('[data-cart-row-template]');
+    var form = page.querySelector('[data-checkout-form]');
+    var submitted = false;
+
+    /* Çift tıklamada ikinci istek hiç yola çıkmasın; sunucu tarafında da
+       order_key ile aynı sipariş bir kez oluşturuluyor. */
+    if (form) {
+      form.addEventListener('submit', function (event) {
+        if (submitted) {
+          event.preventDefault();
+          return;
+        }
+        submitted = true;
+        submit.disabled = true;
+      });
+    }
 
     function render() {
       var items = readCart();
       list.innerHTML = '';
       show(empty, items.length === 0);
-      submit.disabled = items.length === 0;
+      submit.disabled = submitted || items.length === 0;
 
       var sum = 0;
       var currency = items[0] ? items[0].currency : 'TRY';
@@ -418,7 +444,9 @@
         return {
           product_id: item.product_id,
           size: item.size || null,
+          size_id: item.size_id || null,
           color: item.color || null,
+          color_id: item.color_id || null,
           quantity: Math.min(99, Math.max(1, Number(item.quantity) || 1))
         };
       }));

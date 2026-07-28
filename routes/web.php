@@ -30,8 +30,12 @@ Route::middleware(SetStorefrontLocale::class)->group(function () {
     Route::get('/{locale}/multimedya', MultimediaController::class)->name('storefront.multimedia');
     Route::get('/{locale}/iletisim', [ContactController::class, 'show'])->name('storefront.contact');
     Route::post('/{locale}/iletisim', [ContactController::class, 'store'])->name('storefront.contact.store');
-    Route::get('/{locale}/sayfa/{slug}', ContentPageController::class)->name('storefront.page');
     Route::get('/{locale}/blog', [BlogController::class, 'index'])->name('storefront.blog.index');
     Route::get('/{locale}/blog/{slug}', [BlogController::class, 'show'])->name('storefront.blog.show');
     Route::get('/{locale}/product/{slug}', ProductController::class)->name('storefront.product');
+
+    // Bilgilendirme sayfaları dil kökünün hemen altında yaşar (/tr/kvkk).
+    // Sabit storefront rotaları yukarıda tanımlı olduğu için onlar önce eşleşir;
+    // bu satır en sonda kalmalı.
+    Route::get('/{locale}/{slug}', ContentPageController::class)->name('storefront.page');
 });

@@ -26,12 +26,13 @@ class ProductCardService
 
         return Collection::make($products)->map(function ($product) use ($currencies, $locale, $rates) {
             $images = Storefront::sortedImages($product->images);
-            $primary = Storefront::storageUrl('products', $images[0]->storage_path ?? null);
+            // Kart masaüstünde ~400px geniş; 600px retina için yeterli.
+            $primary = Storefront::imageUrl('products', $images[0]->storage_path ?? null, 600);
 
             return [
                 'product' => $product,
                 'primaryImage' => $primary,
-                'secondaryImage' => Storefront::storageUrl('products', $images[1]->storage_path ?? null) ?: $primary,
+                'secondaryImage' => Storefront::imageUrl('products', $images[1]->storage_path ?? null, 600) ?: $primary,
                 'price' => $product->priceForLocale($locale, $rates),
                 'currency' => Storefront::resolveCurrency($currencies, $product->currencyForLocale($locale)),
             ];
