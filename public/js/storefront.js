@@ -131,6 +131,7 @@
     var mainMenu = nav.querySelector('[data-main-menu]');
     var categoryToggle = nav.querySelector('[data-category-toggle]');
     var categoryList = nav.querySelector('[data-category-list]');
+    var categoryBack = nav.querySelector('[data-category-back]');
 
     function isOpen(element) {
       return element && element.style.display !== 'none';
@@ -163,6 +164,15 @@
         show(categoryList, open, 'grid');
         categoryToggle.setAttribute('aria-expanded', String(open));
         categoryToggle.classList.toggle('open', open);
+      });
+    }
+
+    if (categoryBack) {
+      categoryBack.addEventListener('click', function () {
+        show(categoryList, false);
+        categoryToggle.setAttribute('aria-expanded', 'false');
+        categoryToggle.classList.remove('open');
+        categoryToggle.focus();
       });
     }
 

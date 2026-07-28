@@ -31,6 +31,10 @@
                         @include('storefront.partials.icon', ['name' => 'chevron-down', 'size' => 18])
                     </button>
                     <div class="mobile-category-list" id="mobile-category-list" data-category-list style="display:none">
+                        <button type="button" class="mobile-category-back" data-category-back>
+                            @include('storefront.partials.icon', ['name' => 'chevron-left', 'size' => 20])
+                            {{ $label }}
+                        </button>
                         <a class="selected" href="/{{ $locale }}/kategori">{{ ($messages['home']['allCategories'] ?? null) ?: 'Tümü' }}</a>
                         @foreach ($categories as $category)
                             <a href="/{{ $locale }}/kategori/{{ $category->slug }}">{{ Storefront::text($category->name_i18n, $locale) ?: $category->name }}</a>
