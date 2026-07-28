@@ -29,7 +29,8 @@ class HeroSlideForm
                         Multilingual::turkish('button_text', 'Buton Metni'),
                     ]),
                 Section::make('Ayarlar')
-                    ->columns(3)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'sm' => 2, 'lg' => 3])
                     ->schema([
                         TextInput::make('button_url')->label('Buton bağlantısı')->helperText('Örn: /#urunler'),
                         TextInput::make('sort_order')->label('Sıra')->numeric()->default(0),

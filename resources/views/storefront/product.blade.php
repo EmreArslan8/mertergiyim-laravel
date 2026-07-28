@@ -99,7 +99,7 @@
                       data-product-image="{{ $primaryImage }}"
                       data-order-config="{{ json_encode([
                           'ready' => $messages['cart']['ready'] ?? 'Ürün sepete eklenmeye hazır.',
-                          'select' => $messages['cart']['selectVariant'] ?? 'Devam etmek için beden ve renk seçin.',
+                          'select' => $messages['cart']['selectVariant'] ?? 'Devam etmek için renk seçin.',
                           'added' => $messages['cart']['added'] ?? 'Ürün sepete eklendi.',
                       ], JSON_UNESCAPED_UNICODE) }}">
                     <div class="detail-price">
@@ -109,23 +109,17 @@
                         </div>
                         <b>{{ $messages['product']['wholesale'] ?? '' }}</b>
                     </div>
-                    @if (count($sizes))
-                        <fieldset>
-                            <legend>{{ $messages['product']['size'] ?? 'Beden' }}</legend>
-                            <div class="choice-row size-choices">
-                                @foreach ($sizes as $size)
-                                    <button type="button" aria-pressed="false" data-size="{{ $size }}">{{ $size }}</button>
-                                @endforeach
-                            </div>
-                        </fieldset>
-                    @endif
+                    {{-- Beden seçimi müşteri isteğiyle vitrinden kaldırıldı; toptan
+                         satışta beden asorti gidiyor. Varyant verisi panelde duruyor. --}}
                     <fieldset>
                         <legend>
                             {{ $messages['product']['color'] ?? '' }}
                         </legend>
                         <div class="choice-row color-choices">
                             @foreach ($colors as $color)
-                                <button type="button" aria-pressed="false" data-color="{{ $color['name'] }}">
+                                <button type="button" aria-pressed="false"
+                                        data-color-id="{{ $color['id'] }}"
+                                        data-color="{{ $color['name'] }}">
                                     <i style="background: {{ $color['hex'] }}"></i>{{ $color['name'] }}
                                 </button>
                             @endforeach
@@ -136,7 +130,7 @@
                         <input id="product-quantity" name="quantity" type="number" min="1" max="99" value="1" inputmode="numeric">
                     </div>
                     <button class="whatsapp-order" type="submit" disabled>{{ $messages['cart']['add'] ?? 'Sepete Ekle' }}</button>
-                    <p class="order-note" data-order-note>{{ $messages['cart']['selectVariant'] ?? 'Devam etmek için beden ve renk seçin.' }}</p>
+                    <p class="order-note" data-order-note>{{ $messages['cart']['selectVariant'] ?? 'Devam etmek için renk seçin.' }}</p>
                 </form>
             </section>
         </div>

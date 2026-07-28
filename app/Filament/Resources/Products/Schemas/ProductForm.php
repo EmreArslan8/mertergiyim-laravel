@@ -24,6 +24,7 @@ class ProductForm
             ->components([
                 Section::make('Ürün bilgileri')
                     ->extraAttributes(['class' => 'merter-product-fields'])
+                    ->columnSpanFull()
                     ->columns(2)
                     ->schema([
                         Multilingual::turkish('name', 'Ürün Adı')
@@ -73,6 +74,7 @@ class ProductForm
 
                 Section::make('Görseller ve varyantlar')
                     ->extraAttributes(['class' => 'merter-product-media'])
+                    ->columnSpanFull()
                     ->schema([
                         Repeater::make('images')
                             ->label('Ürün Görselleri')
@@ -139,12 +141,14 @@ class ProductForm
                                     ->label('Beden')
                                     ->options(fn () => app(AdminOptionService::class)->sizes())
                                     ->searchable()
-                                    ->preload(),
+                                    ->preload()
+                                    ->wrapOptionLabels(false),
                                 Select::make('color_id')
                                     ->label('Renk')
                                     ->options(fn () => app(AdminOptionService::class)->colors())
                                     ->searchable()
-                                    ->preload(),
+                                    ->preload()
+                                    ->wrapOptionLabels(false),
                                 TextInput::make('stock_quantity')
                                     ->label('Stok')
                                     ->numeric()

@@ -894,3 +894,20 @@ textarea.fi-input {
         max-height: calc(100dvh - 1.5rem);
     }
 }
+
+/* ---------------------------------------------------------------
+   Seçmeli (select) alanlarındaki ikonlar
+   Filament varsayılanı açılır oku 1.5em basıyor; dar alanlarda
+   kutuyu domine ediyor. Ok ve temizle (X) ikonunu yazıyla orantılı
+   boyuta çekiyoruz.
+   --------------------------------------------------------------- */
+.fi-select-input-btn {
+    background-size: 1.05em 1.05em;
+    background-position: right 0.6rem center;
+}
+
+.fi-select-input-ctn button svg,
+.fi-select-input-ctn .fi-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+}

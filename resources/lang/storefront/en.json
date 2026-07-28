@@ -117,7 +117,7 @@
     "add": "Add to Cart",
     "added": "Product added to cart.",
     "ready": "The product is ready to be added.",
-    "selectVariant": "Select a size and color to continue.",
+    "selectVariant": "Select a color to continue.",
     "quantity": "Quantity",
     "total": "Total",
     "remove": "Remove",
@@ -131,7 +131,8 @@
       "unavailable": "A product in your cart is no longer available.",
       "outOfStock": "A product in your cart is out of stock.",
       "variant": "The selected size and color combination was not found.",
-      "stock": "There is not enough stock for the selected product."
+      "stock": "There is not enough stock for the selected product.",
+      "phone": "Enter a valid phone number including the country code."
     }
   },
   "orderSuccess": {

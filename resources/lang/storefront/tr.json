@@ -119,7 +119,7 @@
     "add": "Sepete Ekle",
     "added": "Ürün sepete eklendi.",
     "ready": "Ürün sepete eklenmeye hazır.",
-    "selectVariant": "Devam etmek için beden ve renk seçin.",
+    "selectVariant": "Devam etmek için renk seçin.",
     "quantity": "Adet",
     "total": "Toplam",
     "remove": "Kaldır",
@@ -133,7 +133,8 @@
       "unavailable": "Sepetteki ürünlerden biri artık satışta değil.",
       "outOfStock": "Sepetteki ürünlerden biri tükendi.",
       "variant": "Seçilen beden ve renk kombinasyonu bulunamadı.",
-      "stock": "Seçilen ürün için yeterli stok bulunmuyor."
+      "stock": "Seçilen ürün için yeterli stok bulunmuyor.",
+      "phone": "Geçerli bir telefon numarası girin. Örnek: 0532 325 97 88"
     }
   },
   "orderSuccess": {
