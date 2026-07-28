@@ -15,7 +15,7 @@
 .toggle-img.is-active img.alt{opacity:1}
 .touch-tip{position:absolute;bottom:16px;left:0;width:100%;text-align:center;color:#fff;font-weight:800;z-index:2;pointer-events:none;text-shadow:0 2px 6px rgba(0,0,0,.6);display:none}
 .product-card-body{padding:24px}
-@media(max-width:900px){.product-grid{grid-template-columns:1fr;gap:28px}.touch-tip{display:block}}
+@media(max-width:900px){.product-grid{grid-template-columns:1fr;gap:28px}.touch-tip{display:block}.product-image{aspect-ratio:auto}.product-image img{position:relative;object-fit:contain;background:#f2f3f5}.product-image img.alt{position:absolute}}
 
 /* Alt sayfalarda (home dışı) solid koyu header */
 .site-header--solid{position:static;background:#171719}
