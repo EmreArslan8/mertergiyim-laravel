@@ -40,6 +40,7 @@
     "name": "Ad Soyad",
     "namePlaceholder": "Adınız ve soyadınız",
     "phone": "Telefon",
+    "email": "E-posta",
     "address": "Adres",
     "addressPlaceholder": "Teslimat adresiniz",
     "note": "Not",
@@ -159,5 +160,9 @@
     "message": "Mesajınız",
     "send": "Mesajı Gönder",
     "success": "Mesajınız alındı. En kısa sürede sizinle iletişime geçeceğiz."
+  },
+  "blog": {
+    "kicker": "MERTER GİYİM",
+    "title": "Blog"
   }
 }

@@ -40,6 +40,7 @@
     "name": "Full Name",
     "namePlaceholder": "Your full name",
     "phone": "Phone",
+    "email": "Email",
     "address": "Address",
     "addressPlaceholder": "Delivery address",
     "note": "Note",
@@ -157,5 +158,9 @@
     "message": "Your message",
     "send": "Send Message",
     "success": "We received your message. We will contact you as soon as possible."
+  },
+  "blog": {
+    "kicker": "MERTER CLOTHING",
+    "title": "Blog"
   }
 }

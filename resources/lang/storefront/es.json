@@ -40,6 +40,7 @@
     "name": "Nombre completo",
     "namePlaceholder": "Tu nombre completo",
     "phone": "Teléfono",
+    "email": "Correo electrónico",
     "address": "Dirección",
     "addressPlaceholder": "Dirección de entrega",
     "note": "Nota",
@@ -117,5 +118,6 @@
   },
   "orderSuccess": {"eyebrow": "PEDIDO CREADO", "title": "Pedido recibido", "text": "Tu pedido fue enviado a la tienda. Te contactaremos por teléfono para confirmarlo.", "saveCode": "Guarda tu código de seguimiento.", "track": "Seguir pedido"},
   "media": {"eyebrow": "HISTORIAS DE COLECCIÓN", "title": "Multimedia", "subtitle": "Imágenes, vídeos y documentos de nuestras últimas colecciones.", "openDocument": "Abrir documento", "empty": "Aún no hay contenido multimedia."},
-  "contact": {"eyebrow": "MERTER / ESTAMBUL", "title": "Contacto", "subtitle": "Contáctanos sobre productos, pedidos al por mayor y entrega.", "subject": "Asunto", "message": "Tu mensaje", "send": "Enviar mensaje", "success": "Hemos recibido tu mensaje. Te contactaremos pronto."}
+  "contact": {"eyebrow": "MERTER / ESTAMBUL", "title": "Contacto", "subtitle": "Contáctanos sobre productos, pedidos al por mayor y entrega.", "subject": "Asunto", "message": "Tu mensaje", "send": "Enviar mensaje", "success": "Hemos recibido tu mensaje. Te contactaremos pronto."},
+  "blog": {"kicker": "MERTER ROPA", "title": "Blog"}
 }

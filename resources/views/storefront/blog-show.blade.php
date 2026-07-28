@@ -1,7 +1,7 @@
 @php
     use App\Support\Storefront;
     $title = Storefront::text($post->title, $locale);
-    $metaTitle = $title.' | Merter Giyim';
+    $metaTitle = $title.' | '.$siteName;
     $metaDescription = Storefront::text($post->excerpt, $locale);
     $ogImage = $post->cover_image ? Storefront::storageUrl('site', $post->cover_image) : null;
 @endphp

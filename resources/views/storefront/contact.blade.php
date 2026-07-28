@@ -44,7 +44,7 @@
                 @csrf
                 <label>{{ $messages['order']['name'] ?? 'Ad Soyad' }}<input name="name" required value="{{ old('name') }}"></label>
                 <label>{{ $messages['order']['phone'] ?? 'Telefon' }}<input name="phone" required type="tel" value="{{ old('phone') }}"></label>
-                <label>E-mail <small>({{ $messages['order']['optional'] ?? 'opsiyonel' }})</small><input name="email" type="email" value="{{ old('email') }}"></label>
+                <label>{{ $messages['order']['email'] ?? 'E-posta' }} <small>({{ $messages['order']['optional'] ?? 'opsiyonel' }})</small><input name="email" type="email" value="{{ old('email') }}"></label>
                 <label>{{ $messages['contact']['subject'] ?? 'Konu' }}<input name="subject" value="{{ old('subject') }}"></label>
                 <label>{{ $messages['contact']['message'] ?? 'Mesajınız' }}<textarea name="message" required rows="6">{{ old('message') }}</textarea></label>
                 <button type="submit">{{ $messages['contact']['send'] ?? 'Mesajı Gönder' }}</button>

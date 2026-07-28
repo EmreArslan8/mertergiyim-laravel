@@ -15,6 +15,7 @@ use App\Services\TranslateService;
 use App\Support\TranslationStatus;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -26,6 +27,8 @@ use Throwable;
  */
 class CheckTranslations extends Command
 {
+    private const MAX_REPAIR_ATTEMPTS = 3;
+
     protected $signature = 'translations:check
         {--fix : Eksik dilleri Gemini ile tamamla}
         {--model= : Yalnızca tek bir kaynağı tara (ör. Product)}';
@@ -117,22 +120,42 @@ class CheckTranslations extends Command
      */
     private function repair(TranslateService $translator, Model $record, array $fields): void
     {
-        $source = [];
+        $remainingFields = $fields;
 
-        foreach ($fields as $field) {
-            $value = (array) $record->getAttribute($field);
-            $source[$field] = (string) ($value['tr'] ?? '');
+        for ($attempt = 1; $attempt <= self::MAX_REPAIR_ATTEMPTS; $attempt++) {
+            $source = [];
+
+            foreach ($remainingFields as $field) {
+                $value = (array) $record->getAttribute($field);
+                $source[$field] = (string) ($value['tr'] ?? '');
+            }
+
+            $translations = $translator->translateFields($source);
+
+            foreach ($remainingFields as $field) {
+                $record->setAttribute($field, array_merge(
+                    (array) $record->getAttribute($field),
+                    $translations[$field] ?? [],
+                ));
+            }
+
+            $record->save();
+            $record->refresh();
+
+            $missing = TranslationStatus::missingForRecord($record, $fields);
+
+            if ($missing === []) {
+                return;
+            }
+
+            $remainingFields = array_keys($missing);
         }
 
-        $translations = $translator->translateFields($source);
+        $missing = TranslationStatus::missingForRecord($record, $fields);
 
-        foreach ($fields as $field) {
-            $record->setAttribute($field, array_merge(
-                (array) $record->getAttribute($field),
-                $translations[$field] ?? [],
-            ));
-        }
-
-        $record->save();
+        throw new RuntimeException(
+            'Gemini '.self::MAX_REPAIR_ATTEMPTS.' denemeden sonra bazı dilleri eksik bıraktı: '
+            .TranslationStatus::summary($missing),
+        );
     }
 }

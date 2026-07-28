@@ -40,6 +40,7 @@
     "name": "Nome completo",
     "namePlaceholder": "Il tuo nome completo",
     "phone": "Telefono",
+    "email": "E-mail",
     "address": "Indirizzo",
     "addressPlaceholder": "Indirizzo di consegna",
     "note": "Nota",
@@ -117,5 +118,6 @@
   },
   "orderSuccess": {"eyebrow": "ORDINE CREATO", "title": "Ordine ricevuto", "text": "Il tuo ordine è stato inviato al negozio. Ti contatteremo telefonicamente per conferma.", "saveCode": "Conserva il codice di tracciamento.", "track": "Traccia ordine"},
   "media": {"eyebrow": "STORIE DI COLLEZIONE", "title": "Media", "subtitle": "Immagini, video e documenti delle nostre ultime collezioni.", "openDocument": "Apri documento", "empty": "Nessun contenuto multimediale disponibile."},
-  "contact": {"eyebrow": "MERTER / ISTANBUL", "title": "Contatti", "subtitle": "Contattaci per prodotti, ordini all’ingrosso e consegne.", "subject": "Oggetto", "message": "Il tuo messaggio", "send": "Invia messaggio", "success": "Messaggio ricevuto. Ti contatteremo al più presto."}
+  "contact": {"eyebrow": "MERTER / ISTANBUL", "title": "Contatti", "subtitle": "Contattaci per prodotti, ordini all’ingrosso e consegne.", "subject": "Oggetto", "message": "Il tuo messaggio", "send": "Invia messaggio", "success": "Messaggio ricevuto. Ti contatteremo al più presto."},
+  "blog": {"kicker": "MERTER ABBIGLIAMENTO", "title": "Blog"}
 }

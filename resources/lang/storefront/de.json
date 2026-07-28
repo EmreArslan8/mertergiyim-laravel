@@ -40,6 +40,7 @@
     "name": "Vor- und Nachname",
     "namePlaceholder": "Ihr vollständiger Name",
     "phone": "Telefon",
+    "email": "E-Mail",
     "address": "Adresse",
     "addressPlaceholder": "Lieferadresse",
     "note": "Notiz",
@@ -117,5 +118,6 @@
   },
   "orderSuccess": {"eyebrow": "BESTELLUNG ERSTELLT", "title": "Bestellung erhalten", "text": "Ihre Bestellung wurde an den Shop gesendet. Wir kontaktieren Sie telefonisch zur Bestätigung.", "saveCode": "Bewahren Sie Ihren Tracking-Code auf.", "track": "Bestellung verfolgen"},
   "media": {"eyebrow": "KOLLEKTIONSGESCHICHTEN", "title": "Medien", "subtitle": "Bilder, Videos und Dokumente aus unseren neuesten Kollektionen.", "openDocument": "Dokument öffnen", "empty": "Noch keine Medieninhalte vorhanden."},
-  "contact": {"eyebrow": "MERTER / ISTANBUL", "title": "Kontakt", "subtitle": "Kontaktieren Sie uns zu Produkten, Großhandel und Lieferung.", "subject": "Betreff", "message": "Ihre Nachricht", "send": "Nachricht senden", "success": "Ihre Nachricht ist eingegangen. Wir melden uns schnellstmöglich."}
+  "contact": {"eyebrow": "MERTER / ISTANBUL", "title": "Kontakt", "subtitle": "Kontaktieren Sie uns zu Produkten, Großhandel und Lieferung.", "subject": "Betreff", "message": "Ihre Nachricht", "send": "Nachricht senden", "success": "Ihre Nachricht ist eingegangen. Wir melden uns schnellstmöglich."},
+  "blog": {"kicker": "MERTER BEKLEIDUNG", "title": "Blog"}
 }

@@ -1,6 +1,6 @@
 @php
     use App\Support\Storefront;
-    $metaTitle = 'Blog | Merter Giyim';
+    $metaTitle = ($messages['blog']['title'] ?? 'Blog').' | '.$siteName;
 @endphp
 
 @extends('layouts.app')
@@ -12,8 +12,8 @@
 @section('content')
     <main class="editorial-page" dir="{{ $dir }}">
         <header class="editorial-list-head">
-            <span class="editorial-kicker">MERTER GİYİM</span>
-            <h1>Blog</h1>
+            <span class="editorial-kicker">{{ $messages['blog']['kicker'] ?? 'MERTER GİYİM' }}</span>
+            <h1>{{ $messages['blog']['title'] ?? 'Blog' }}</h1>
         </header>
         <section class="editorial-grid">
             @foreach ($posts as $post)
