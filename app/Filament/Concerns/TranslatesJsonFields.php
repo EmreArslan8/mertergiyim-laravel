@@ -16,7 +16,8 @@ use Throwable;
  * Gemini ile 9 dile çevrilip jsonb'nin ilgili anahtarlarına yazılır.
  *
  * Kurallar:
- * - Türkçe metin değişmediyse çeviri çağrısı yapılmaz, eski çeviriler korunur.
+ * - Türkçe metin değişmediyse ve tüm diller doluysa çeviri çağrısı yapılmaz.
+ * - Eksik dil varsa Türkçe değişmemiş olsa bile çeviriler otomatik tamamlanır.
  * - Değişen tüm alanlar TEK Gemini isteğinde çevrilir.
  * - Gemini hatası kaydı bozmaz: tr yazılır, eski çeviriler kalır, kullanıcı uyarılır.
  *
@@ -87,7 +88,10 @@ trait TranslatesJsonFields
 
             $turkish[$field] = $value;
 
-            if ($value !== '' && $value !== $this->originalTrValue($field)) {
+            if ($value !== '' && (
+                $value !== $this->originalTrValue($field)
+                || TranslationStatus::missingLocales($this->originalJsonValue($field)) !== []
+            )) {
                 $changed[$field] = $value;
             }
         }
