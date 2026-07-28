@@ -26,6 +26,11 @@ class StorageUpload
     {
         return FileUpload::make($name)
             ->image()
+            // Filament kaydı yüklerken getDisk()->exists() ile dosyayı doğruluyor.
+            // Disk verilmezse varsayılan 'local' diskine bakar, dosya Supabase'de
+            // olduğu için bulamaz ve alanı boşaltır; sonuç: düzenleme açılışında
+            // görsel görünmez ve required doğrulaması patlar.
+            ->disk(UploadTarget::disk($bucketKey))
             ->maxSize(12 * 1024)
             ->helperText('Yükleme sırasında en uzun kenar '.config('storefront.upload.max_size').'px olacak şekilde küçültülüp WebP\'e çevrilir.')
             ->saveUploadedFileUsing(function (TemporaryUploadedFile $file, $livewire) use ($bucketKey, $directory) {
@@ -42,6 +47,8 @@ class StorageUpload
     public static function file(string $name, string $bucketKey, string $directory = 'media'): FileUpload
     {
         return FileUpload::make($name)
+            // image() ile aynı sebep: doğrulama gerçek diske bakmalı.
+            ->disk(UploadTarget::disk($bucketKey))
             ->maxSize(50 * 1024)
             ->acceptedFileTypes([
                 'image/jpeg', 'image/png', 'image/webp', 'image/gif',
