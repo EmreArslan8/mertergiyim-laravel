@@ -11,8 +11,8 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -23,7 +23,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 class AdminPanelProvider extends PanelProvider
 {
     /** Tarayıcı önbelleğini kırmak için tema sürümü. */
-    public const THEME_VERSION = '2';
+    public const THEME_VERSION = '4';
 
     public function panel(Panel $panel): Panel
     {
@@ -32,10 +32,15 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            // Kullanıcı menü öğesinin üzerine geldiğinde hedef sayfayı önceden
+            // getirir; uzak veritabanı gecikmesini tıklamadan önce başlatır.
+            ->spa(hasPrefetching: true)
             ->brandName('Merter Giyim')
             ->brandLogo(asset('merter-tekstil.png'))
             ->brandLogoHeight('2.25rem')
             ->favicon(asset('icon.png'))
+            ->sidebarWidth('13.5rem')
+            ->maxContentWidth(Width::Full)
             ->colors([
                 'primary' => Color::hex('#126df5'),
                 'gray' => Color::Slate,
@@ -55,6 +60,10 @@ class AdminPanelProvider extends PanelProvider
                 fn (): string => view('filament.sidebar-bottom')->render(),
             )
             ->renderHook(
+                PanelsRenderHook::TOPBAR_START,
+                fn (): string => view('filament.topbar-section')->render(),
+            )
+            ->renderHook(
                 PanelsRenderHook::TOPBAR_END,
                 fn (): string => view('filament.topbar-user')->render(),
             )
@@ -66,7 +75,6 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 StorefrontStatsWidget::class,
-                AccountWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

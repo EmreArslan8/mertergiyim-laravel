@@ -109,5 +109,52 @@
       "completed": "Delivered",
       "cancelled": "Cancelled"
     }
+  },
+  "category": {"productCount": "products"},
+  "cart": {
+    "title": "Your Cart",
+    "subtitle": "Review your products and complete your order details.",
+    "add": "Add to Cart",
+    "added": "Product added to cart.",
+    "ready": "The product is ready to be added.",
+    "selectVariant": "Select a size and color to continue.",
+    "quantity": "Quantity",
+    "total": "Total",
+    "remove": "Remove",
+    "emptyTitle": "Your cart is empty",
+    "emptyText": "Browse products, choose a size and color, and add them to your cart.",
+    "continueShopping": "Back to products",
+    "placeOrder": "Place Order",
+    "paymentNote": "No online payment is taken. The store will confirm your order by phone.",
+    "errors": {
+      "empty": "Your cart is empty.",
+      "unavailable": "A product in your cart is no longer available.",
+      "outOfStock": "A product in your cart is out of stock.",
+      "variant": "The selected size and color combination was not found.",
+      "stock": "There is not enough stock for the selected product."
+    }
+  },
+  "orderSuccess": {
+    "eyebrow": "ORDER CREATED",
+    "title": "We received your order",
+    "text": "Your order has been sent to the store. We will contact you by phone to confirm it.",
+    "saveCode": "Save your tracking code. You can use it to check your order status.",
+    "track": "Track Order"
+  },
+  "media": {
+    "eyebrow": "COLLECTION STORIES",
+    "title": "Media",
+    "subtitle": "Images, videos and documents from our latest collections.",
+    "openDocument": "Open document",
+    "empty": "No media content has been added yet."
+  },
+  "contact": {
+    "eyebrow": "MERTER / ISTANBUL",
+    "title": "Contact",
+    "subtitle": "Contact us about products, wholesale orders and delivery.",
+    "subject": "Subject",
+    "message": "Your message",
+    "send": "Send Message",
+    "success": "We received your message. We will contact you as soon as possible."
   }
 }

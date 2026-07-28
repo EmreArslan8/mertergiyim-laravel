@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BlogPost;
+use App\Models\Category;
+use App\Models\ContentPage;
 use App\Models\Product;
 use App\Support\Storefront;
 use Illuminate\Http\Response;
@@ -19,17 +22,47 @@ class SitemapController extends Controller
             $base = rtrim((string) config('storefront.site_url'), '/');
             $locales = Storefront::locales();
             $slugs = Product::query()->active()->pluck('slug')->filter()->all();
+            $pageSlugs = ContentPage::query()->where('active', true)->pluck('slug')->filter()->all();
+            $postSlugs = BlogPost::query()->where('active', true)->pluck('slug')->filter()->all();
+            $categorySlugs = Category::query()->where('active', true)->pluck('slug')->filter()->all();
 
             $paths = [
                 ['path' => fn (string $locale) => '/'.$locale, 'freq' => 'daily', 'priority' => '1.0'],
                 ['path' => fn (string $locale) => '/'.$locale.'/siparis-takibi', 'freq' => 'monthly', 'priority' => '0.4'],
+                ['path' => fn (string $locale) => '/'.$locale.'/blog', 'freq' => 'weekly', 'priority' => '0.7'],
+                ['path' => fn (string $locale) => '/'.$locale.'/multimedya', 'freq' => 'weekly', 'priority' => '0.6'],
+                ['path' => fn (string $locale) => '/'.$locale.'/iletisim', 'freq' => 'monthly', 'priority' => '0.5'],
             ];
+
+            foreach ($categorySlugs as $slug) {
+                $paths[] = [
+                    'path' => fn (string $locale) => '/'.$locale.'/kategori/'.$slug,
+                    'freq' => 'weekly',
+                    'priority' => '0.8',
+                ];
+            }
 
             foreach ($slugs as $slug) {
                 $paths[] = [
                     'path' => fn (string $locale) => Storefront::productHref($locale, $slug),
                     'freq' => 'weekly',
                     'priority' => '0.8',
+                ];
+            }
+
+            foreach ($pageSlugs as $slug) {
+                $paths[] = [
+                    'path' => fn (string $locale) => '/'.$locale.'/sayfa/'.$slug,
+                    'freq' => 'monthly',
+                    'priority' => '0.6',
+                ];
+            }
+
+            foreach ($postSlugs as $slug) {
+                $paths[] = [
+                    'path' => fn (string $locale) => '/'.$locale.'/blog/'.$slug,
+                    'freq' => 'monthly',
+                    'priority' => '0.6',
                 ];
             }
 

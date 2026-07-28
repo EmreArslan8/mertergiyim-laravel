@@ -44,4 +44,9 @@ return [
         // Kaynak app/api/translate/route.ts ile birebir aynı liste ve sıra.
         'languages' => ['en', 'ar', 'ru', 'fa', 'uk', 'fr', 'de', 'es', 'it'],
     ],
+
+    'exchange' => [
+        'tcmb_endpoint' => env('TCMB_EXCHANGE_RATE_ENDPOINT', 'https://www.tcmb.gov.tr/kurlar/today.xml'),
+        'fallback_endpoint' => env('EXCHANGE_RATE_FALLBACK_ENDPOINT', 'https://api.frankfurter.dev'),
+    ],
 ];

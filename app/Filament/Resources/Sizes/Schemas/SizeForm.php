@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Sizes\Schemas;
 
+use App\Filament\Support\Multilingual;
+use App\Models\Size;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
@@ -12,7 +14,8 @@ class SizeForm
     {
         return $schema
             ->components([
-                TextInput::make('name')->label('Beden')->required()->unique(ignoreRecord: true),
+                Multilingual::turkish('name_i18n', 'Beden')
+                    ->unique(table: Size::class, column: 'name', ignoreRecord: true),
                 TextInput::make('sort_order')->label('Sıra')->numeric()->default(0),
                 Toggle::make('active')->label('Aktif')->default(true),
             ]);

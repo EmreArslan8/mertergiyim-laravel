@@ -109,5 +109,13 @@
       "completed": "Entregado",
       "cancelled": "Cancelado"
     }
-  }
+  },
+  "category": {"productCount": "productos"},
+  "cart": {
+    "title": "Tu carrito", "subtitle": "Revisa tus productos y completa los datos del pedido.", "add": "Añadir al carrito", "added": "Producto añadido al carrito.", "ready": "El producto está listo para añadirse.", "selectVariant": "Selecciona talla y color.", "quantity": "Cantidad", "total": "Total", "remove": "Eliminar", "emptyTitle": "Tu carrito está vacío", "emptyText": "Explora los productos y añade tu selección al carrito.", "continueShopping": "Volver a productos", "placeOrder": "Crear pedido", "paymentNote": "No se realiza pago en línea. La tienda confirmará el pedido por teléfono.",
+    "errors": {"empty": "Tu carrito está vacío.", "unavailable": "Un producto ya no está disponible.", "outOfStock": "Un producto está agotado.", "variant": "No se encontró la combinación seleccionada.", "stock": "No hay suficiente stock."}
+  },
+  "orderSuccess": {"eyebrow": "PEDIDO CREADO", "title": "Pedido recibido", "text": "Tu pedido fue enviado a la tienda. Te contactaremos por teléfono para confirmarlo.", "saveCode": "Guarda tu código de seguimiento.", "track": "Seguir pedido"},
+  "media": {"eyebrow": "HISTORIAS DE COLECCIÓN", "title": "Multimedia", "subtitle": "Imágenes, vídeos y documentos de nuestras últimas colecciones.", "openDocument": "Abrir documento", "empty": "Aún no hay contenido multimedia."},
+  "contact": {"eyebrow": "MERTER / ESTAMBUL", "title": "Contacto", "subtitle": "Contáctanos sobre productos, pedidos al por mayor y entrega.", "subject": "Asunto", "message": "Tu mensaje", "send": "Enviar mensaje", "success": "Hemos recibido tu mensaje. Te contactaremos pronto."}
 }

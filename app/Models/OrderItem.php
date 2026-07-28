@@ -10,9 +10,16 @@ class OrderItem extends Model
 {
     use HasUuidKey;
 
+    public const UPDATED_AT = null;
+
     protected $guarded = [];
 
-    protected $casts = ['quantity' => 'integer', 'created_at' => 'datetime'];
+    protected $casts = [
+        'quantity' => 'integer',
+        'unit_price' => 'decimal:2',
+        'line_total' => 'decimal:2',
+        'created_at' => 'datetime',
+    ];
 
     public function order(): BelongsTo
     {

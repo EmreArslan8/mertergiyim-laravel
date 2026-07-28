@@ -12,7 +12,14 @@ class Category extends Model
 
     protected $guarded = [];
 
-    protected $casts = ['active' => 'boolean'];
+    protected $casts = ['active' => 'boolean', 'name_i18n' => 'array'];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Category $category): void {
+            $category->name = $category->name_i18n['tr'] ?? $category->name;
+        });
+    }
 
     public function products(): HasMany
     {

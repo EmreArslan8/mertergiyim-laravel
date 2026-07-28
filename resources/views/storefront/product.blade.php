@@ -11,6 +11,7 @@
 
 @push('styles')
     <link rel="stylesheet" href="/css/product.css">
+    <link rel="stylesheet" href="/css/commerce.css">
 @endpush
 
 @section('content')
@@ -89,16 +90,17 @@
                 {{-- OrderForm.tsx --}}
                 <form class="detail-order-form"
                       data-order-form
-                      data-whatsapp="{{ config('storefront.whatsapp_number') }}"
+                      data-product-id="{{ $product->id }}"
+                      data-product-slug="{{ $product->slug }}"
+                      data-product-name="{{ $productName }}"
+                      data-product-code="{{ $product->code }}"
+                      data-product-price="{{ $numericPrice }}"
+                      data-product-currency="{{ $currencyCode }}"
+                      data-product-image="{{ $primaryImage }}"
                       data-order-config="{{ json_encode([
-                          'headline' => $product->code.' '.$productName.': '.($messages['order']['message'] ?? ''),
-                          'colorLabel' => $messages['product']['color'] ?? '',
-                          'nameLabel' => $messages['order']['name'] ?? '',
-                          'phoneLabel' => $messages['order']['phone'] ?? '',
-                          'addressLabel' => $messages['order']['address'] ?? '',
-                          'noteLabel' => $messages['order']['note'] ?? '',
-                          'ready' => $messages['order']['ready'] ?? '',
-                          'select' => $messages['order']['select'] ?? '',
+                          'ready' => $messages['cart']['ready'] ?? 'Ürün sepete eklenmeye hazır.',
+                          'select' => $messages['cart']['selectVariant'] ?? 'Devam etmek için beden ve renk seçin.',
+                          'added' => $messages['cart']['added'] ?? 'Ürün sepete eklendi.',
                       ], JSON_UNESCAPED_UNICODE) }}">
                     <div class="detail-price">
                         <div>
@@ -107,9 +109,19 @@
                         </div>
                         <b>{{ $messages['product']['wholesale'] ?? '' }}</b>
                     </div>
+                    @if (count($sizes))
+                        <fieldset>
+                            <legend>{{ $messages['product']['size'] ?? 'Beden' }}</legend>
+                            <div class="choice-row size-choices">
+                                @foreach ($sizes as $size)
+                                    <button type="button" aria-pressed="false" data-size="{{ $size }}">{{ $size }}</button>
+                                @endforeach
+                            </div>
+                        </fieldset>
+                    @endif
                     <fieldset>
                         <legend>
-                            {{ $messages['product']['color'] ?? '' }} <small>{{ $messages['product']['multiple'] ?? '' }}</small>
+                            {{ $messages['product']['color'] ?? '' }}
                         </legend>
                         <div class="choice-row color-choices">
                             @foreach ($colors as $color)
@@ -119,26 +131,12 @@
                             @endforeach
                         </div>
                     </fieldset>
-                    <div class="customer-fields">
-                        <label>
-                            {{ $messages['order']['name'] ?? '' }}
-                            <input name="name" required autocomplete="name" placeholder="{{ $messages['order']['namePlaceholder'] ?? '' }}">
-                        </label>
-                        <label>
-                            {{ $messages['order']['phone'] ?? '' }}
-                            <input name="phone" required type="tel" autocomplete="tel" placeholder="05xx xxx xx xx">
-                        </label>
-                        <label>
-                            {{ $messages['order']['address'] ?? '' }}
-                            <textarea name="address" required rows="3" placeholder="{{ $messages['order']['addressPlaceholder'] ?? '' }}"></textarea>
-                        </label>
-                        <label>
-                            {{ $messages['order']['note'] ?? '' }} <small>({{ $messages['order']['optional'] ?? '' }})</small>
-                            <input name="note" placeholder="{{ $messages['order']['notePlaceholder'] ?? '' }}">
-                        </label>
+                    <div class="quantity-field">
+                        <label for="product-quantity">{{ $messages['cart']['quantity'] ?? 'Adet' }}</label>
+                        <input id="product-quantity" name="quantity" type="number" min="1" max="99" value="1" inputmode="numeric">
                     </div>
-                    <button class="whatsapp-order" type="submit" disabled>{{ $messages['order']['order'] ?? '' }}</button>
-                    <p class="order-note" data-order-note>{{ $messages['order']['select'] ?? '' }}</p>
+                    <button class="whatsapp-order" type="submit" disabled>{{ $messages['cart']['add'] ?? 'Sepete Ekle' }}</button>
+                    <p class="order-note" data-order-note>{{ $messages['cart']['selectVariant'] ?? 'Devam etmek için beden ve renk seçin.' }}</p>
                 </form>
             </section>
         </div>

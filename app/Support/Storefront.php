@@ -141,6 +141,20 @@ class Storefront
         return $key === 'cart' || $key === 'sepet' || mb_strtolower($trLabel, 'UTF-8') === 'sepet';
     }
 
+    public static function navigationHref(mixed $link, string $locale): string
+    {
+        $key = mb_strtolower((string) ($link->link_key ?? ''), 'UTF-8');
+
+        return match ($key) {
+            'cart', 'sepet' => '/'.$locale.'/sepet',
+            'tracking', 'siparis-takibi' => '/'.$locale.'/siparis-takibi',
+            'media', 'multimedia', 'multimedya' => '/'.$locale.'/multimedya',
+            'contact', 'iletisim' => '/'.$locale.'/iletisim',
+            'blog' => '/'.$locale.'/blog',
+            default => self::href($link->url ?? '', $locale),
+        };
+    }
+
     /**
      * currencies satırından gösterim bilgisi (sembol + konum).
      */
@@ -166,6 +180,15 @@ class Storefront
         return ($code && isset($resolver['byCode'][$code]))
             ? $resolver['byCode'][$code]
             : $resolver['fallback'];
+    }
+
+    public static function currencyCodeForLocale(string $locale): string
+    {
+        return match ($locale) {
+            'tr' => 'TRY',
+            'ar', 'fa' => 'USD',
+            default => 'EUR',
+        };
     }
 
     /**

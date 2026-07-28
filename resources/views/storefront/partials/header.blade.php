@@ -10,14 +10,13 @@
         @foreach ($headerLinks as $link)
             @php
                 $cart = Storefront::isCartLink($link);
-                $href = $link->link_key === 'tracking'
-                    ? '/'.$locale.'/siparis-takibi'
-                    : Storefront::href($link->url, $locale);
+                $href = Storefront::navigationHref($link, $locale);
             @endphp
             <a class="{{ $cart ? 'cart-link' : '' }}" href="{{ $href }}">
                 {{ Storefront::text($link->label, $locale) }}
                 @if ($cart)
                     @include('storefront.partials.icon', ['name' => 'shopping-cart', 'size' => 20, 'strokeWidth' => 2.2])
+                    <span class="cart-count" data-cart-count hidden>0</span>
                 @endif
             </a>
         @endforeach

@@ -31,23 +31,22 @@
                         @include('storefront.partials.icon', ['name' => 'chevron-down', 'size' => 18])
                     </button>
                     <div class="mobile-category-list" id="mobile-category-list" data-category-list style="display:none">
-                        <button type="button" class="selected" data-category-pick="">{{ $messages['home']['allCategories'] ?? '' }}</button>
+                        <a class="selected" href="/{{ $locale }}#urunler">{{ $messages['home']['allCategories'] ?? '' }}</a>
                         @foreach ($categories as $category)
-                            <button type="button" data-category-pick="{{ $category->id }}">{{ $category->name }}</button>
+                            <a href="/{{ $locale }}/kategori/{{ $category->slug }}">{{ Storefront::text($category->name_i18n, $locale) ?: $category->name }}</a>
                         @endforeach
                     </div>
                 </div>
             @else
                 @php
                     $cart = Storefront::isCartLink($link);
-                    $href = $link->link_key === 'tracking'
-                        ? '/'.$locale.'/siparis-takibi'
-                        : Storefront::href($link->url, $locale);
+                    $href = Storefront::navigationHref($link, $locale);
                 @endphp
                 <a href="{{ $href }}">
                     {{ $label }}
                     @if ($cart)
                         @include('storefront.partials.icon', ['name' => 'shopping-cart', 'size' => 19])
+                        <span class="cart-count" data-cart-count hidden>0</span>
                     @endif
                 </a>
             @endif

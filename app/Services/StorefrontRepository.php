@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Category;
+use App\Models\BlogPost;
+use App\Models\ContentPage;
 use App\Models\Currency;
 use App\Models\HeroSlide;
 use App\Models\Language;
@@ -62,7 +64,7 @@ class StorefrontRepository
             'languages' => Language::query()->where('active', true)->orderBy('sort_order')->get(['code', 'name'])->all(),
             'settingValue' => SiteSetting::query()->find('storefront')?->value ?? [],
             'links' => SiteLink::query()->where('active', true)->orderBy('sort_order')->get()->all(),
-            'categories' => Category::query()->where('active', true)->orderBy('name')->get(['id', 'name', 'slug'])->all(),
+            'categories' => Category::query()->where('active', true)->orderBy('name')->get(['id', 'name', 'name_i18n', 'slug'])->all(),
         ]);
     }
 
@@ -103,10 +105,37 @@ class StorefrontRepository
         return $data['product'] ? $data : null;
     }
 
+    public function contentPage(string $slug): ?ContentPage
+    {
+        return $this->remember('page:'.$slug, fn () => ContentPage::query()
+            ->where('active', true)
+            ->where('slug', $slug)
+            ->first());
+    }
+
+    public function blogPosts(): array
+    {
+        return $this->remember('blog', fn () => BlogPost::query()
+            ->where('active', true)
+            ->where(fn ($query) => $query->whereNull('published_at')->orWhere('published_at', '<=', now()))
+            ->orderByDesc('published_at')
+            ->get()
+            ->all());
+    }
+
+    public function blogPost(string $slug): ?BlogPost
+    {
+        return $this->remember('blog:'.$slug, fn () => BlogPost::query()
+            ->where('active', true)
+            ->where('slug', $slug)
+            ->where(fn ($query) => $query->whereNull('published_at')->orWhere('published_at', '<=', now()))
+            ->first());
+    }
+
     /**
      * Ürünün beden/renk seçenekleri; varyantlardan tekilleştirilir.
      */
-    public function productOptions(Product $product): array
+    public function productOptions(Product $product, string $locale): array
     {
         $sizes = [];
         $colors = [];
@@ -125,8 +154,11 @@ class StorefrontRepository
         usort($colors, $bySortOrder);
 
         return [
-            'sizes' => array_map(fn ($size) => $size->name, $sizes),
-            'colors' => array_map(fn ($color) => ['name' => $color->name, 'hex' => $color->hex], $colors),
+            'sizes' => array_map(fn ($size) => Storefront::text($size->name_i18n, $locale) ?: $size->name, $sizes),
+            'colors' => array_map(fn ($color) => [
+                'name' => Storefront::text($color->name_i18n, $locale) ?: $color->name,
+                'hex' => $color->hex,
+            ], $colors),
         ];
     }
 

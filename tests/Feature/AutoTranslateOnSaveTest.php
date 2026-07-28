@@ -37,6 +37,9 @@ class AutoTranslateOnSaveTest extends TestCase
             'description' => ['tr' => 'Test açıklama', 'en' => 'Test description', 'de' => 'Test Beschreibung'],
             'price' => 1,
             'currency' => 'TRY',
+            'price_try' => 1,
+            'price_usd' => 1,
+            'price_eur' => 1,
             'stock_status' => 'in_stock',
             'active' => false,
         ]);
@@ -73,7 +76,7 @@ class AutoTranslateOnSaveTest extends TestCase
                 'slug' => 'phpunit-'.$suffix,
                 'name' => ['tr' => 'Yeni Ürün'],
                 'description' => ['tr' => 'Yeni açıklama'],
-                'currency' => 'TRY',
+                'price_try' => 100,
                 'stock_status' => 'in_stock',
                 'active' => false,
             ])
@@ -93,7 +96,7 @@ class AutoTranslateOnSaveTest extends TestCase
         $this->mock(TranslateService::class, fn ($mock) => $mock->shouldNotReceive('translateFields'));
 
         Livewire::test(EditProduct::class, ['record' => $this->product->getKey()])
-            ->fillForm(['price' => 42])
+            ->fillForm(['price_try' => 42])
             ->call('save')
             ->assertHasNoFormErrors();
 

@@ -109,5 +109,13 @@
       "completed": "Zugestellt",
       "cancelled": "Storniert"
     }
-  }
+  },
+  "category": {"productCount": "Produkte"},
+  "cart": {
+    "title": "Ihr Warenkorb", "subtitle": "Prüfen Sie Ihre Produkte und vervollständigen Sie Ihre Bestelldaten.", "add": "In den Warenkorb", "added": "Produkt wurde in den Warenkorb gelegt.", "ready": "Das Produkt kann hinzugefügt werden.", "selectVariant": "Wählen Sie Größe und Farbe aus.", "quantity": "Menge", "total": "Gesamt", "remove": "Entfernen", "emptyTitle": "Ihr Warenkorb ist leer", "emptyText": "Entdecken Sie Produkte und legen Sie Ihre Auswahl in den Warenkorb.", "continueShopping": "Zurück zu den Produkten", "placeOrder": "Bestellung aufgeben", "paymentNote": "Keine Online-Zahlung. Der Shop bestätigt Ihre Bestellung telefonisch.",
+    "errors": {"empty": "Ihr Warenkorb ist leer.", "unavailable": "Ein Produkt ist nicht mehr verfügbar.", "outOfStock": "Ein Produkt ist ausverkauft.", "variant": "Die gewählte Kombination wurde nicht gefunden.", "stock": "Nicht genügend Bestand verfügbar."}
+  },
+  "orderSuccess": {"eyebrow": "BESTELLUNG ERSTELLT", "title": "Bestellung erhalten", "text": "Ihre Bestellung wurde an den Shop gesendet. Wir kontaktieren Sie telefonisch zur Bestätigung.", "saveCode": "Bewahren Sie Ihren Tracking-Code auf.", "track": "Bestellung verfolgen"},
+  "media": {"eyebrow": "KOLLEKTIONSGESCHICHTEN", "title": "Medien", "subtitle": "Bilder, Videos und Dokumente aus unseren neuesten Kollektionen.", "openDocument": "Dokument öffnen", "empty": "Noch keine Medieninhalte vorhanden."},
+  "contact": {"eyebrow": "MERTER / ISTANBUL", "title": "Kontakt", "subtitle": "Kontaktieren Sie uns zu Produkten, Großhandel und Lieferung.", "subject": "Betreff", "message": "Ihre Nachricht", "send": "Nachricht senden", "success": "Ihre Nachricht ist eingegangen. Wir melden uns schnellstmöglich."}
 }

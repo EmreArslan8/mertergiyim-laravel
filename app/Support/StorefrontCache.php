@@ -2,7 +2,21 @@
 
 namespace App\Support;
 
+use App\Models\BlogPost;
+use App\Models\Category;
+use App\Models\Color;
+use App\Models\ContentPage;
+use App\Models\Currency;
+use App\Models\HeroSlide;
+use App\Models\Language;
+use App\Models\Media;
 use App\Models\Product;
+use App\Models\ProductImage;
+use App\Models\ProductVariant;
+use App\Models\SiteLink;
+use App\Models\SiteSetting;
+use App\Models\Size;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -13,9 +27,82 @@ use Illuminate\Support\Facades\Cache;
  */
 class StorefrontCache
 {
+    public static function flushFor(Model $model): void
+    {
+        if ($model instanceof Product) {
+            self::forgetMany(['home', 'sitemap', 'product:'.$model->slug]);
+            $originalSlug = $model->getOriginal('slug');
+            if ($originalSlug && $originalSlug !== $model->slug) {
+                Cache::forget('storefront:product:'.$originalSlug);
+            }
+
+            return;
+        }
+
+        if ($model instanceof ProductImage || $model instanceof ProductVariant) {
+            Cache::forget('storefront:home');
+            $slug = Product::query()->whereKey($model->product_id)->value('slug');
+            if ($slug) {
+                Cache::forget('storefront:product:'.$slug);
+            }
+
+            return;
+        }
+
+        if ($model instanceof Category) {
+            self::forgetMany(['chrome', 'home', 'sitemap']);
+
+            return;
+        }
+
+        if ($model instanceof Size || $model instanceof Color) {
+            Product::query()->pluck('slug')->each(
+                fn ($slug) => Cache::forget('storefront:product:'.$slug)
+            );
+
+            return;
+        }
+
+        if ($model instanceof Currency) {
+            Cache::forget('storefront:currencies');
+
+            return;
+        }
+
+        if ($model instanceof Language || $model instanceof SiteLink || $model instanceof SiteSetting) {
+            Cache::forget('storefront:chrome');
+
+            return;
+        }
+
+        if ($model instanceof HeroSlide) {
+            Cache::forget('storefront:home');
+
+            return;
+        }
+
+        if ($model instanceof ContentPage) {
+            self::forgetMany(['sitemap', 'page:'.$model->slug]);
+
+            return;
+        }
+
+        if ($model instanceof BlogPost) {
+            self::forgetMany(['blog', 'sitemap', 'blog:'.$model->slug]);
+
+            return;
+        }
+
+        if ($model instanceof Media) {
+            return;
+        }
+
+        self::flush();
+    }
+
     public static function flush(): void
     {
-        foreach (['currencies', 'chrome', 'home', 'sitemap'] as $key) {
+        foreach (['currencies', 'chrome', 'home', 'blog', 'sitemap'] as $key) {
             Cache::forget('storefront:'.$key);
         }
 
@@ -24,5 +111,24 @@ class StorefrontCache
                 fn ($slug) => Cache::forget('storefront:product:'.$slug)
             );
         }, report: false);
+
+        rescue(function () {
+            ContentPage::query()->pluck('slug')->each(
+                fn ($slug) => Cache::forget('storefront:page:'.$slug)
+            );
+            BlogPost::query()->pluck('slug')->each(
+                fn ($slug) => Cache::forget('storefront:blog:'.$slug)
+            );
+        }, report: false);
+    }
+
+    /**
+     * @param  array<int, string>  $keys
+     */
+    private static function forgetMany(array $keys): void
+    {
+        foreach ($keys as $key) {
+            Cache::forget('storefront:'.$key);
+        }
     }
 }

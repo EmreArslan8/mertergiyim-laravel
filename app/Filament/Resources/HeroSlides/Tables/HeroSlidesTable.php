@@ -12,6 +12,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class HeroSlidesTable
 {
@@ -34,7 +35,11 @@ class HeroSlidesTable
                 TextColumn::make('sort_order')->label('Sıra'),
                 IconColumn::make('active')->label('Aktif')->boolean(),
             ])
-            ->recordActions([EditAction::make(), DeleteAction::make()])
+            ->recordActions([
+                EditAction::make()
+                    ->mutateDataUsing(fn (array $data, $livewire, ?Model $record): array => $livewire->fillAutomaticTranslationsFor($data, $record)),
+                DeleteAction::make(),
+            ])
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 }

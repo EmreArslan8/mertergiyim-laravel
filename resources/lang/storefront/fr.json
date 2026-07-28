@@ -109,5 +109,13 @@
       "completed": "Livrée",
       "cancelled": "Annulée"
     }
-  }
+  },
+  "category": {"productCount": "produits"},
+  "cart": {
+    "title": "Votre panier", "subtitle": "Vérifiez vos produits et complétez vos informations de commande.", "add": "Ajouter au panier", "added": "Produit ajouté au panier.", "ready": "Le produit est prêt à être ajouté.", "selectVariant": "Sélectionnez une taille et une couleur.", "quantity": "Quantité", "total": "Total", "remove": "Retirer", "emptyTitle": "Votre panier est vide", "emptyText": "Découvrez les produits et ajoutez votre sélection au panier.", "continueShopping": "Retour aux produits", "placeOrder": "Passer la commande", "paymentNote": "Aucun paiement en ligne. La boutique confirmera votre commande par téléphone.",
+    "errors": {"empty": "Votre panier est vide.", "unavailable": "Un produit n’est plus disponible.", "outOfStock": "Un produit est épuisé.", "variant": "La combinaison sélectionnée est introuvable.", "stock": "Stock insuffisant pour ce produit."}
+  },
+  "orderSuccess": {"eyebrow": "COMMANDE CRÉÉE", "title": "Commande reçue", "text": "Votre commande a été transmise à la boutique. Nous vous contacterons par téléphone pour confirmation.", "saveCode": "Conservez votre code de suivi.", "track": "Suivre la commande"},
+  "media": {"eyebrow": "HISTOIRES DE COLLECTION", "title": "Médias", "subtitle": "Images, vidéos et documents de nos dernières collections.", "openDocument": "Ouvrir le document", "empty": "Aucun contenu multimédia pour le moment."},
+  "contact": {"eyebrow": "MERTER / ISTANBUL", "title": "Contact", "subtitle": "Contactez-nous pour les produits, commandes en gros et livraisons.", "subject": "Objet", "message": "Votre message", "send": "Envoyer", "success": "Votre message a été reçu. Nous vous contacterons rapidement."}
 }

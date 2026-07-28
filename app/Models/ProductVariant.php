@@ -10,6 +10,8 @@ class ProductVariant extends Model
 {
     use HasUuidKey;
 
+    public $timestamps = false;
+
     protected $guarded = [];
 
     protected $casts = ['stock_quantity' => 'integer'];

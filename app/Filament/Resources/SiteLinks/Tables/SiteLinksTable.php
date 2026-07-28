@@ -10,6 +10,7 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class SiteLinksTable
 {
@@ -31,7 +32,11 @@ class SiteLinksTable
                 IconColumn::make('active')->label('Aktif')->boolean(),
             ])
             ->filters([])
-            ->recordActions([EditAction::make(), DeleteAction::make()])
+            ->recordActions([
+                EditAction::make()
+                    ->mutateDataUsing(fn (array $data, $livewire, ?Model $record): array => $livewire->fillAutomaticTranslationsFor($data, $record)),
+                DeleteAction::make(),
+            ])
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 }

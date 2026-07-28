@@ -11,5 +11,12 @@ class Size extends Model
 
     protected $guarded = [];
 
-    protected $casts = ['active' => 'boolean', 'sort_order' => 'integer'];
+    protected $casts = ['active' => 'boolean', 'sort_order' => 'integer', 'name_i18n' => 'array'];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Size $size): void {
+            $size->name = $size->name_i18n['tr'] ?? $size->name;
+        });
+    }
 }

@@ -19,7 +19,7 @@
                 <nav class="footer-policy-links" aria-label="{{ $infoTitle }}">
                     @foreach ($footerLinks as $link)
                         @php $external = (bool) preg_match('#^https?://#i', $link->url); @endphp
-                        <a href="{{ Storefront::href($link->url, $locale) }}"
+                        <a href="{{ Storefront::navigationHref($link, $locale) }}"
                            @if ($external) target="_blank" rel="noreferrer" @endif>
                             {{ Storefront::text($link->label, $locale) }}
                         </a>

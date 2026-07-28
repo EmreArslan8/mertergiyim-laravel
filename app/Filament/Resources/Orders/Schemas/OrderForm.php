@@ -50,7 +50,12 @@ class OrderForm
                             ->label('Toplam')
                             ->numeric()
                             ->step('0.01')
-                            ->suffix(fn () => Currency::query()->where('is_default', true)->value('symbol') ?? 'TL'),
+                            ->suffix(fn ($get) => Currency::query()->where('code', $get('currency') ?: 'TRY')->value('symbol') ?? 'TL'),
+                        Select::make('currency')
+                            ->label('Para birimi')
+                            ->options(fn () => Currency::query()->pluck('code', 'code'))
+                            ->default('TRY')
+                            ->required(),
                     ]),
 
                 Section::make('Müşteri')

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Colors;
 
+use App\Filament\Resources\ManagedResource;
 use App\Filament\Resources\Colors\Pages\CreateColor;
 use App\Filament\Resources\Colors\Pages\EditColor;
 use App\Filament\Resources\Colors\Pages\ListColors;
@@ -9,12 +10,11 @@ use App\Filament\Resources\Colors\Schemas\ColorForm;
 use App\Filament\Resources\Colors\Tables\ColorsTable;
 use App\Models\Color;
 use BackedEnum;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class ColorResource extends Resource
+class ColorResource extends ManagedResource
 {
     protected static ?string $model = Color::class;
 
@@ -27,7 +27,7 @@ class ColorResource extends Resource
     protected static ?string $pluralModelLabel = 'renkler';
 
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
     {

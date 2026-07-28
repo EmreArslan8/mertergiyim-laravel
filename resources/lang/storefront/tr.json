@@ -109,5 +109,54 @@
       "completed": "Teslim Edildi",
       "cancelled": "İptal Edildi"
     }
+  },
+  "category": {
+    "productCount": "ürün"
+  },
+  "cart": {
+    "title": "Sepetiniz",
+    "subtitle": "Ürünlerinizi kontrol edin ve sipariş bilgilerinizi tamamlayın.",
+    "add": "Sepete Ekle",
+    "added": "Ürün sepete eklendi.",
+    "ready": "Ürün sepete eklenmeye hazır.",
+    "selectVariant": "Devam etmek için beden ve renk seçin.",
+    "quantity": "Adet",
+    "total": "Toplam",
+    "remove": "Kaldır",
+    "emptyTitle": "Sepetiniz boş",
+    "emptyText": "Ürünleri inceleyip beden ve renk seçerek sepetinize ekleyebilirsiniz.",
+    "continueShopping": "Ürünlere dön",
+    "placeOrder": "Siparişi Oluştur",
+    "paymentNote": "Online ödeme alınmaz. Siparişiniz mağaza tarafından telefonla teyit edilir.",
+    "errors": {
+      "empty": "Sepetiniz boş.",
+      "unavailable": "Sepetteki ürünlerden biri artık satışta değil.",
+      "outOfStock": "Sepetteki ürünlerden biri tükendi.",
+      "variant": "Seçilen beden ve renk kombinasyonu bulunamadı.",
+      "stock": "Seçilen ürün için yeterli stok bulunmuyor."
+    }
+  },
+  "orderSuccess": {
+    "eyebrow": "SİPARİŞ OLUŞTURULDU",
+    "title": "Siparişiniz alındı",
+    "text": "Siparişiniz mağazaya iletildi. Onay için sizinle telefon üzerinden iletişime geçilecektir.",
+    "saveCode": "Takip kodunuzu kaydedin. Sipariş durumunu bu kodla sorgulayabilirsiniz.",
+    "track": "Siparişi Takip Et"
+  },
+  "media": {
+    "eyebrow": "KOLEKSİYON HİKÂYELERİ",
+    "title": "Multimedya",
+    "subtitle": "Yeni koleksiyonlardan görseller, videolar ve belgeler.",
+    "openDocument": "Belgeyi aç",
+    "empty": "Henüz multimedya içeriği eklenmedi."
+  },
+  "contact": {
+    "eyebrow": "MERTER / İSTANBUL",
+    "title": "İletişim",
+    "subtitle": "Ürünler, toptan siparişler ve teslimat hakkında bize ulaşın.",
+    "subject": "Konu",
+    "message": "Mesajınız",
+    "send": "Mesajı Gönder",
+    "success": "Mesajınız alındı. En kısa sürede sizinle iletişime geçeceğiz."
   }
 }

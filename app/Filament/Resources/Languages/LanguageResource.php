@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Languages;
 
+use App\Filament\Resources\ManagedResource;
 use App\Filament\Resources\Languages\Pages\CreateLanguage;
 use App\Filament\Resources\Languages\Pages\EditLanguage;
 use App\Filament\Resources\Languages\Pages\ListLanguages;
@@ -9,12 +10,11 @@ use App\Filament\Resources\Languages\Schemas\LanguageForm;
 use App\Filament\Resources\Languages\Tables\LanguagesTable;
 use App\Models\Language;
 use BackedEnum;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class LanguageResource extends Resource
+class LanguageResource extends ManagedResource
 {
     protected static ?string $model = Language::class;
 
@@ -27,7 +27,7 @@ class LanguageResource extends Resource
     protected static ?string $pluralModelLabel = 'diller';
 
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 12;
 
     public static function form(Schema $schema): Schema
     {

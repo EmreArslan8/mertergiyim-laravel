@@ -1,6 +1,13 @@
 <?php
 
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ContentPageController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MultimediaController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
@@ -15,6 +22,16 @@ Route::get('/robots.txt', RobotsController::class)->name('storefront.robots');
 
 Route::middleware(SetStorefrontLocale::class)->group(function () {
     Route::get('/{locale}', HomeController::class)->name('storefront.home');
+    Route::get('/{locale}/kategori/{slug}', CategoryController::class)->name('storefront.category');
+    Route::get('/{locale}/sepet', CartController::class)->name('storefront.cart');
+    Route::post('/{locale}/siparisler', [CheckoutController::class, 'store'])->name('storefront.order.store');
+    Route::get('/{locale}/siparis-basarili/{trackingCode}', [CheckoutController::class, 'success'])->name('storefront.order.success');
     Route::get('/{locale}/siparis-takibi', TrackingController::class)->name('storefront.tracking');
+    Route::get('/{locale}/multimedya', MultimediaController::class)->name('storefront.multimedia');
+    Route::get('/{locale}/iletisim', [ContactController::class, 'show'])->name('storefront.contact');
+    Route::post('/{locale}/iletisim', [ContactController::class, 'store'])->name('storefront.contact.store');
+    Route::get('/{locale}/sayfa/{slug}', ContentPageController::class)->name('storefront.page');
+    Route::get('/{locale}/blog', [BlogController::class, 'index'])->name('storefront.blog.index');
+    Route::get('/{locale}/blog/{slug}', [BlogController::class, 'show'])->name('storefront.blog.show');
     Route::get('/{locale}/product/{slug}', ProductController::class)->name('storefront.product');
 });

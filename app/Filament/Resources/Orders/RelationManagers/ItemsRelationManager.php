@@ -27,6 +27,8 @@ class ItemsRelationManager extends RelationManager
             TextInput::make('size')->label('Beden'),
             TextInput::make('color')->label('Renk'),
             TextInput::make('quantity')->label('Adet')->numeric()->default(1)->required(),
+            TextInput::make('unit_price')->label('Birim fiyat')->numeric()->step('0.01'),
+            TextInput::make('line_total')->label('Satır toplamı')->numeric()->step('0.01'),
         ]);
     }
 
@@ -39,6 +41,8 @@ class ItemsRelationManager extends RelationManager
                 TextColumn::make('size')->label('Beden')->placeholder('-'),
                 TextColumn::make('color')->label('Renk')->placeholder('-'),
                 TextColumn::make('quantity')->label('Adet'),
+                TextColumn::make('unit_price')->label('Birim fiyat')->numeric(decimalPlaces: 2)->placeholder('-'),
+                TextColumn::make('line_total')->label('Toplam')->numeric(decimalPlaces: 2)->placeholder('-'),
             ])
             ->headerActions([CreateAction::make()->label('Kalem ekle')])
             ->recordActions([EditAction::make(), DeleteAction::make()])

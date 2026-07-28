@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SiteSettings\Tables;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class SiteSettingsTable
 {
@@ -18,6 +19,14 @@ class SiteSettingsTable
                     ->formatStateUsing(fn ($state) => is_array($state) ? implode(', ', array_keys($state)) : '-'),
                 TextColumn::make('updated_at')->label('Güncellendi')->dateTime('d.m.Y H:i'),
             ])
-            ->recordActions([EditAction::make()]);
+            ->recordActions([
+                EditAction::make()
+                    ->mutateDataUsing(function (array $data, $livewire, ?Model $record): array {
+                        $data = $livewire->fillAutomaticTranslationsFor($data, $record);
+                        $data['updated_at'] = now();
+
+                        return $data;
+                    }),
+            ]);
     }
 }

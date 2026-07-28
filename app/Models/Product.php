@@ -18,8 +18,42 @@ class Product extends Model
         // jsonb çok dilli alanlar
         'name' => 'array',
         'description' => 'array',
+        'price' => 'decimal:2',
+        'price_try' => 'decimal:2',
+        'price_usd' => 'decimal:2',
+        'price_eur' => 'decimal:2',
         'active' => 'boolean',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Product $product): void {
+            $product->price = $product->price_try;
+            $product->currency = 'TRY';
+        });
+    }
+
+    public function priceForLocale(string $locale, ?array $rates = null): mixed
+    {
+        return match ($locale) {
+            'tr' => $this->price_try ?? $this->price,
+            'ar', 'fa' => isset($rates['USD'])
+                ? round((float) ($this->price_try ?? $this->price) * $rates['USD'], 2)
+                : ($this->price_usd ?? $this->price),
+            default => isset($rates['EUR'])
+                ? round((float) ($this->price_try ?? $this->price) * $rates['EUR'], 2)
+                : ($this->price_eur ?? $this->price),
+        };
+    }
+
+    public function currencyForLocale(string $locale): string
+    {
+        return match ($locale) {
+            'tr' => 'TRY',
+            'ar', 'fa' => 'USD',
+            default => 'EUR',
+        };
+    }
 
     public function scopeActive(Builder $query): Builder
     {

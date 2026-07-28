@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use App\Filament\Support\Multilingual;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
@@ -13,9 +14,7 @@ class CategoryForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->label('Kategori adı')
-                    ->required()
+                Multilingual::turkish('name_i18n', 'Kategori adı')
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn ($state, $set) => $set('slug', Str::slug((string) $state))),
                 TextInput::make('slug')

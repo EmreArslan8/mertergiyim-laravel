@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Colors\Schemas;
 
+use App\Filament\Support\Multilingual;
+use App\Models\Color;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -13,7 +15,8 @@ class ColorForm
     {
         return $schema
             ->components([
-                TextInput::make('name')->label('Renk adı')->required()->unique(ignoreRecord: true),
+                Multilingual::turkish('name_i18n', 'Renk adı')
+                    ->unique(table: Color::class, column: 'name', ignoreRecord: true),
                 ColorPicker::make('hex')->label('Renk')->hex()->default('#ffffff')->required(),
                 TextInput::make('sort_order')->label('Sıra')->numeric()->default(0),
                 Toggle::make('active')->label('Aktif')->default(true),

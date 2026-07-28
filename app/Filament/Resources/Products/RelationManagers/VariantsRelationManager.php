@@ -2,8 +2,7 @@
 
 namespace App\Filament\Resources\Products\RelationManagers;
 
-use App\Models\Color;
-use App\Models\Size;
+use App\Services\AdminOptionService;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -28,12 +27,12 @@ class VariantsRelationManager extends RelationManager
         return $schema->components([
             Select::make('size_id')
                 ->label('Beden')
-                ->options(fn () => Size::query()->where('active', true)->orderBy('sort_order')->pluck('name', 'id'))
+                ->options(fn () => app(AdminOptionService::class)->sizes())
                 ->searchable()
                 ->preload(),
             Select::make('color_id')
                 ->label('Renk')
-                ->options(fn () => Color::query()->where('active', true)->orderBy('sort_order')->pluck('name', 'id'))
+                ->options(fn () => app(AdminOptionService::class)->colors())
                 ->searchable()
                 ->preload(),
             TextInput::make('stock_quantity')->label('Stok adedi')->numeric()->default(0),

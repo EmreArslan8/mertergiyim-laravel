@@ -10,9 +10,14 @@ class Order extends Model
 {
     use HasUuidKey;
 
+    public const UPDATED_AT = null;
+
     protected $guarded = [];
 
-    protected $casts = ['created_at' => 'datetime'];
+    protected $casts = [
+        'total' => 'decimal:2',
+        'created_at' => 'datetime',
+    ];
 
     public function items(): HasMany
     {

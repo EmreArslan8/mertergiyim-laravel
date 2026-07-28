@@ -2,12 +2,12 @@
 
 namespace App\Filament\Resources\TranslationUsages;
 
+use App\Filament\Resources\ManagedResource;
 use App\Filament\Resources\TranslationUsages\Pages\ListTranslationUsages;
 use App\Models\TranslationUsage;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -18,7 +18,7 @@ use Filament\Tables\Table;
 /**
  * Gemini çeviri isteklerinin token kullanımı (salt okunur liste).
  */
-class TranslationUsageResource extends Resource
+class TranslationUsageResource extends ManagedResource
 {
     protected static ?string $model = TranslationUsage::class;
 
@@ -31,7 +31,7 @@ class TranslationUsageResource extends Resource
     protected static ?string $pluralModelLabel = 'çeviri kayıtları';
 
 
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 14;
 
     public static function canCreate(): bool
     {

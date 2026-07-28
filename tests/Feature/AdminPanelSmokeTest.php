@@ -50,6 +50,10 @@ class AdminPanelSmokeTest extends TestCase
             '/admin/orders',
             '/admin/orders/create',
             '/admin/translation-usages',
+            '/admin/content-pages',
+            '/admin/blog-posts',
+            '/admin/media',
+            '/admin/admin-users',
         ]);
     }
 

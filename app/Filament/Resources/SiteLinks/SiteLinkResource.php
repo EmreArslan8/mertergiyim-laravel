@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SiteLinks;
 
+use App\Filament\Resources\ManagedResource;
 use App\Filament\Resources\SiteLinks\Pages\CreateSiteLink;
 use App\Filament\Resources\SiteLinks\Pages\EditSiteLink;
 use App\Filament\Resources\SiteLinks\Pages\ListSiteLinks;
@@ -9,12 +10,11 @@ use App\Filament\Resources\SiteLinks\Schemas\SiteLinkForm;
 use App\Filament\Resources\SiteLinks\Tables\SiteLinksTable;
 use App\Models\SiteLink;
 use BackedEnum;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class SiteLinkResource extends Resource
+class SiteLinkResource extends ManagedResource
 {
     protected static ?string $model = SiteLink::class;
 
@@ -27,7 +27,7 @@ class SiteLinkResource extends Resource
     protected static ?string $pluralModelLabel = 'bağlantılar';
 
 
-    protected static ?int $navigationSort = 9;
+    protected static ?int $navigationSort = 10;
 
     public static function form(Schema $schema): Schema
     {

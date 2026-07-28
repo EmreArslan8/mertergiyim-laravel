@@ -11,5 +11,12 @@ class Color extends Model
 
     protected $guarded = [];
 
-    protected $casts = ['active' => 'boolean', 'sort_order' => 'integer'];
+    protected $casts = ['active' => 'boolean', 'sort_order' => 'integer', 'name_i18n' => 'array'];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Color $color): void {
+            $color->name = $color->name_i18n['tr'] ?? $color->name;
+        });
+    }
 }

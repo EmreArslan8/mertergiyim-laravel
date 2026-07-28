@@ -1,0 +1,75 @@
+<?php
+
+namespace App\Filament\Resources\AdminUsers;
+
+use App\Filament\Resources\AdminUsers\Pages\ListAdminUsers;
+use App\Models\User;
+use BackedEnum;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class AdminUserResource extends Resource
+{
+    protected static ?string $model = User::class;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
+    protected static ?string $navigationLabel = 'Admin Ayarları';
+    protected static ?string $modelLabel = 'yönetici';
+    protected static ?string $pluralModelLabel = 'yöneticiler';
+    protected static ?int $navigationSort = 20;
+
+    public static function canAccess(): bool
+    {
+        return filament()->auth()->user()?->isSuperAdmin() ?? false;
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema->components([
+            Section::make('Yönetici hesabı')->schema([
+                TextInput::make('name')->label('Ad soyad')->required(),
+                TextInput::make('email')->label('E-posta')->email()->required()->unique(ignoreRecord: true),
+                TextInput::make('password')
+                    ->label('Şifre')
+                    ->password()
+                    ->revealable()
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn ($state): bool => filled($state)),
+                Select::make('role')->label('Yetki')->options([
+                    'super_admin' => 'Süper Yönetici',
+                    'editor' => 'İçerik Editörü',
+                    'order_manager' => 'Sipariş Yetkilisi',
+                ])->default('editor')->required(),
+                Toggle::make('is_active')->label('Hesap aktif')->default(true),
+            ]),
+        ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table->columns([
+            TextColumn::make('name')->label('Yönetici')->searchable(),
+            TextColumn::make('email')->label('E-posta')->searchable(),
+            TextColumn::make('role')->label('Yetki')->badge()->formatStateUsing(fn ($state) => match ($state) {
+                'super_admin' => 'Süper Yönetici',
+                'order_manager' => 'Sipariş Yetkilisi',
+                default => 'İçerik Editörü',
+            }),
+            IconColumn::make('is_active')->label('Aktif')->boolean(),
+        ])->recordActions([EditAction::make(), DeleteAction::make()]);
+    }
+
+    public static function getPages(): array
+    {
+        return ['index' => ListAdminUsers::route('/')];
+    }
+}

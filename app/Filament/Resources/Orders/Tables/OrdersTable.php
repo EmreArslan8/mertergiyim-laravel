@@ -27,7 +27,11 @@ class OrdersTable
                 TextColumn::make('tracking_code')->label('Takip kodu')->placeholder('-')->searchable(),
                 TextColumn::make('total')
                     ->label('Toplam')
-                    ->formatStateUsing(fn ($state) => Storefront::formatPrice($state)),
+                    ->formatStateUsing(fn ($state, $record) => Storefront::formatPrice($state, match ($record->currency ?? 'TRY') {
+                        'USD' => ['symbol' => '$', 'position' => 'prefix'],
+                        'EUR' => ['symbol' => '€', 'position' => 'suffix'],
+                        default => ['symbol' => 'TL', 'position' => 'suffix'],
+                    })),
                 TextColumn::make('status')
                     ->label('Durum')
                     ->badge()
