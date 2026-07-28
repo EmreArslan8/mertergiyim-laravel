@@ -1,6 +1,6 @@
 @php
     use App\Support\Storefront;
-    $metaTitle = ($messages['media']['title'] ?? 'Multimedya').' | '.($messages['common']['brand'] ?? 'Merter Giyim');
+    $metaTitle = ($messages['media']['title'] ?? 'Multimedya').' | '.$siteName;
 @endphp
 
 @extends('layouts.app')

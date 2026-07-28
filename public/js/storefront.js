@@ -104,6 +104,7 @@
     show(nav.querySelector('[data-language-menu]'), false);
     show(nav.querySelector('[data-main-menu]'), false);
     show(nav.querySelector('[data-category-list]'), false);
+    document.body.classList.remove('mobile-menu-open');
 
     var languageTrigger = nav.querySelector('[data-language-trigger]');
     var menuTrigger = nav.querySelector('[data-menu-trigger]');
@@ -149,6 +150,7 @@
         var open = !isOpen(mainMenu);
         closeMobileMenus();
         show(mainMenu, open, 'grid');
+        document.body.classList.toggle('mobile-menu-open', open);
         menuTrigger.setAttribute('aria-expanded', String(open));
         show(nav.querySelector('[data-menu-icon="open"]'), !open);
         show(nav.querySelector('[data-menu-icon="close"]'), open);
@@ -243,10 +245,9 @@
   }
 
   function cartItemKey(item) {
-    /* Varyant kimliği varsa onu kullan; eski sepetlerde yalnızca ad bulunur. */
+    /* Toptan satışta beden seçilmez; aynı ürün ve renk tek sepet satırıdır. */
     return [
       item.product_id,
-      item.size_id || item.size || '',
       item.color_id || item.color || ''
     ].join('|');
   }
@@ -296,41 +297,31 @@
     var config = JSON.parse(form.getAttribute('data-order-config') || '{}');
     var submit = form.querySelector('.whatsapp-order');
     var note = form.querySelector('[data-order-note]');
-    var selectedColor = '';
-    var selectedColorId = '';
-    var selectedSize = '';
-    var selectedSizeId = '';
-    var sizeButtons = all('[data-size]', form);
+    var selectedColors = [];
     var colorButtons = all('[data-color]', form);
 
     function refresh() {
-      var canSubmit = (!colorButtons.length || selectedColor) && (!sizeButtons.length || selectedSize);
+      var canSubmit = !colorButtons.length || selectedColors.length > 0;
       submit.disabled = !canSubmit;
       note.textContent = canSubmit ? config.ready : config.select;
     }
 
     colorButtons.forEach(function (button) {
       button.addEventListener('click', function () {
-        selectedColor = button.getAttribute('data-color');
-        selectedColorId = button.getAttribute('data-color-id') || '';
-        colorButtons.forEach(function (item) {
-          var active = item === button;
-          item.classList.toggle('selected', active);
-          item.setAttribute('aria-pressed', String(active));
+        var color = {
+          name: button.getAttribute('data-color') || '',
+          id: button.getAttribute('data-color-id') || ''
+        };
+        var index = selectedColors.findIndex(function (item) {
+          return (item.id || item.name) === (color.id || color.name);
         });
-        refresh();
-      });
-    });
+        var active = index === -1;
 
-    sizeButtons.forEach(function (button) {
-      button.addEventListener('click', function () {
-        selectedSize = button.getAttribute('data-size');
-        selectedSizeId = button.getAttribute('data-size-id') || '';
-        sizeButtons.forEach(function (item) {
-          var active = item === button;
-          item.classList.toggle('selected', active);
-          item.setAttribute('aria-pressed', String(active));
-        });
+        if (active) selectedColors.push(color);
+        else selectedColors.splice(index, 1);
+
+        button.classList.toggle('selected', active);
+        button.setAttribute('aria-pressed', String(active));
         refresh();
       });
     });
@@ -341,26 +332,28 @@
 
       var quantityInput = form.querySelector('[name=quantity]');
       var quantity = Math.min(99, Math.max(1, Number(quantityInput && quantityInput.value) || 1));
-      var item = {
-        product_id: form.getAttribute('data-product-id'),
-        slug: form.getAttribute('data-product-slug'),
-        name: form.getAttribute('data-product-name'),
-        code: form.getAttribute('data-product-code'),
-        price: Number(form.getAttribute('data-product-price')) || 0,
-        currency: form.getAttribute('data-product-currency') || 'TRY',
-        image: form.getAttribute('data-product-image') || '',
-        size: selectedSize,
-        size_id: selectedSizeId,
-        color: selectedColor,
-        color_id: selectedColorId,
-        quantity: quantity
-      };
-
       var items = readCart();
-      var key = cartItemKey(item);
-      var existing = items.find(function (candidate) { return cartItemKey(candidate) === key; });
-      if (existing) existing.quantity = Math.min(99, Number(existing.quantity || 0) + quantity);
-      else items.push(item);
+      var colorsToAdd = selectedColors.length ? selectedColors : [{ name: '', id: '' }];
+
+      colorsToAdd.forEach(function (color) {
+        var item = {
+          product_id: form.getAttribute('data-product-id'),
+          slug: form.getAttribute('data-product-slug'),
+          name: form.getAttribute('data-product-name'),
+          code: form.getAttribute('data-product-code'),
+          price: Number(form.getAttribute('data-product-price')) || 0,
+          currency: form.getAttribute('data-product-currency') || 'TRY',
+          image: form.getAttribute('data-product-image') || '',
+          color: color.name,
+          color_id: color.id,
+          quantity: quantity
+        };
+        var key = cartItemKey(item);
+        var existing = items.find(function (candidate) { return cartItemKey(candidate) === key; });
+
+        if (existing) existing.quantity = Math.min(99, Number(existing.quantity || 0) + quantity);
+        else items.push(item);
+      });
 
       writeCart(items);
       cartToast(config.added || 'Ürün sepete eklendi.');
@@ -420,7 +413,7 @@
         }
         row.querySelector('[data-line-code]').textContent = item.code || '';
         row.querySelector('[data-line-name]').textContent = item.name || '';
-        row.querySelector('[data-line-options]').textContent = [item.size, item.color].filter(Boolean).join(' · ');
+        row.querySelector('[data-line-options]').textContent = item.color || '';
         row.querySelector('[data-line-total]').textContent = money(lineTotal, item.currency);
         row.querySelector('[data-cart-quantity]').value = String(quantity);
 
@@ -443,8 +436,6 @@
       payload.value = JSON.stringify(items.map(function (item) {
         return {
           product_id: item.product_id,
-          size: item.size || null,
-          size_id: item.size_id || null,
           color: item.color || null,
           color_id: item.color_id || null,
           quantity: Math.min(99, Math.max(1, Number(item.quantity) || 1))

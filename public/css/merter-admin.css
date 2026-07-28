@@ -853,6 +853,29 @@ textarea.fi-input {
 }
 
 @media (max-width: 63.999rem) {
+    .fi-sidebar.fi-main-sidebar {
+        position: fixed !important;
+        inset-block: 0;
+        height: 100svh;
+        max-height: 100svh;
+        overflow: hidden;
+        overscroll-behavior: none;
+        will-change: translate;
+    }
+
+    .fi-sidebar .fi-sidebar-nav {
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+        scroll-behavior: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .merter-sidebar-bottom {
+        flex: none;
+        background: #fff;
+    }
+
     nav.fi-topbar {
         min-height: 3.25rem;
         height: 3.25rem;

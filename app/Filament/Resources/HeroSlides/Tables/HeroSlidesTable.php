@@ -9,9 +9,9 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Support\Enums\Width;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
@@ -34,7 +34,7 @@ class HeroSlidesTable
                     ->getStateUsing(fn ($record) => Multilingual::tr($record->button_text))
                     ->description(fn ($record) => $record->button_url),
                 TextColumn::make('sort_order')->label('Sıra'),
-                IconColumn::make('active')->label('Aktif')->boolean(),
+                ToggleColumn::make('active')->label('Aktif / Pasif'),
             ])
             ->recordActions([
                 EditAction::make()

@@ -41,11 +41,27 @@ class Multilingual
     /**
      * Panelde tek Türkçe alan.
      */
-    public static function turkish(string $field, string $label, bool $long = false, bool $required = true): TextInput|Textarea
+    public static function turkish(
+        string $field,
+        string $label,
+        bool $long = false,
+        bool $required = true,
+        ?string $legacyFallback = null,
+    ): TextInput|Textarea
     {
-        return self::input($field.'.tr', $label.' (Türkçe)', $long)
+        $input = self::input($field.'.tr', $label, $long)
             ->required($required)
             ->columnSpanFull();
+
+        if ($legacyFallback) {
+            $input->afterStateHydrated(function ($component, $state, $record) use ($legacyFallback): void {
+                if (blank($state) && filled($record?->{$legacyFallback})) {
+                    $component->state($record->{$legacyFallback});
+                }
+            });
+        }
+
+        return $input;
     }
 
     private static function input(string $name, string $label, bool $long): TextInput|Textarea

@@ -225,6 +225,7 @@ class StorefrontSeeder extends Seeder
     {
         $perLocale = [
             'tr' => [
+                'siteName' => 'Merter Giyim',
                 'footerBrand' => 'Merter Giyim',
                 'footerDescription' => 'Merter’den Türkiye’nin her noktasına toptan ve perakende kadın giyim.',
                 'footerInfoTitle' => 'Bilgilendirmeler',
@@ -232,6 +233,7 @@ class StorefrontSeeder extends Seeder
                 'copyright' => '© '.date('Y').' Merter Giyim. Tüm hakları saklıdır.',
             ],
             'en' => [
+                'siteName' => 'Merter Clothing',
                 'footerBrand' => 'Merter Clothing',
                 'footerDescription' => 'Wholesale and retail women’s clothing shipped worldwide from Merter, Istanbul.',
                 'footerInfoTitle' => 'Information',

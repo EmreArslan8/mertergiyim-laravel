@@ -15,11 +15,17 @@ class ColorForm
     {
         return $schema
             ->components([
-                Multilingual::turkish('name_i18n', 'Renk adı')
+                Multilingual::turkish('name_i18n', 'Renk adı', legacyFallback: 'name')
                     ->unique(table: Color::class, column: 'name', ignoreRecord: true),
                 ColorPicker::make('hex')->label('Renk')->hex()->default('#ffffff')->required(),
                 TextInput::make('sort_order')->label('Sıra')->numeric()->default(0),
-                Toggle::make('active')->label('Aktif')->default(true),
+                Toggle::make('active')
+                    ->label('Durum')
+                    ->default(true)
+                    ->live()
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->helperText(fn (?bool $state): string => $state ? 'Aktif' : 'Pasif'),
             ]);
     }
 }

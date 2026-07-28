@@ -22,6 +22,7 @@ Route::get('/robots.txt', RobotsController::class)->name('storefront.robots');
 
 Route::middleware(SetStorefrontLocale::class)->group(function () {
     Route::get('/{locale}', HomeController::class)->name('storefront.home');
+    Route::get('/{locale}/kategori', [CategoryController::class, 'index'])->name('storefront.categories');
     Route::get('/{locale}/kategori/{slug}', CategoryController::class)->name('storefront.category');
     Route::get('/{locale}/sepet', CartController::class)->name('storefront.cart');
     Route::post('/{locale}/siparisler', [CheckoutController::class, 'store'])->name('storefront.order.store');

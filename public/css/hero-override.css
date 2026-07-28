@@ -16,6 +16,7 @@
 /* Üst header — kaynak index.html nav'ı ile birebir (py-6 px-10, z-50). */
 .site-header{height:auto;padding:24px 40px;z-index:50}
 .site-header .brand{font-size:30px;font-weight:900;font-style:italic;letter-spacing:-.05em;line-height:1.2}
+.brand-image{display:block;width:auto;max-width:190px;height:48px;object-fit:contain}
 .main-nav{gap:32px}
 .main-nav a{font-size:14px;line-height:20px;font-weight:700;text-transform:uppercase;transition:color .15s}
 .main-nav a:hover{color:#f97316}
@@ -44,6 +45,7 @@ body{background:#f8fafc}                                    /* bg-slate-50 */
 .buy-button,.whatsapp-button{padding:16px 0;border-radius:8px;font-size:16px;font-weight:700;line-height:24px;text-transform:uppercase}
 .buy-button{margin-bottom:8px;background:#ea580c}
 .whatsapp-button{background:#22c55e}
+.mobil-kategori-goster{display:none}
 
 /* ---- Footer — kaynak index.html ile birebir ---- */
 .site-footer{background:#000}                               /* bg-black */
@@ -51,6 +53,10 @@ body{background:#f8fafc}                                    /* bg-slate-50 */
 .site-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:128px;padding-bottom:80px}
 .footer-brand-block{padding-top:8px}                        /* pt-2 */
 .footer-logo{line-height:1.2}                               /* 30px → 36px */
+.footer-brand-image{display:block;width:auto;max-width:240px;height:68px;object-fit:contain}
+.footer-contact-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;margin-top:14px}
+.footer-contact-links a{color:#8792a5;font-size:12px;text-decoration:none}
+.footer-contact-links a:hover{color:#f47b32}
 .footer-brand-block p{max-width:none;margin:16px 0 0;color:#94a3b8;line-height:1.625}
 .footer-info-block h2{margin-bottom:24px;padding-bottom:8px;border-bottom-color:#1e293b;font-size:18px;font-weight:700;line-height:28px}
 .footer-policy-links{gap:12px 24px}
@@ -71,35 +77,50 @@ body{background:#f8fafc}                                    /* bg-slate-50 */
   .site-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:128px;padding-bottom:80px}
   .footer-policy-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 24px}
   .footer-logo{font-size:30px}
+  .toggle-img.is-active img.main{opacity:1}
+  .toggle-img.is-active img.alt{opacity:0}
+  .product-image:hover img.main{opacity:0}
+  .product-image:hover img.alt{opacity:1}
 }
 @media(max-width:767px){
   .product-grid{grid-template-columns:1fr;gap:32px}         /* gap-8 */
   .touch-tip{display:block}
+  .mobil-urun-detay-gizle{display:none}
+  .mobil-kategori-goster{display:block;margin-top:4px;color:#4b5563;font-size:12px;font-weight:600}
+  .product-image:hover img.main{opacity:1}
+  .product-image:hover img.alt{opacity:0}
+  .toggle-img.is-active img.main{opacity:0}
+  .toggle-img.is-active img.alt{opacity:1}
 }
 @media(max-width:767px){
   .hero{height:80vh;min-height:80vh}
-  .site-header{height:76px;padding:0 5%;overflow:visible}
-  .site-header .brand{max-width:52%;font-size:clamp(20px,6vw,24px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .site-header{height:80px;padding:24px;overflow:visible}
+  .site-header .brand{position:relative;z-index:26;flex:0 0 auto;max-width:none;font-size:24px;line-height:32px;overflow:visible;white-space:nowrap}
+  .brand-image{max-width:150px;height:40px}
   .main-nav{display:none}
   .language-bar{display:none}
-  .mobile-header-actions{display:flex;align-items:center;gap:10px}
-  .mobile-language-picker{position:relative}
-  .mobile-language-trigger{height:46px;display:flex;align-items:center;gap:9px;padding:0 15px;border:1px solid #ffffff29;border-radius:15px;background:#18181be8;color:#fff;font:800 15px Montserrat,sans-serif;cursor:pointer}
-  .mobile-language-menu{position:absolute;z-index:30;top:54px;right:0;min-width:170px;max-height:280px;padding:7px;border:1px solid #ffffff20;border-radius:13px;background:#18181bf5;box-shadow:0 18px 42px #0006;overflow:auto;backdrop-filter:blur(12px)}
+  .mobile-header-actions{display:flex;align-items:center;gap:12px}
+  .mobile-language-picker{position:relative;z-index:26}
+  .mobile-language-trigger{height:30px;display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #ffffff33;border-radius:8px;background:#0008;color:#fff;font:700 12px/16px Montserrat,sans-serif;cursor:pointer}
+  .mobile-language-trigger svg{width:14px;height:14px}
+  .mobile-language-menu{position:absolute;z-index:30;top:38px;right:0;min-width:170px;max-height:280px;padding:7px;border:1px solid #ffffff20;border-radius:13px;background:#18181bf5;box-shadow:0 18px 42px #0006;overflow:auto;backdrop-filter:blur(12px)}
   .mobile-language-menu a{display:block;padding:10px 12px;border-radius:8px;color:#d4d4d8;font-size:12px;font-weight:700;text-decoration:none}
   .mobile-language-menu a.selected{background:#ea580c;color:#fff}
-  .mobile-menu-trigger{width:46px;height:46px;display:grid;place-items:center;padding:0;border:0;background:transparent;color:#fff;cursor:pointer}
-  .mobile-main-menu{position:absolute;z-index:25;top:76px;left:0;right:0;display:grid;gap:0;padding:8px 5% 18px;border-top:1px solid #ffffff1f;background:#18181bf5;box-shadow:0 18px 42px #0005;backdrop-filter:blur(14px)}
-  .mobile-main-menu a{display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid #ffffff14;color:#fff;font-size:13px;font-weight:800;text-decoration:none;text-transform:uppercase}
+  .mobile-menu-trigger{position:relative;z-index:26;width:32px;height:32px;display:grid;place-items:center;padding:0;border:0;background:transparent;color:#fff;cursor:pointer}
+  .mobile-menu-trigger svg{width:32px;height:32px}
+  .mobile-main-menu{position:fixed;z-index:25;inset:0;display:grid;grid-template-columns:minmax(0,1fr);align-content:center;justify-items:center;gap:16px;width:100vw;height:100dvh;min-height:100vh;padding:104px 24px 40px;border:0;background:#000000f2;box-shadow:none;overflow-y:auto;overscroll-behavior:contain}
+  .mobile-main-menu>a,.mobile-main-menu>.mobile-category-group{width:min(100%,320px)}
+  .mobile-main-menu a{display:flex;align-items:center;justify-content:center;padding:8px;border:0;color:#fff;font-size:20px;line-height:1.25;font-weight:800;text-align:center;text-decoration:none;text-transform:uppercase}
+  .mobile-main-menu .mobile-category-toggle{justify-content:center;gap:10px;padding:8px;border:0;font-size:20px;line-height:1.25}
+  body.mobile-menu-open{overflow:hidden}
 
-  /* "BİLGİLENDİRMELER" gibi uzun tek kelimelik başlıklar dar ekranda taşıyordu.
-     Genişliğe göre küçülsün, gerekirse tireleyerek kırılsın. */
-  .footer-info-block h2{font-size:clamp(14px,4.4vw,18px);line-height:1.35;letter-spacing:0;overflow-wrap:anywhere;hyphens:auto}
-  .footer-policy-links a{overflow-wrap:anywhere}
-}
-/* Kaynak index.html'deki sm:grid-cols-2 davranışı: dar mobilde uzun
-   bilgilendirme başlıkları tek sütunda rahatça okunur ve dokunulur. */
-@media(max-width:639px){
-  .footer-policy-links{grid-template-columns:1fr;gap:14px}
-  .footer-policy-links a{display:block;padding:2px 0}
+  .site-footer-inner{width:calc(100% - 32px);padding:52px 0 24px}
+  .site-footer-grid{grid-template-columns:minmax(0,1fr);gap:42px;padding-bottom:48px}
+  .footer-brand-block{padding-top:0}
+  .footer-logo{font-size:26px;white-space:nowrap}
+  .footer-brand-image{max-width:200px;height:58px}
+  .footer-info-block h2{margin-bottom:20px;font-size:16px;line-height:1.4;letter-spacing:0;overflow-wrap:normal;word-break:normal;hyphens:none}
+  .footer-policy-links{grid-template-columns:minmax(0,1fr);gap:14px}
+  .footer-policy-links a{display:block;padding:3px 0;line-height:1.5;overflow-wrap:normal;word-break:normal}
+  .site-footer-bottom{padding-top:24px}
 }

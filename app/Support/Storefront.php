@@ -138,7 +138,14 @@ class Storefront
 
         $url = str_replace('/storage/v1/object/public/', '/storage/v1/render/image/public/', $url);
 
-        return $url.'?'.http_build_query(['width' => $width, 'quality' => $quality]);
+        return $url.'?'.http_build_query([
+            'width' => $width,
+            'quality' => $quality,
+            // Supabase'in varsayılan "cover" modu yalnızca width
+            // verildiğinde görseli yataydan kırpar. Kaynak oranını koru;
+            // gerekli kadrajı vitrindeki object-fit: cover yapsın.
+            'resize' => 'contain',
+        ]);
     }
 
     /**
@@ -186,6 +193,7 @@ class Storefront
         return match ($key) {
             'cart', 'sepet' => '/'.$locale.'/sepet',
             'tracking', 'siparis-takibi' => '/'.$locale.'/siparis-takibi',
+            'categories', 'kategori' => '/'.$locale.'/kategori',
             'media', 'multimedia', 'multimedya' => '/'.$locale.'/multimedya',
             'contact', 'iletisim' => '/'.$locale.'/iletisim',
             'blog' => '/'.$locale.'/blog',

@@ -7,8 +7,8 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,10 +22,10 @@ class SizesTable
             ->columns([
                 TextColumn::make('name_i18n')
                     ->label('Beden')
-                    ->getStateUsing(fn ($record) => Multilingual::tr($record->name_i18n))
+                    ->getStateUsing(fn ($record) => Multilingual::tr($record->name_i18n) ?: $record->name)
                     ->searchable(query: fn ($query, string $search) => $query->where('name', 'like', "%{$search}%")),
                 TextColumn::make('sort_order')->label('Sıra'),
-                IconColumn::make('active')->label('Aktif')->boolean(),
+                ToggleColumn::make('active')->label('Aktif / Pasif'),
             ])
             ->recordActions([
                 EditAction::make()

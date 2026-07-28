@@ -17,7 +17,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -57,7 +57,7 @@ class MediaResource extends ManagedResource
             ),
             TextColumn::make('title')->label('Başlık')->getStateUsing(fn ($record) => Multilingual::tr($record->title))->placeholder('-'),
             TextColumn::make('type')->label('Tür')->badge(),
-            IconColumn::make('active')->label('Aktif')->boolean(),
+            ToggleColumn::make('active')->label('Aktif / Pasif'),
         ])->recordActions([
             EditAction::make()->mutateDataUsing(fn (array $data, $livewire, ?Model $record): array => $livewire->fillAutomaticTranslationsFor($data, $record)),
             DeleteAction::make(),

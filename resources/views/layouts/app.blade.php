@@ -27,7 +27,7 @@
     <link rel="alternate" hreflang="x-default" href="{{ $siteUrl.$alternatePath(config('storefront.default_locale')) }}">
 
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="{{ $messages['common']['brand'] ?? 'Merter Giyim' }}">
+    <meta property="og:site_name" content="{{ $siteName ?? ($messages['common']['brand'] ?? 'Merter Giyim') }}">
     <meta property="og:title" content="{{ $metaTitle }}">
     <meta property="og:description" content="{{ $metaDescription }}">
     <meta property="og:locale" content="{{ $locale }}">

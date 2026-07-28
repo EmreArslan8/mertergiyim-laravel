@@ -1,5 +1,5 @@
 @php
-    $metaTitle = ($messages['orderSuccess']['title'] ?? 'Siparişiniz Alındı').' | '.($messages['common']['brand'] ?? 'Merter Giyim');
+    $metaTitle = ($messages['orderSuccess']['title'] ?? 'Siparişiniz Alındı').' | '.$siteName;
 @endphp
 
 @extends('layouts.app')

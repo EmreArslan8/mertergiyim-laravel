@@ -113,11 +113,10 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('SUPABASE_DB_SSLMODE', 'require'),
-            // Pooler Frankfurt'ta; her istekte yeniden bağlanmak ~600 ms.
-            // Kalıcı bağlantı worker başına bir kez kurulur, sonraki istekler
-            // el sıkışmayı atlar. Session pooler kalıcı bağlantıyla uyumlu.
+            // Supabase pooler kalıcı PDO bağlantılarını paralel isteklerde
+            // kapatabildiği için güvenli varsayılan bağlantı başına false'tur.
             'options' => [
-                PDO::ATTR_PERSISTENT => (bool) env('SUPABASE_DB_PERSISTENT', true),
+                PDO::ATTR_PERSISTENT => (bool) env('SUPABASE_DB_PERSISTENT', false),
             ],
         ],
 

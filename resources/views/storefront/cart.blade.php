@@ -1,5 +1,5 @@
 @php
-    $metaTitle = ($messages['cart']['title'] ?? 'Sepet').' | '.($messages['common']['brand'] ?? 'Merter Giyim');
+    $metaTitle = ($messages['cart']['title'] ?? 'Sepet').' | '.$siteName;
 @endphp
 
 @extends('layouts.app')
@@ -11,7 +11,7 @@
 @section('content')
     <main class="cart-page" dir="{{ $dir }}" data-cart-page>
         <header class="commerce-head">
-            <span>{{ $messages['common']['brand'] ?? 'Merter Giyim' }}</span>
+            <span>{{ $siteName }}</span>
             <h1>{{ $messages['cart']['title'] ?? 'Sepetiniz' }}</h1>
             <p>{{ $messages['cart']['subtitle'] ?? 'Ürünlerinizi kontrol edin ve sipariş bilgilerinizi tamamlayın.' }}</p>
         </header>
@@ -29,7 +29,7 @@
                 <div data-cart-items></div>
                 <div class="cart-empty" data-cart-empty>
                     <strong>{{ $messages['cart']['emptyTitle'] ?? 'Sepetiniz boş' }}</strong>
-                    <p>{{ $messages['cart']['emptyText'] ?? 'Ürünleri inceleyip beden ve renk seçerek sepetinize ekleyebilirsiniz.' }}</p>
+                    <p>{{ $messages['cart']['emptyText'] ?? 'Ürünleri inceleyip renk seçerek sepetinize ekleyebilirsiniz.' }}</p>
                     <a href="/{{ $locale }}#urunler">{{ $messages['cart']['continueShopping'] ?? 'Ürünlere dön' }}</a>
                 </div>
             </section>

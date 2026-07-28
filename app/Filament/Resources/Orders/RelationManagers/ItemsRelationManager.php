@@ -27,8 +27,8 @@ class ItemsRelationManager extends RelationManager
             TextInput::make('size')->label('Beden'),
             TextInput::make('color')->label('Renk'),
             TextInput::make('quantity')->label('Adet')->numeric()->default(1)->required(),
-            TextInput::make('unit_price')->label('Birim fiyat')->numeric()->step('0.01'),
-            TextInput::make('line_total')->label('Satır toplamı')->numeric()->step('0.01'),
+            TextInput::make('unit_price')->label('Birim fiyat')->numeric()->minValue(0)->step('0.01'),
+            TextInput::make('line_total')->label('Satır toplamı')->numeric()->minValue(0)->step('0.01'),
         ]);
     }
 

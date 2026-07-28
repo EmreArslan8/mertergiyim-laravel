@@ -1,7 +1,7 @@
 @php
     use App\Support\Storefront;
     $categoryName = Storefront::text($category->name_i18n, $locale) ?: $category->name;
-    $metaTitle = $categoryName.' | '.($messages['common']['brand'] ?? 'Merter Giyim');
+    $metaTitle = $categoryName.' | '.$siteName;
 @endphp
 
 @extends('layouts.app')

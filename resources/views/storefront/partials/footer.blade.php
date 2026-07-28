@@ -1,7 +1,7 @@
 @php
     use App\Support\Storefront;
 
-    $brand = $footerSettings['footerBrand'] ?? ($messages['common']['brand'] ?? '');
+    $brand = $footerSettings['footerBrand'] ?? $siteName;
     $infoTitle = $footerSettings['footerInfoTitle'] ?? 'Bilgilendirmeler';
 @endphp
 {{-- StoreFooter (StorefrontSections.tsx) --}}
@@ -9,7 +9,13 @@
     <div class="site-footer-inner">
         <div class="site-footer-grid">
             <div class="footer-brand-block">
-                <a class="footer-logo" href="/{{ $locale }}">{{ $brand }}</a>
+                <a class="footer-logo" href="/{{ $locale }}" aria-label="{{ $brand }}">
+                    @if (! empty($siteSettings['siteLogo']))
+                        <img class="footer-brand-image" src="{{ Storefront::storageUrl('site', $siteSettings['siteLogo']) }}" alt="{{ $brand }}">
+                    @else
+                        {{ $brand }}
+                    @endif
+                </a>
                 @if (! empty($footerSettings['footerDescription']))
                     <p>{{ $footerSettings['footerDescription'] }}</p>
                 @endif
@@ -33,6 +39,16 @@
             @endif
             @if (! empty($footerSettings['copyright']))
                 <small>{{ $footerSettings['copyright'] }}</small>
+            @endif
+            @if (! empty($siteSettings['contactPhone']) || ! empty($siteSettings['contactEmail']))
+                <div class="footer-contact-links">
+                    @if (! empty($siteSettings['contactPhone']))
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $siteSettings['contactPhone']) }}">{{ $siteSettings['contactPhone'] }}</a>
+                    @endif
+                    @if (! empty($siteSettings['contactEmail']))
+                        <a href="mailto:{{ $siteSettings['contactEmail'] }}">{{ $siteSettings['contactEmail'] }}</a>
+                    @endif
+                </div>
             @endif
         </div>
     </div>

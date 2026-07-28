@@ -5,7 +5,13 @@
 @endphp
 {{-- StoreHeader.tsx --}}
 <header class="site-header{{ $isHome ? '' : ' site-header--solid' }}">
-    <a class="brand" href="/{{ $locale }}">{{ $messages['common']['brand'] ?? '' }}</a>
+    <a class="brand" href="/{{ $locale }}" aria-label="{{ $siteName }}">
+        @if (! empty($siteSettings['siteLogo']))
+            <img class="brand-image" src="{{ Storefront::storageUrl('site', $siteSettings['siteLogo']) }}" alt="{{ $siteName }}">
+        @else
+            {{ $siteName }}
+        @endif
+    </a>
     <nav class="main-nav">
         @foreach ($headerLinks as $link)
             @php

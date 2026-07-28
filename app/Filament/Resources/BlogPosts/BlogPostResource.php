@@ -16,7 +16,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -53,7 +53,7 @@ class BlogPostResource extends ManagedResource
         return $table->defaultSort('published_at', 'desc')->columns([
             TextColumn::make('title')->label('Başlık')->getStateUsing(fn ($record) => Multilingual::tr($record->title))->searchable(),
             TextColumn::make('published_at')->label('Yayın tarihi')->dateTime('d.m.Y H:i'),
-            IconColumn::make('active')->label('Yayında')->boolean(),
+            ToggleColumn::make('active')->label('Yayında'),
         ])->recordActions([
             EditAction::make()->mutateDataUsing(fn (array $data, $livewire, ?Model $record): array => $livewire->fillAutomaticTranslationsFor($data, $record)),
             DeleteAction::make(),

@@ -114,6 +114,7 @@
                     <fieldset>
                         <legend>
                             {{ $messages['product']['color'] ?? '' }}
+                            <small>{{ $messages['product']['multiple'] ?? 'Birden fazla seçebilirsiniz' }}</small>
                         </legend>
                         <div class="choice-row color-choices">
                             @foreach ($colors as $color)
@@ -125,10 +126,7 @@
                             @endforeach
                         </div>
                     </fieldset>
-                    <div class="quantity-field">
-                        <label for="product-quantity">{{ $messages['cart']['quantity'] ?? 'Adet' }}</label>
-                        <input id="product-quantity" name="quantity" type="number" min="1" max="99" value="1" inputmode="numeric">
-                    </div>
+                    <input name="quantity" type="hidden" value="1">
                     <button class="whatsapp-order" type="submit" disabled>{{ $messages['cart']['add'] ?? 'Sepete Ekle' }}</button>
                     <p class="order-note" data-order-note>{{ $messages['cart']['selectVariant'] ?? 'Devam etmek için renk seçin.' }}</p>
                 </form>

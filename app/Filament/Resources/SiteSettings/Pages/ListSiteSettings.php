@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SiteSettings\Pages;
 use App\Filament\Concerns\TranslatesJsonFields;
 use App\Filament\Resources\SiteSettings\Schemas\SiteSettingForm;
 use App\Filament\Resources\SiteSettings\SiteSettingResource;
+use App\Models\SiteSetting;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Arr;
 
@@ -15,6 +16,45 @@ class ListSiteSettings extends ListRecords
     }
 
     protected static string $resource = SiteSettingResource::class;
+
+    public function mount(): void
+    {
+        parent::mount();
+
+        SiteSetting::query()->firstOrCreate(
+            ['key' => 'storefront'],
+            [
+                'value' => self::defaultSettings(),
+                'updated_at' => now(),
+            ],
+        );
+
+        $this->redirect(
+            SiteSettingResource::getUrl('edit', ['record' => 'storefront']),
+            navigate: true,
+        );
+    }
+
+    private static function defaultSettings(): array
+    {
+        return [
+            'tr' => [
+                'siteName' => 'Merter Giyim',
+                'footerBrand' => 'Merter Giyim',
+                'footerDescription' => 'Merter’den dünyaya toptan kadın giyim.',
+                'footerAddress' => 'Merter / İstanbul',
+                'footerInfoTitle' => 'Bilgilendirmeler',
+                'copyright' => '© '.date('Y').' Merter Giyim. Tüm hakları saklıdır.',
+            ],
+            'general' => [
+                'siteLogo' => null,
+                'whatsappNumber' => (string) config('storefront.whatsapp_number'),
+                'contactPhone' => '',
+                'contactEmail' => '',
+                'instagramUrl' => '',
+            ],
+        ];
+    }
 
     protected function translatableJsonFields(): array
     {

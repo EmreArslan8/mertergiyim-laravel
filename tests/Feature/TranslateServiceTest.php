@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Services\TranslateService;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 /**
@@ -12,6 +13,7 @@ use Tests\TestCase;
  *
  * Gerçek Gemini çağrısı yapar; hiçbir kayıt oluşturulmaz/değiştirilmez.
  */
+#[Group('external')]
 class TranslateServiceTest extends TestCase
 {
     public function test_it_translates_multiple_fields_in_a_single_request(): void

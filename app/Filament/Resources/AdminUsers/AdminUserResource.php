@@ -23,8 +23,8 @@ class AdminUserResource extends Resource
     protected static ?string $model = User::class;
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
     protected static ?string $navigationLabel = 'Admin Ayarları';
-    protected static ?string $modelLabel = 'yönetici';
-    protected static ?string $pluralModelLabel = 'yöneticiler';
+    protected static ?string $modelLabel = 'Yönetici';
+    protected static ?string $pluralModelLabel = 'Yöneticiler';
     protected static ?int $navigationSort = 20;
 
     public static function canAccess(): bool

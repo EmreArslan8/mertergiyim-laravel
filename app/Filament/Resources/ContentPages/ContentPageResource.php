@@ -15,8 +15,8 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -65,7 +65,7 @@ class ContentPageResource extends ManagedResource
             ->columns([
                 TextColumn::make('title')->label('Başlık')->getStateUsing(fn ($record) => Multilingual::tr($record->title))->searchable(),
                 TextColumn::make('slug')->label('URL')->color('gray'),
-                IconColumn::make('active')->label('Yayında')->boolean(),
+                ToggleColumn::make('active')->label('Yayında'),
                 TextColumn::make('updated_at')->label('Güncellendi')->dateTime('d.m.Y H:i'),
             ])
             ->recordActions([

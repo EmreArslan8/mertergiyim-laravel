@@ -132,7 +132,7 @@ class CheckoutController extends Controller
 
                     if (! $variant) {
                         throw ValidationException::withMessages([
-                            'cart' => $this->copy($locale, 'cart.errors.variant', 'Seçilen beden ve renk kombinasyonu bulunamadı.'),
+                            'cart' => $this->copy($locale, 'cart.errors.variant', 'Seçilen renk için uygun stok bulunamadı.'),
                         ]);
                     }
 
@@ -154,9 +154,9 @@ class CheckoutController extends Controller
                     'variant_id' => $variant?->id,
                     'product_name' => Storefront::text($product->name, $locale),
                     'product_code' => $product->code,
-                    // Panelde okunabilir olsun diye varyantın Türkçe adı yazılır;
-                    // varyantsız üründe müşterinin gördüğü etiket kalır.
-                    'size' => $variant?->size?->name ?? (($item['size'] ?? '') ?: null),
+                    // Toptan satışta müşteri beden seçmez; paneldeki beden
+                    // varyantları yalnızca stok yönetimi için korunur.
+                    'size' => null,
                     'color' => $variant?->color?->name ?? (($item['color'] ?? '') ?: null),
                     'quantity' => $item['quantity'],
                     'unit_price' => $unitPrice,
@@ -216,26 +216,28 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Sepet satırını ürünün varyantlarından biriyle eşler.
-     *
-     * Ürün sayfası beden/renk adını aktif dile çevirerek gösterdiği için ada
-     * göre eşleşme yabancı dillerde çalışmıyordu; öncelik size_id/color_id'de.
-     * Ada göre eşleşme yalnızca bu alanları taşımayan eski sepetler için yedek.
+     * Toptan satışta beden seçilmez. Sepet satırını yalnızca renge göre,
+     * yeterli stoğu bulunan ilk varyantla eşler. Paneldeki beden varyantları
+     * stok takibi için korunmaya devam eder.
      *
      * @param  array<string, mixed>  $item
      */
     private function matchVariant(Product $product, array $item): ?ProductVariant
     {
-        $sizeId = $item['size_id'] ?? null;
         $colorId = $item['color_id'] ?? null;
+        $colorName = (string) ($item['color'] ?? '');
+        $quantity = max(1, (int) ($item['quantity'] ?? 1));
 
-        if ($sizeId !== null || $colorId !== null) {
-            return $product->variants->first(fn ($candidate) => $candidate->size_id === $sizeId
-                && $candidate->color_id === $colorId);
-        }
+        $candidates = $product->variants->filter(function ($candidate) use ($colorId, $colorName): bool {
+            if ($colorId !== null) {
+                return $candidate->color_id === $colorId;
+            }
 
-        return $product->variants->first(fn ($candidate) => ($candidate->size?->name ?? '') === ($item['size'] ?? '')
-            && ($candidate->color?->name ?? '') === ($item['color'] ?? ''));
+            return ($candidate->color?->name ?? '') === $colorName;
+        });
+
+        return $candidates->first(fn ($candidate) => $candidate->stock_quantity >= $quantity)
+            ?? $candidates->first();
     }
 
     private function copy(string $locale, string $key, string $fallback): string

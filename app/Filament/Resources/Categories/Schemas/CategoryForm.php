@@ -14,7 +14,7 @@ class CategoryForm
     {
         return $schema
             ->components([
-                Multilingual::turkish('name_i18n', 'Kategori adı')
+                Multilingual::turkish('name_i18n', 'Kategori adı', legacyFallback: 'name')
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn ($state, $set) => $set('slug', Str::slug((string) $state))),
                 TextInput::make('slug')

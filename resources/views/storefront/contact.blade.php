@@ -1,5 +1,5 @@
 @php
-    $metaTitle = ($messages['contact']['title'] ?? 'İletişim').' | '.($messages['common']['brand'] ?? 'Merter Giyim');
+    $metaTitle = ($messages['contact']['title'] ?? 'İletişim').' | '.$siteName;
 @endphp
 
 @extends('layouts.app')
@@ -18,7 +18,16 @@
             @if (! empty($footerSettings['footerAddress']))
                 <address>{{ $footerSettings['footerAddress'] }}</address>
             @endif
-            <a href="https://wa.me/{{ config('storefront.whatsapp_number') }}" target="_blank" rel="noreferrer">WhatsApp</a>
+            @if (! empty($siteSettings['contactPhone']))
+                <a href="tel:{{ preg_replace('/[^0-9+]/', '', $siteSettings['contactPhone']) }}">{{ $siteSettings['contactPhone'] }}</a>
+            @endif
+            @if (! empty($siteSettings['contactEmail']))
+                <a href="mailto:{{ $siteSettings['contactEmail'] }}">{{ $siteSettings['contactEmail'] }}</a>
+            @endif
+            <a href="https://wa.me/{{ $siteSettings['whatsappNumber'] ?? config('storefront.whatsapp_number') }}" target="_blank" rel="noreferrer">WhatsApp</a>
+            @if (! empty($siteSettings['instagramUrl']))
+                <a href="{{ $siteSettings['instagramUrl'] }}" target="_blank" rel="noreferrer">Instagram</a>
+            @endif
         </section>
 
         <section class="contact-form-card">

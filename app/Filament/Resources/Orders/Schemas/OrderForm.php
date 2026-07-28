@@ -49,6 +49,7 @@ class OrderForm
                         TextInput::make('total')
                             ->label('Toplam')
                             ->numeric()
+                            ->minValue(0)
                             ->step('0.01')
                             ->suffix(fn ($get) => Currency::query()->where('code', $get('currency') ?: 'TRY')->value('symbol') ?? 'TL'),
                         Select::make('currency')

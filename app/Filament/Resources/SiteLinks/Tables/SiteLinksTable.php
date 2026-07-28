@@ -7,8 +7,8 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,7 +29,7 @@ class SiteLinksTable
                     ->getStateUsing(fn ($record) => Multilingual::tr($record->label)),
                 TextColumn::make('url')->label('URL')->color('gray'),
                 TextColumn::make('sort_order')->label('Sıra'),
-                IconColumn::make('active')->label('Aktif')->boolean(),
+                ToggleColumn::make('active')->label('Aktif / Pasif'),
             ])
             ->filters([])
             ->recordActions([

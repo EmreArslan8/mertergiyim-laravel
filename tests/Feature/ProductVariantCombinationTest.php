@@ -13,6 +13,26 @@ use Tests\TestCase;
 
 class ProductVariantCombinationTest extends TestCase
 {
+    public function test_negative_product_price_is_rejected(): void
+    {
+        $this->actingAs(User::query()->firstOrFail());
+        $suffix = uniqid();
+
+        Livewire::test(CreateProduct::class)
+            ->fillForm([
+                'code' => 'NEGATIVE-'.$suffix,
+                'slug' => 'negative-'.$suffix,
+                'name' => ['tr' => 'Negatif Fiyat Testi'],
+                'price_try' => -0.01,
+                'stock_status' => 'in_stock',
+                'active' => false,
+            ])
+            ->call('create')
+            ->assertHasFormErrors(['price_try' => 'min']);
+
+        $this->assertDatabaseMissing('products', ['code' => 'NEGATIVE-'.$suffix]);
+    }
+
     public function test_selected_sizes_and_colors_create_cartesian_variants(): void
     {
         $this->actingAs(User::query()->firstOrFail());

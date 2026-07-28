@@ -74,7 +74,7 @@ class StorefrontRepository
     public function home(): array
     {
         return $this->remember('home', fn () => [
-            'products' => Product::query()->active()->with('images')->orderBy('created_at')->get()->all(),
+            'products' => Product::query()->active()->with(['images', 'category'])->orderBy('created_at')->get()->all(),
             'slides' => HeroSlide::query()->where('active', true)->orderBy('sort_order')->get()->all(),
         ]);
     }
@@ -93,7 +93,7 @@ class StorefrontRepository
 
             return [
                 'product' => $product,
-                'recommendations' => Product::query()->active()->with('images')
+                'recommendations' => Product::query()->active()->with(['images', 'category'])
                     ->whereKeyNot($product->id)
                     ->orderByDesc('created_at')
                     ->limit(2)

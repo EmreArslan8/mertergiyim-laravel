@@ -4,9 +4,20 @@ namespace App\Filament\Resources;
 
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 abstract class ManagedResource extends \Filament\Resources\Resource
 {
+    public static function getModelLabel(): string
+    {
+        return Str::ucfirst(parent::getModelLabel());
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return Str::ucfirst(parent::getPluralModelLabel());
+    }
+
     public static function canAccess(): bool
     {
         $user = filament()->auth()->user();

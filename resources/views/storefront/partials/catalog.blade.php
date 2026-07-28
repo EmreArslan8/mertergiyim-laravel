@@ -1,7 +1,7 @@
 @php
     use App\Support\Storefront;
 
-    $whatsappNumber = config('storefront.whatsapp_number');
+    $whatsappNumber = $siteSettings['whatsappNumber'] ?? config('storefront.whatsapp_number');
 @endphp
 
 {{-- CategoryBar (CatalogSection.tsx) --}}
@@ -10,7 +10,7 @@
         <div class="category-section-inner">
             <h2>{{ $messages['home']['categories'] ?? '' }}</h2>
             <div class="category-pills" data-category-pills>
-                <a class="selected" href="/{{ $locale }}#urunler">{{ $messages['home']['allCategories'] ?? '' }}</a>
+                <a class="selected" href="{{ $allCategoriesHref ?? '/'.$locale.'#urunler' }}">{{ $messages['home']['allCategories'] ?? '' }}</a>
                 @foreach ($categories as $category)
                     <a href="/{{ $locale }}/kategori/{{ $category->slug }}">{{ Storefront::text($category->name_i18n, $locale) ?: $category->name }}</a>
                 @endforeach
@@ -53,8 +53,9 @@
                 <div class="product-card-body">
                     <div class="product-card-head">
                         <h3>{{ $messages['product']['code'] ?? '' }} {{ $product->code }}</h3>
-                        <a class="detail-button" href="{{ $href }}">{{ $messages['home']['detail'] ?? '' }}</a>
+                        <a class="detail-button mobil-urun-detay-gizle" href="{{ $href }}">{{ $messages['home']['detail'] ?? '' }}</a>
                     </div>
+                    <div class="mobil-kategori-goster">{{ Storefront::text($product->category?->name_i18n, $locale) ?: $product->category?->name }}</div>
                     <p class="product-description">{{ Storefront::text($product->description, $locale) }}</p>
                     <h4>{{ $name }}</h4>
                     <div class="product-divider"></div>

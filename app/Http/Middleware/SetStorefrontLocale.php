@@ -43,6 +43,10 @@ class SetStorefrontLocale
         app()->setLocale($locale);
 
         $localeSettings = $chrome['settingValue'][$locale] ?? [];
+        $siteSettings = $chrome['settingValue']['general'] ?? [];
+        $siteName = $localeSettings['siteName']
+            ?? $this->dictionary->all($locale)['common']['brand']
+            ?? 'Merter Giyim';
 
         View::share([
             'locale' => $locale,
@@ -52,6 +56,8 @@ class SetStorefrontLocale
             'categories' => $chrome['categories'],
             'headerLinks' => array_values(array_filter($chrome['links'], fn ($link) => $link->location === 'header')),
             'footerLinks' => array_values(array_filter($chrome['links'], fn ($link) => $link->location === 'footer')),
+            'siteName' => $siteName,
+            'siteSettings' => $siteSettings,
             'footerSettings' => array_filter(
                 $localeSettings,
                 fn ($key) => str_starts_with($key, 'footer') || $key === 'copyright',

@@ -27,7 +27,13 @@ class AdminPanelSmokeTest extends TestCase
     {
         $admin = User::query()->firstOrFail();
 
-        $this->actingAs($admin)->get($path)->assertOk();
+        $response = $this->actingAs($admin)->get($path);
+
+        if ($response->isRedirect()) {
+            $this->get($response->headers->get('Location'))->assertOk();
+        } else {
+            $response->assertOk();
+        }
     }
 
     public static function panelPages(): array

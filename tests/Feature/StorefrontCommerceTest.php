@@ -46,7 +46,6 @@ class StorefrontCommerceTest extends TestCase
             'note' => 'Öğleden sonra arayın.',
             'cart' => json_encode([[
                 'product_id' => $productId,
-                'size' => 'M',
                 'color' => 'Siyah',
                 'quantity' => 2,
             ]]),
@@ -67,7 +66,7 @@ class StorefrontCommerceTest extends TestCase
             'product_id' => $productId,
             'variant_id' => $variantId,
             'quantity' => 2,
-            'size' => 'M',
+            'size' => null,
             'color' => 'Siyah',
         ]);
         $this->assertSame(3, DB::table('product_variants')->where('id', $variantId)->value('stock_quantity'));
@@ -95,6 +94,7 @@ class StorefrontCommerceTest extends TestCase
             'updated_at' => now(),
         ]);
 
+        $this->get('/tr/kategori')->assertOk()->assertSee('KATEGORİLER')->assertSee('Takımlar');
         $this->get('/tr/kategori/takimlar')->assertOk()->assertSee('Takımlar');
         $this->get('/tr/sepet')->assertOk()->assertSee('Sepetiniz');
         $this->get('/tr/multimedya')->assertOk()->assertSee('Yeni Koleksiyon');

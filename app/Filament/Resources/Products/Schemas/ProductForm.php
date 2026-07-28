@@ -50,6 +50,7 @@ class ProductForm
                         TextInput::make('price_try')
                             ->label('Fiyat')
                             ->numeric()
+                            ->minValue(0)
                             ->step('0.01')
                             ->prefix('₺')
                             ->required()
