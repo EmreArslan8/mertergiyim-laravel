@@ -60,26 +60,6 @@
                     </div>
                 @endif
 
-                <div class="recommended-products">
-                    <hr>
-                    <div class="section-title">{{ $messages['product']['recommended'] ?? '' }}</div>
-                    <div class="recommended-grid">
-                        @foreach ($recommendations as $item)
-                            @php $name = Storefront::text($item['product']->name, $locale); @endphp
-                            <a class="recommended-card" href="{{ Storefront::productHref($locale, $item['product']->slug) }}">
-                                <div class="recommended-image">
-                                    @if ($item['image'])
-                                        <img src="{{ $item['image'] }}" alt="{{ $name }}" loading="lazy" style="object-fit:contain">
-                                    @endif
-                                </div>
-                                <div class="recommended-body">
-                                    <strong>{{ $name }}</strong>
-                                    <span>{{ $item['price'] }}</span>
-                                </div>
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
             </section>
 
             <section class="detail-info">
@@ -131,6 +111,29 @@
                     <p class="order-note" data-order-note>{{ $messages['cart']['selectVariant'] ?? 'Devam etmek için renk seçin.' }}</p>
                 </form>
             </section>
+
+            @if (count($recommendations))
+                <section class="recommended-products">
+                    <hr>
+                    <div class="section-title">{{ $messages['product']['recommended'] ?? '' }}</div>
+                    <div class="recommended-grid">
+                        @foreach ($recommendations as $item)
+                            @php $name = Storefront::text($item['product']->name, $locale); @endphp
+                            <a class="recommended-card" href="{{ Storefront::productHref($locale, $item['product']->slug) }}">
+                                <div class="recommended-image">
+                                    @if ($item['image'])
+                                        <img src="{{ $item['image'] }}" alt="{{ $name }}" loading="lazy" style="object-fit:contain">
+                                    @endif
+                                </div>
+                                <div class="recommended-body">
+                                    <strong>{{ $name }}</strong>
+                                    <span>{{ $item['price'] }}</span>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
         </div>
     </main>
 @endsection

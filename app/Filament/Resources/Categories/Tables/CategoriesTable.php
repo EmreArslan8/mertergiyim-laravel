@@ -17,6 +17,7 @@ class CategoriesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->defaultSort('name')
             ->columns([
                 TextColumn::make('name_i18n')

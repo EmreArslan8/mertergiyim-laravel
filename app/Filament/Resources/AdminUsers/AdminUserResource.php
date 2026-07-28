@@ -56,7 +56,7 @@ class AdminUserResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->columns([
+        return $table->stackedOnMobile()->columns([
             TextColumn::make('name')->label('Yönetici')->searchable(),
             TextColumn::make('email')->label('E-posta')->searchable(),
             TextColumn::make('role')->label('Yetki')->badge()->formatStateUsing(fn ($state) => match ($state) {

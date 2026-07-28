@@ -291,6 +291,25 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
+.recommended-products {
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding-top: 8px;
+}
+.recommended-products hr {
+  margin: 0 0 20px;
+  border: 0;
+  border-top: 1px solid #dfe3e7;
+}
+.recommended-products .section-title {
+  margin-bottom: 14px;
+  color: #20242a;
+  font-size: 20px;
+  font-weight: 800;
+}
+.recommended-products .recommended-grid {
+  grid-template-columns: repeat(2, minmax(0, 320px));
+}
 .recommended-card {
   border: 1px solid #edf0f2;
   border-radius: 13px;
@@ -659,6 +678,13 @@
     font-size: 1.6rem;
     font-weight: 500;
     line-height: 1.2;
+  }
+  .recommended-products {
+    grid-column: 1;
+    padding-top: 4px;
+  }
+  .recommended-products .recommended-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

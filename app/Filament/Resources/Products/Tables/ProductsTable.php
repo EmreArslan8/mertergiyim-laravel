@@ -27,6 +27,7 @@ class ProductsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->defaultSort('created_at', 'desc')
             // Uzak Supabase bağlantısında her ayrı sorgu yaklaşık 230–500 ms.
             // Liste için gereken kategori ve kapak görselini ana ürün sorgusuna

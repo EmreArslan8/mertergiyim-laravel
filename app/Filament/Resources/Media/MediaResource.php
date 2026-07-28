@@ -51,7 +51,7 @@ class MediaResource extends ManagedResource
 
     public static function table(Table $table): Table
     {
-        return $table->defaultSort('sort_order')->columns([
+        return $table->stackedOnMobile()->defaultSort('sort_order')->columns([
             ImageColumn::make('file_path')->label('Önizleme')->getStateUsing(
                 fn ($record) => $record->type === 'image' ? Storefront::storageUrl('site', $record->file_path) : null
             ),

@@ -17,6 +17,7 @@ class SiteLinksTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
             ->columns([

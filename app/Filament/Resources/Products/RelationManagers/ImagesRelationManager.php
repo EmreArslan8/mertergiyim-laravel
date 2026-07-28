@@ -51,6 +51,7 @@ class ImagesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
             ->columns([

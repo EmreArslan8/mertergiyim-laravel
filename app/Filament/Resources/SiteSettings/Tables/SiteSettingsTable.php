@@ -12,6 +12,7 @@ class SiteSettingsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->columns([
                 TextColumn::make('key')->label('Anahtar')->weight('bold'),
                 TextColumn::make('value')

@@ -61,6 +61,7 @@ class ContentPageResource extends ManagedResource
     public static function table(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->defaultSort('sort_order')
             ->columns([
                 TextColumn::make('title')->label('Başlık')->getStateUsing(fn ($record) => Multilingual::tr($record->title))->searchable(),

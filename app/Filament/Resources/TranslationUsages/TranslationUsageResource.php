@@ -41,6 +41,7 @@ class TranslationUsageResource extends ManagedResource
     public static function table(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('created_at')->label('Tarih')->dateTime('d.m.Y H:i')->sortable(),

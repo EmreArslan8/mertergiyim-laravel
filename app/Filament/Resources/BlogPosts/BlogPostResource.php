@@ -50,7 +50,7 @@ class BlogPostResource extends ManagedResource
 
     public static function table(Table $table): Table
     {
-        return $table->defaultSort('published_at', 'desc')->columns([
+        return $table->stackedOnMobile()->defaultSort('published_at', 'desc')->columns([
             TextColumn::make('title')->label('Başlık')->getStateUsing(fn ($record) => Multilingual::tr($record->title))->searchable(),
             TextColumn::make('published_at')->label('Yayın tarihi')->dateTime('d.m.Y H:i'),
             ToggleColumn::make('active')->label('Yayında'),

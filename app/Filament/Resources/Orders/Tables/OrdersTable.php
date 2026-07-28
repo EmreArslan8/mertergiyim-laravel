@@ -22,6 +22,7 @@ class OrdersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('order_number')->label('Sipariş no')->weight('bold')->searchable(),

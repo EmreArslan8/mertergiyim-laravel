@@ -35,6 +35,7 @@ class ItemsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->columns([
                 TextColumn::make('product_name')->label('Ürün'),
                 TextColumn::make('product_code')->label('Kod')->placeholder('-'),

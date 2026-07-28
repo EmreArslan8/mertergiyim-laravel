@@ -42,6 +42,7 @@ class VariantsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->columns([
                 TextColumn::make('size.name')->label('Beden')->placeholder('-'),
                 ColorColumn::make('color.hex')->label('Renk'),

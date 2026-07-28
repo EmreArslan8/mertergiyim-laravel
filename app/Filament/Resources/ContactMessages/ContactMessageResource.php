@@ -49,6 +49,7 @@ class ContactMessageResource extends ManagedResource
     public static function table(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('name')->label('Gönderen')->searchable()
