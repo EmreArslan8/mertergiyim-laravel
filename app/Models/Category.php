@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\HasUuidKey;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Category extends Model
 {
@@ -18,6 +19,10 @@ class Category extends Model
     {
         static::saving(function (Category $category): void {
             $category->name = $category->name_i18n['tr'] ?? $category->name;
+
+            if (blank($category->slug)) {
+                $category->slug = Str::slug((string) $category->name);
+            }
         });
     }
 

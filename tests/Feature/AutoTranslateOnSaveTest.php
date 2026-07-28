@@ -29,12 +29,17 @@ class AutoTranslateOnSaveTest extends TestCase
         $this->actingAs(User::query()->firstOrFail());
 
         $suffix = uniqid();
+        $languages = config('storefront.translation.languages');
+        $nameTranslations = array_fill_keys($languages, 'Test Product');
+        $descriptionTranslations = array_fill_keys($languages, 'Test description');
+        $nameTranslations['de'] = 'Test Produkt';
+        $descriptionTranslations['de'] = 'Test Beschreibung';
 
         $this->product = Product::query()->create([
             'code' => 'PHPUNIT-'.$suffix,
             'slug' => 'phpunit-'.$suffix,
-            'name' => ['tr' => 'Test Ürün', 'en' => 'Test Product', 'de' => 'Test Produkt'],
-            'description' => ['tr' => 'Test açıklama', 'en' => 'Test description', 'de' => 'Test Beschreibung'],
+            'name' => ['tr' => 'Test Ürün', ...$nameTranslations],
+            'description' => ['tr' => 'Test açıklama', ...$descriptionTranslations],
             'price' => 1,
             'currency' => 'TRY',
             'price_try' => 1,
@@ -140,6 +145,37 @@ class AutoTranslateOnSaveTest extends TestCase
         foreach ($languages as $language) {
             $this->assertSame('name-'.$language, $fresh->name[$language]);
             $this->assertSame('desc-'.$language, $fresh->description[$language]);
+        }
+    }
+
+    public function test_it_completes_missing_locales_when_turkish_text_is_unchanged(): void
+    {
+        $languages = config('storefront.translation.languages');
+
+        $this->product->update([
+            'name' => ['tr' => 'Test Ürün', 'en' => 'Test Product'],
+        ]);
+
+        $this->mock(TranslateService::class, function ($mock) use ($languages) {
+            $mock->shouldReceive('translateFields')
+                ->once()
+                ->with(Mockery::on(fn ($fields) => array_keys($fields) === ['name']
+                    && $fields['name'] === 'Test Ürün'))
+                ->andReturn([
+                    'name' => array_combine($languages, array_map(fn ($lang) => 'name-'.$lang, $languages)),
+                ]);
+        });
+
+        Livewire::test(EditProduct::class, ['record' => $this->product->getKey()])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $fresh = $this->product->fresh();
+
+        $this->assertSame('Test Ürün', $fresh->name['tr']);
+
+        foreach ($languages as $language) {
+            $this->assertSame('name-'.$language, $fresh->name[$language]);
         }
     }
 
