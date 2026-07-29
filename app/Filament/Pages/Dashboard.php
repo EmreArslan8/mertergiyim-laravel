@@ -34,18 +34,17 @@ class Dashboard extends BaseDashboard
         $summary = Cache::remember(
             'admin:dashboard:summary',
             now()->addSeconds(20),
-            fn () => DB::selectOne('
-                select
-                    (select count(*) from products) as products,
-                    (select count(*) from products where active = true) as active_products,
-                    (select count(*) from orders) as orders,
-                    (select count(*) from orders where status = ?) as new_orders,
-                    (select count(*) from contact_messages) as messages,
-                    (select count(*) from contact_messages where read = false) as unread_messages,
-                    (select count(*) from categories) as categories,
-                    (select count(*) from hero_slides) as slides,
-                    (select count(*) from hero_slides where active = true) as active_slides
-            ', ['new']),
+            fn () => (object) [
+                'products' => DB::table('products')->count(),
+                'active_products' => DB::table('products')->where('active', true)->count(),
+                'orders' => DB::table('orders')->count(),
+                'new_orders' => DB::table('orders')->where('status', 'new')->count(),
+                'messages' => DB::table('contact_messages')->count(),
+                'unread_messages' => DB::table('contact_messages')->where('read', false)->count(),
+                'categories' => DB::table('categories')->count(),
+                'slides' => DB::table('hero_slides')->count(),
+                'active_slides' => DB::table('hero_slides')->where('active', true)->count(),
+            ],
         );
 
         $user = filament()->auth()->user();
