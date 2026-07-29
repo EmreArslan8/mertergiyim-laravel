@@ -3330,3 +3330,33 @@ nav.fi-topbar {
         padding: 0.55rem;
     }
 }
+
+/* Form modalları viewport dışına taşmaz; başlık ve işlemler görünür kalır. */
+@media (min-width: 48rem) {
+    .fi-modal-window:has(.fi-fo-field-wrp) {
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100dvh - 2rem) !important;
+        overflow: hidden;
+    }
+
+    .fi-modal-window:has(.fi-fo-field-wrp) > .fi-modal-header,
+    .fi-modal-window:has(.fi-fo-field-wrp) > .fi-modal-footer {
+        position: relative;
+        z-index: 2;
+        flex: none;
+        background: #fff;
+    }
+
+    .fi-modal-window:has(.fi-fo-field-wrp) > .fi-modal-content {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    .fi-modal-window:has(.fi-fo-field-wrp) > .fi-modal-footer {
+        border-top: 1px solid #e5e5e5;
+        box-shadow: 0 -0.5rem 1.5rem rgb(0 0 0 / 5%);
+    }
+}
