@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders\Tables;
 
+use App\Filament\Resources\Orders\OrderResource;
 use App\Services\WhatsAppNotifier;
 use App\Support\OrderStatus;
 use App\Support\Storefront;
@@ -82,7 +83,8 @@ class OrdersTable
                                 ->send();
                         }
                     }),
-                EditAction::make(),
+                EditAction::make()
+                    ->url(fn ($record): string => OrderResource::getUrl('edit', ['record' => $record])),
                 DeleteAction::make(),
             ])
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);

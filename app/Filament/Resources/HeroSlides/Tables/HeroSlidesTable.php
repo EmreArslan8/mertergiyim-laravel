@@ -2,18 +2,17 @@
 
 namespace App\Filament\Resources\HeroSlides\Tables;
 
+use App\Filament\Resources\HeroSlides\HeroSlideResource;
 use App\Filament\Support\Multilingual;
 use App\Support\Storefront;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 
 class HeroSlidesTable
 {
@@ -39,8 +38,7 @@ class HeroSlidesTable
             ])
             ->recordActions([
                 EditAction::make()
-                    ->modalWidth(Width::FiveExtraLarge)
-                    ->mutateDataUsing(fn (array $data, $livewire, ?Model $record): array => $livewire->fillAutomaticTranslationsFor($data, $record)),
+                    ->url(fn ($record): string => HeroSlideResource::getUrl('edit', ['record' => $record])),
                 DeleteAction::make(),
             ])
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);

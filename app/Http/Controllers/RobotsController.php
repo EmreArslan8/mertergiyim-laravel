@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\BrandSettings;
 use Illuminate\Http\Response;
 
 /**
@@ -11,11 +12,12 @@ class RobotsController extends Controller
 {
     public function __invoke(): Response
     {
-        $base = rtrim((string) config('storefront.site_url'), '/');
+        $base = BrandSettings::siteUrl();
+        $indexingEnabled = (bool) BrandSettings::general('searchIndexingEnabled', true);
 
         $body = implode("\n", [
             'User-agent: *',
-            'Allow: /',
+            $indexingEnabled ? 'Allow: /' : 'Disallow: /',
             'Disallow: /admin',
             'Disallow: /livewire/',
             '',

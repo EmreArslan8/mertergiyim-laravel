@@ -1,11 +1,13 @@
 @php
     use App\Support\Storefront;
+
+    $activeLanguage = collect($languages)->firstWhere('code', $locale);
 @endphp
 {{-- MobileNavigation.tsx --}}
 <div class="mobile-header-actions" data-mobile-nav data-locale="{{ $locale }}">
     <div class="mobile-language-picker">
         <button type="button" class="mobile-language-trigger" aria-expanded="false" aria-controls="mobile-language-menu" data-language-trigger>
-            {{ strtoupper($locale) }}
+            {{ data_get($activeLanguage, 'name', strtoupper($locale)) }}
             @include('storefront.partials.icon', ['name' => 'chevron-down', 'size' => 18])
         </button>
         <div class="mobile-language-menu" id="mobile-language-menu" data-language-menu style="display:none">

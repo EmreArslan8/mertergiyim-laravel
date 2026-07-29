@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap");
 
 /* Merter Giyim — Filament v4 admin teması (açık/light, eski Next.js paneline birebir) */
 
@@ -1398,4 +1398,1935 @@ textarea.fi-input {
 .fi-select-input-ctn .fi-icon {
     width: 0.9rem;
     height: 0.9rem;
+}
+
+/* =================================================================
+   MERTER OPS / 2026
+   Fashion editorial vitrin dilinin operasyon paneli karşılığı.
+   Bu katman eski eşleştirme kurallarını bilinçli olarak ezer.
+   ================================================================= */
+:root {
+    --merter-blue: #f05a24;
+    --merter-blue-dark: #d94716;
+    --merter-orange: #f05a24;
+    --merter-orange-soft: #fff0e9;
+    --merter-ink: #181816;
+    --merter-muted: #77746d;
+    --merter-border: #dfdcd4;
+    --merter-canvas: #f3f1ec;
+    --merter-paper: #fffefa;
+    --merter-sidebar: #171715;
+    --merter-sidebar-soft: #242421;
+    --merter-sidebar-text: #d8d5ce;
+    --merter-success: #247453;
+    --merter-danger: #b94737;
+    --merter-display: "Montserrat", sans-serif;
+    --merter-body: "Montserrat", sans-serif;
+}
+
+html.fi,
+.fi-body,
+.fi-modal,
+.fi-dropdown-panel {
+    font-family: var(--merter-body);
+}
+
+.fi-body,
+.fi-main-ctn {
+    background:
+        radial-gradient(circle at 92% 2%, rgba(240, 90, 36, 0.055), transparent 23rem),
+        var(--merter-canvas);
+    color: var(--merter-ink);
+}
+
+/* Sidebar */
+.fi-sidebar.fi-main-sidebar {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 12rem),
+        var(--merter-sidebar);
+    border-inline-end: 0;
+    box-shadow: 1rem 0 3rem rgba(29, 27, 23, 0.08);
+}
+
+.fi-sidebar .fi-sidebar-nav {
+    padding: 1.25rem 0.875rem 0.875rem;
+    scrollbar-color: #47463f transparent;
+}
+
+.fi-sidebar .fi-sidebar-nav-groups {
+    row-gap: 1.15rem;
+}
+
+.fi-sidebar .fi-sidebar-group {
+    row-gap: 0.3rem;
+}
+
+.fi-sidebar .fi-sidebar-group-label {
+    display: block;
+    padding: 0 0.75rem 0.4rem;
+    color: #77766f;
+    font-family: var(--merter-body);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.fi-sidebar .fi-sidebar-group-collapse-btn {
+    display: none;
+}
+
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn {
+    min-height: 2.55rem;
+    column-gap: 0.7rem;
+    border: 0;
+    border-radius: 0.65rem;
+    padding: 0.65rem 0.75rem;
+    transition:
+        background-color 160ms ease,
+        color 160ms ease,
+        transform 160ms ease;
+}
+
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn > .fi-sidebar-item-label {
+    color: var(--merter-sidebar-text);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn > .fi-icon {
+    width: 1.05rem;
+    height: 1.05rem;
+    color: #88877f;
+}
+
+.fi-sidebar .fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover {
+    background: var(--merter-sidebar-soft);
+    transform: translateX(2px);
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn:hover {
+    position: relative;
+    background: var(--merter-orange);
+    box-shadow: 0 0.6rem 1.4rem rgba(240, 90, 36, 0.18);
+    transform: none;
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn::before {
+    content: "";
+    position: absolute;
+    inset-block: 0.65rem;
+    inset-inline-start: -0.875rem;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: #fff7f2;
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-icon {
+    color: #fff;
+}
+
+.merter-brand {
+    height: auto;
+    gap: 0.75rem;
+    margin: 0 0 1.7rem;
+    padding: 0.15rem 0.55rem 1.25rem;
+    border-bottom: 1px solid #33332e;
+}
+
+.merter-brand-avatar {
+    position: relative;
+    width: 2.45rem;
+    height: 2.45rem;
+    overflow: hidden;
+    border: 1px solid #4b4a43;
+    border-radius: 0.65rem;
+    background: var(--merter-orange);
+    color: #fff;
+    font-family: var(--merter-display);
+    font-size: 1rem;
+    font-style: italic;
+    font-weight: 900;
+    box-shadow: 0.45rem 0.45rem 0 #2a2a27;
+}
+
+.merter-brand-avatar::after {
+    content: "";
+    position: absolute;
+    right: -0.45rem;
+    bottom: -0.5rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    rotate: 45deg;
+}
+
+.merter-brand-avatar span {
+    position: relative;
+    z-index: 1;
+}
+
+.merter-brand-text strong {
+    color: #fff;
+    font-family: var(--merter-display);
+    font-size: 0.92rem;
+    font-style: italic;
+    font-weight: 900;
+    letter-spacing: -0.045em;
+}
+
+.merter-brand-text small {
+    margin-top: 0.3rem;
+    color: #898881;
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.merter-sidebar-bottom {
+    padding: 0.85rem;
+    background: var(--merter-sidebar);
+    color: #918f87;
+}
+
+.merter-sidebar-storefront {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.45rem;
+    padding: 0.8rem;
+    border: 1px solid #373732;
+    border-radius: 0.7rem;
+    background: #20201e;
+    color: #fff;
+    text-decoration: none;
+    transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.merter-sidebar-storefront:hover {
+    border-color: #585750;
+    background: #272724;
+}
+
+.merter-sidebar-storefront small,
+.merter-sidebar-storefront strong {
+    display: block;
+}
+
+.merter-sidebar-storefront small {
+    margin-bottom: 0.15rem;
+    color: #85847d;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.merter-sidebar-storefront strong {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.merter-sidebar-storefront svg {
+    width: 1rem;
+    color: var(--merter-orange);
+}
+
+.merter-logout {
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.6rem;
+    color: #99978f;
+    font-size: 0.75rem;
+}
+
+.merter-logout:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: #f1eee7;
+}
+
+.merter-sidebar-copy {
+    border-top-color: #33332e;
+    color: #5f5e58;
+    font-size: 0.625rem;
+}
+
+.merter-sidebar-copy b {
+    border-color: #3b3a35;
+    color: #7f7d75;
+    letter-spacing: 0.08em;
+}
+
+/* Topbar */
+nav.fi-topbar {
+    min-height: 4.25rem;
+    height: 4.25rem;
+    padding-inline: 1.75rem;
+    border-bottom: 1px solid var(--merter-border);
+    background: rgba(255, 254, 250, 0.88);
+    box-shadow: 0 0.4rem 1.5rem rgba(43, 38, 29, 0.025);
+    backdrop-filter: blur(18px);
+}
+
+.merter-topbar-section {
+    height: 4.25rem;
+    gap: 0.75rem;
+}
+
+.merter-topbar-section > svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    color: var(--merter-orange);
+}
+
+.merter-topbar-section span,
+.merter-topbar-section small,
+.merter-topbar-section strong {
+    display: block;
+}
+
+.merter-topbar-section small {
+    margin-bottom: 0.1rem;
+    color: #98958e;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.merter-topbar-section strong {
+    color: var(--merter-ink);
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.merter-topbar-user {
+    height: 4.25rem;
+    gap: 0.85rem;
+}
+
+.merter-storefront-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--merter-border);
+    border-radius: 0.55rem;
+    background: #fffefa;
+    color: #5f5c55;
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.merter-storefront-link:hover {
+    border-color: #bbb6ac;
+    color: var(--merter-ink);
+}
+
+.merter-storefront-link svg {
+    width: 0.85rem;
+}
+
+.merter-user-identity {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-inline-start: 0.85rem;
+    border-inline-start: 1px solid var(--merter-border);
+}
+
+.merter-user-identity > b {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--merter-ink);
+    color: #fff;
+    font-family: var(--merter-display);
+    font-size: 0.72rem;
+}
+
+.merter-user-identity small,
+.merter-user-identity strong {
+    display: block;
+}
+
+.merter-user-identity small {
+    color: #9b9891;
+    font-size: 0.56rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.merter-user-identity strong {
+    max-width: 12rem;
+    overflow: hidden;
+    color: #4e4b45;
+    font-size: 0.68rem;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.merter-topbar-logout {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: #8b8881;
+    cursor: pointer;
+}
+
+.merter-topbar-logout:hover {
+    background: #f0ede6;
+    color: var(--merter-danger);
+}
+
+.merter-topbar-logout svg {
+    width: 1rem;
+}
+
+/* Main workspace */
+.fi-main {
+    padding: 0 clamp(1rem, 2.4vw, 2.6rem) 2.5rem;
+}
+
+.fi-page-header-main-ctn {
+    padding-block: 2.3rem 1.7rem;
+}
+
+.fi-header-heading {
+    color: var(--merter-ink);
+    font-family: var(--merter-display);
+    font-size: clamp(1.45rem, 2.2vw, 2.15rem);
+    font-weight: 800;
+    letter-spacing: -0.055em;
+}
+
+.fi-header-heading::after {
+    content: "";
+    display: block;
+    width: 2.4rem;
+    height: 3px;
+    margin-top: 0.65rem;
+    border-radius: 3px;
+    background: var(--merter-orange);
+}
+
+.fi-section,
+.fi-ta-ctn,
+.fi-wi-stats-overview-stat {
+    border: 1px solid var(--merter-border);
+    border-radius: 0.9rem;
+    background: var(--merter-paper);
+    box-shadow: 0 0.8rem 2.2rem rgba(45, 40, 31, 0.045);
+}
+
+.fi-section-header {
+    padding: 1.2rem 1.35rem 1rem;
+    border-bottom-color: #ebe8e0;
+}
+
+.fi-section-header-heading {
+    font-family: var(--merter-display);
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.fi-section-header-description {
+    color: var(--merter-muted);
+}
+
+.fi-section-content {
+    padding: 1.25rem 1.35rem 1.4rem;
+}
+
+/* Tables */
+.fi-ta-ctn .fi-ta-header,
+.fi-ta-ctn .fi-ta-header-toolbar {
+    padding-inline: 1.35rem;
+}
+
+.fi-ta-table > thead > tr {
+    background: #eeece6;
+}
+
+.fi-ta-header-cell {
+    padding-block: 0.9rem;
+    color: #79766f;
+    font-size: 0.625rem;
+    letter-spacing: 0.11em;
+}
+
+.fi-ta-table > tbody > tr {
+    border-bottom-color: #ece9e2;
+}
+
+.fi-ta-table > tbody > tr:hover {
+    background: #fff8f4;
+}
+
+.fi-ta-cell .fi-ta-cell-content {
+    min-height: 3.65rem;
+    color: var(--merter-ink);
+}
+
+.fi-ta-image {
+    border-radius: 0.55rem;
+    box-shadow: 0 0 0 1px rgba(24, 24, 22, 0.08);
+}
+
+.fi-ta-text-item-description {
+    color: #99958d;
+}
+
+.fi-ta-actions > .fi-btn,
+.fi-ta-actions > .fi-link {
+    min-height: 2rem;
+    border-color: #d7d3ca;
+    border-radius: 0.5rem;
+    background: #fffefa;
+    color: #54514b;
+    font-weight: 500;
+}
+
+.fi-ta-actions > .fi-btn:hover,
+.fi-ta-actions > .fi-link:hover {
+    border-color: #bbb6ac;
+    background: #f5f2ec;
+}
+
+.fi-badge {
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 600;
+}
+
+/* Buttons and fields */
+.fi-btn {
+    border-radius: 0.6rem;
+    font-family: var(--merter-body);
+    font-weight: 600;
+    transition:
+        transform 150ms ease,
+        box-shadow 150ms ease,
+        background-color 150ms ease;
+}
+
+.fi-btn.fi-color-primary {
+    background: var(--merter-orange);
+    box-shadow: 0 0.55rem 1.25rem rgba(240, 90, 36, 0.18);
+}
+
+.fi-btn.fi-color-primary:hover {
+    background: var(--merter-blue-dark);
+    box-shadow: 0 0.7rem 1.5rem rgba(240, 90, 36, 0.23);
+}
+
+.fi-btn.fi-color-gray {
+    border-color: #d2cec5;
+    background: var(--merter-paper);
+    color: #56534d;
+}
+
+.fi-fo-field-wrp-label {
+    color: #45423d;
+    font-size: 0.77rem;
+    font-weight: 600;
+}
+
+.fi-input-wrp {
+    min-height: 2.65rem;
+    border-radius: 0.55rem;
+    background: var(--merter-paper);
+    box-shadow: 0 0 0 1px #d6d2c9;
+}
+
+.fi-input-wrp:hover {
+    box-shadow: 0 0 0 1px #bbb6ac;
+}
+
+.fi-input-wrp:focus-within {
+    box-shadow:
+        0 0 0 1px var(--merter-orange),
+        0 0 0 4px rgba(240, 90, 36, 0.11);
+}
+
+.fi-toggle.fi-checked {
+    background: var(--merter-orange);
+}
+
+.fi-fo-file-upload .filepond--drop-label {
+    border-color: #c8c2b7;
+    background:
+        linear-gradient(135deg, rgba(240, 90, 36, 0.035), transparent 50%),
+        #f7f4ee;
+}
+
+.fi-fo-file-upload .filepond--drop-label:hover {
+    border-color: var(--merter-orange);
+    background: var(--merter-orange-soft);
+}
+
+/* Dashboard */
+.fi-wi-stats-overview-stat {
+    position: relative;
+    overflow: hidden;
+    padding: 1.4rem;
+}
+
+.fi-wi-stats-overview-stat::after {
+    content: "";
+    position: absolute;
+    right: -1.4rem;
+    bottom: -1.8rem;
+    width: 5rem;
+    height: 5rem;
+    border: 1px solid #e7e2d8;
+    border-radius: 50%;
+}
+
+.fi-wi-stats-overview-stat-label {
+    color: #88847c;
+    font-size: 0.65rem;
+    letter-spacing: 0.11em;
+}
+
+.fi-wi-stats-overview-stat-value {
+    color: var(--merter-ink);
+    font-family: var(--merter-display);
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.055em;
+}
+
+/* Modals */
+.fi-modal-close-overlay {
+    background: rgba(23, 23, 21, 0.55);
+    backdrop-filter: blur(8px);
+}
+
+.fi-modal-window {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 1.1rem;
+    background: var(--merter-paper);
+    box-shadow: 0 2rem 6rem rgba(20, 18, 15, 0.28);
+}
+
+.fi-modal-header {
+    border-bottom-color: #e8e4dc;
+}
+
+.fi-modal-heading {
+    font-family: var(--merter-display);
+    font-weight: 700;
+}
+
+/* Editorial login */
+.fi-simple-layout {
+    position: relative;
+    min-height: 100dvh;
+    overflow: hidden;
+    background:
+        linear-gradient(90deg, var(--merter-sidebar) 0 43%, var(--merter-canvas) 43% 100%);
+}
+
+.fi-simple-layout::before {
+    content: "MERTER\A FASHION\A OPERATIONS";
+    position: fixed;
+    top: 50%;
+    left: 5vw;
+    width: 32vw;
+    color: #fff;
+    font-family: var(--merter-display);
+    font-size: clamp(2.2rem, 4.2vw, 5rem);
+    font-style: italic;
+    font-weight: 900;
+    letter-spacing: -0.075em;
+    line-height: 0.88;
+    white-space: pre;
+    transform: translateY(-55%);
+}
+
+.fi-simple-layout::after {
+    content: "MERTER / ISTANBUL  •  WHOLESALE WORKSPACE";
+    position: fixed;
+    bottom: 3.5rem;
+    left: 5vw;
+    color: #77766f;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+}
+
+.fi-simple-main {
+    width: min(27rem, calc(100vw - 2rem));
+    max-width: 27rem;
+    padding: 2.4rem;
+    border: 1px solid #ddd8ce;
+    border-radius: 1rem;
+    background: rgba(255, 254, 250, 0.95);
+    box-shadow: 0 2rem 5rem rgba(32, 29, 23, 0.12);
+    transform: translateX(23vw);
+}
+
+.fi-simple-main::before {
+    content: "YÖNETİM PANELİ";
+    display: block;
+    width: max-content;
+    margin: 0 auto 1.3rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: var(--merter-orange-soft);
+    color: var(--merter-orange);
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+}
+
+.fi-simple-header .fi-logo {
+    display: none;
+}
+
+.fi-simple-header .fi-header-heading,
+.fi-simple-main .fi-header-heading {
+    font-family: var(--merter-display);
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.055em;
+}
+
+.fi-simple-header .fi-header-heading::after,
+.fi-simple-main .fi-header-heading::after {
+    margin-inline: auto;
+}
+
+@media (max-width: 63.999rem) {
+    .merter-sidebar-bottom {
+        background: var(--merter-sidebar);
+    }
+
+    nav.fi-topbar {
+        min-height: 3.7rem;
+        height: 3.7rem;
+        padding-inline: 0.85rem;
+    }
+
+    .merter-topbar-user {
+        height: 3.7rem;
+    }
+
+    .merter-storefront-link,
+    .merter-user-identity {
+        display: none;
+    }
+
+    .fi-simple-layout {
+        background:
+            linear-gradient(180deg, var(--merter-sidebar) 0 11rem, var(--merter-canvas) 11rem 100%);
+    }
+
+    .fi-simple-layout::before {
+        top: 2.7rem;
+        left: 50%;
+        width: auto;
+        font-size: 2rem;
+        line-height: 0.88;
+        text-align: center;
+        transform: translateX(-50%);
+    }
+
+    .fi-simple-layout::after {
+        display: none;
+    }
+
+    .fi-simple-main {
+        margin-top: 8rem;
+        padding: 1.5rem;
+        transform: none;
+    }
+}
+
+@media (max-width: 47.999rem) {
+    .fi-main {
+        padding-inline: 0.75rem;
+    }
+
+    .fi-page-header-main-ctn {
+        padding-block: 1.25rem 1rem;
+    }
+
+    .fi-header-heading {
+        font-size: 1.35rem;
+    }
+
+    .fi-section,
+    .fi-ta-ctn {
+        border-radius: 0.8rem;
+    }
+
+    .fi-ta-table.fi-ta-table-stacked-on-mobile {
+        background: var(--merter-canvas);
+    }
+
+    .fi-ta-table-stacked-on-mobile .fi-ta-table-stacked-header-cell {
+        background: #eae7e0;
+    }
+
+    .fi-ta-table-stacked-on-mobile > tbody > tr {
+        border-color: var(--merter-border);
+        background: var(--merter-paper);
+        box-shadow: 0 0.65rem 1.5rem rgba(45, 40, 31, 0.045);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn,
+    .fi-btn {
+        transition: none;
+    }
+}
+
+/* =================================================================
+   MINIMAL BLACK / WHITE REVISION
+   Turuncu yalnız küçük durum ve odak vurgularında kullanılır.
+   ================================================================= */
+:root {
+    --merter-blue: #171717;
+    --merter-blue-dark: #000;
+    --merter-orange: #e7652d;
+    --merter-orange-soft: #fff4ef;
+    --merter-ink: #171717;
+    --merter-muted: #767676;
+    --merter-border: #e5e5e5;
+    --merter-canvas: #f6f6f6;
+    --merter-paper: #fff;
+    --merter-sidebar: #fff;
+    --merter-sidebar-soft: #f3f3f3;
+    --merter-sidebar-text: #333;
+}
+
+.fi-body,
+.fi-main-ctn {
+    background: var(--merter-canvas);
+}
+
+.fi-sidebar.fi-main-sidebar {
+    border-inline-end: 1px solid var(--merter-border);
+    background: #fff;
+    box-shadow: none;
+}
+
+.fi-sidebar .fi-sidebar-nav {
+    padding: 1.1rem 0.75rem 0.75rem;
+}
+
+.fi-sidebar .fi-sidebar-nav-groups {
+    row-gap: 1rem;
+}
+
+.fi-sidebar .fi-sidebar-group-label {
+    padding-inline: 0.7rem;
+    color: #a0a0a0;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+}
+
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn {
+    min-height: 2.45rem;
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.7rem;
+}
+
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn > .fi-sidebar-item-label {
+    color: #3d3d3d;
+    font-size: 0.8rem;
+}
+
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn > .fi-icon {
+    color: #8b8b8b;
+}
+
+.fi-sidebar .fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover {
+    background: #f4f4f4;
+    transform: none;
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn:hover {
+    background: #171717;
+    box-shadow: none;
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn::before {
+    display: none;
+}
+
+.merter-brand {
+    gap: 0.65rem;
+    margin-bottom: 1.25rem;
+    padding: 0.1rem 0.45rem 1rem;
+    border-bottom-color: #ededed;
+}
+
+.merter-brand-avatar {
+    width: 2.1rem;
+    height: 2.1rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: #171717;
+    box-shadow: none;
+    font-family: var(--merter-body);
+    font-size: 0.82rem;
+    font-style: normal;
+    font-weight: 600;
+}
+
+.merter-brand-avatar::after {
+    display: none;
+}
+
+.merter-brand-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.merter-brand-avatar:has(img) {
+    border: 1px solid #ededed;
+    background: #fff;
+}
+
+.merter-brand-text strong {
+    color: #171717;
+    font-family: var(--merter-body);
+    font-size: 0.82rem;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.merter-brand-text small {
+    color: #999;
+    font-size: 0.6rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+}
+
+.merter-sidebar-bottom {
+    border-top: 1px solid #ededed;
+    background: #fff;
+}
+
+.merter-sidebar-storefront {
+    margin: 0;
+    padding: 0.65rem 0.7rem;
+    border: 0;
+    border-radius: 0.45rem;
+    background: transparent;
+    color: #444;
+}
+
+.merter-sidebar-storefront:hover {
+    border-color: transparent;
+    background: #f4f4f4;
+}
+
+.merter-sidebar-storefront strong {
+    font-size: 0.72rem;
+}
+
+.merter-sidebar-storefront svg {
+    color: #999;
+}
+
+.merter-logout {
+    color: #777;
+}
+
+.merter-logout:hover {
+    background: #f4f4f4;
+    color: #171717;
+}
+
+.merter-sidebar-copy {
+    border-top-color: #ededed;
+    color: #aaa;
+}
+
+.merter-sidebar-copy b {
+    border-color: #e5e5e5;
+    color: #999;
+}
+
+nav.fi-topbar {
+    min-height: 3.75rem;
+    height: 3.75rem;
+    padding-inline: 1.5rem;
+    border-bottom-color: var(--merter-border);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: none;
+}
+
+.merter-topbar-section,
+.merter-topbar-user {
+    height: 3.75rem;
+}
+
+.merter-topbar-section {
+    gap: 0.55rem;
+}
+
+.merter-topbar-section > svg {
+    width: 1rem;
+    height: 1rem;
+    color: #777;
+}
+
+.merter-topbar-section strong {
+    color: #333;
+    font-size: 0.78rem;
+}
+
+.merter-storefront-link {
+    padding: 0.45rem 0.65rem;
+    border-color: #e2e2e2;
+    border-radius: 0.45rem;
+    background: #fff;
+    color: #555;
+}
+
+.merter-user-identity {
+    gap: 0.5rem;
+    border-inline-start-color: #e5e5e5;
+}
+
+.merter-user-identity > b {
+    width: 1.8rem;
+    height: 1.8rem;
+    background: #ededed;
+    color: #444;
+    font-family: var(--merter-body);
+}
+
+.merter-user-identity strong {
+    color: #666;
+}
+
+.fi-main {
+    padding-inline: clamp(1rem, 2vw, 2rem);
+}
+
+.fi-page-header-main-ctn {
+    padding-block: 1.75rem 1.35rem;
+}
+
+.fi-header-heading {
+    font-family: var(--merter-body);
+    font-size: clamp(1.3rem, 2vw, 1.7rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+}
+
+.fi-header-heading::after {
+    width: 1.25rem;
+    height: 2px;
+    margin-top: 0.5rem;
+    background: var(--merter-orange);
+}
+
+.fi-section,
+.fi-ta-ctn,
+.fi-wi-stats-overview-stat {
+    border-color: var(--merter-border);
+    border-radius: 0.7rem;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.025);
+}
+
+.fi-section-header {
+    border-bottom-color: #ededed;
+}
+
+.fi-section-header-heading {
+    font-family: var(--merter-body);
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.fi-ta-table > thead > tr {
+    background: #f7f7f7;
+}
+
+.fi-ta-table > tbody > tr:hover {
+    background: #fafafa;
+}
+
+.fi-ta-header-cell {
+    color: #777;
+    letter-spacing: 0.07em;
+}
+
+.fi-ta-actions > .fi-btn,
+.fi-ta-actions > .fi-link {
+    background: #fff;
+}
+
+.fi-btn.fi-color-primary {
+    background: #171717;
+    box-shadow: none;
+}
+
+.fi-btn.fi-color-primary:hover {
+    background: #000;
+    box-shadow: none;
+}
+
+.fi-input-wrp {
+    background: #fff;
+    box-shadow: 0 0 0 1px #d9d9d9;
+}
+
+.fi-input-wrp:focus-within {
+    box-shadow:
+        0 0 0 1px #171717,
+        0 0 0 3px rgba(23, 23, 23, 0.08);
+}
+
+.fi-toggle.fi-checked {
+    background: #171717;
+}
+
+.fi-fo-file-upload .filepond--drop-label,
+.fi-fo-file-upload .filepond--drop-label:hover {
+    border-color: #d5d5d5;
+    background: #fafafa;
+}
+
+.fi-wi-stats-overview-stat {
+    padding: 1.2rem;
+}
+
+.fi-wi-stats-overview-stat::after {
+    display: none;
+}
+
+.fi-wi-stats-overview-stat-value {
+    font-family: var(--merter-body);
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+}
+
+.fi-modal-close-overlay {
+    background: rgba(0, 0, 0, 0.38);
+    backdrop-filter: blur(3px);
+}
+
+.fi-modal-window {
+    border-color: #e5e5e5;
+    border-radius: 0.8rem;
+    background: #fff;
+    box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.18);
+}
+
+.fi-modal-heading {
+    font-family: var(--merter-body);
+    font-weight: 600;
+}
+
+.fi-simple-layout {
+    background: #f5f5f5;
+}
+
+.fi-simple-layout::before,
+.fi-simple-layout::after,
+.fi-simple-main::before {
+    display: none;
+}
+
+.fi-simple-main {
+    width: min(24rem, calc(100vw - 2rem));
+    max-width: 24rem;
+    padding: 2rem;
+    border-color: #e2e2e2;
+    border-radius: 0.75rem;
+    background: #fff;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.08);
+    transform: none;
+}
+
+.fi-simple-header .fi-logo {
+    display: block;
+}
+
+.fi-simple-header .fi-header-heading,
+.fi-simple-main .fi-header-heading {
+    font-family: var(--merter-body);
+    font-size: 1.45rem;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+}
+
+@media (max-width: 63.999rem) {
+    .merter-sidebar-bottom {
+        background: #fff;
+    }
+
+    .fi-simple-layout {
+        background: #f5f5f5;
+    }
+
+    .fi-simple-main {
+        margin-top: 0;
+    }
+}
+
+/* =================================================================
+   DASHBOARD
+   ================================================================= */
+.merter-dashboard {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.merter-dashboard-welcome {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    min-height: 9.5rem;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    border-radius: 1rem;
+    background: #171717;
+    color: #fff;
+}
+
+.merter-dashboard-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+    color: #a9a9a9;
+    font-size: 0.64rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.merter-dashboard-eyebrow i {
+    display: block;
+    width: 0.42rem;
+    height: 0.42rem;
+    border-radius: 50%;
+    background: var(--merter-orange);
+}
+
+.merter-dashboard-welcome h1 {
+    margin: 0;
+    color: #fff;
+    font-family: var(--merter-body);
+    font-size: clamp(1.6rem, 3vw, 2.35rem);
+    font-weight: 600;
+    letter-spacing: -0.05em;
+    line-height: 1.08;
+}
+
+.merter-dashboard-welcome p {
+    margin: 0.75rem 0 0;
+    color: #a6a6a6;
+    font-size: 0.84rem;
+}
+
+.merter-dashboard-welcome-actions {
+    display: flex;
+    flex: none;
+    gap: 0.65rem;
+}
+
+.merter-dashboard-welcome-actions a {
+    padding: 0.65rem 0.85rem;
+    border: 1px solid #545454;
+    border-radius: 0.5rem;
+    color: #e8e8e8;
+    font-size: 0.74rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 140ms ease, border-color 140ms ease;
+}
+
+.merter-dashboard-welcome-actions a:first-child {
+    border-color: #fff;
+    background: #fff;
+    color: #171717;
+}
+
+.merter-dashboard-welcome-actions a:hover {
+    border-color: #777;
+    background: #292929;
+    color: #fff;
+}
+
+.merter-dashboard-welcome-actions a:first-child:hover {
+    border-color: #e5e5e5;
+    background: #e5e5e5;
+    color: #171717;
+}
+
+.merter-dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+.merter-dashboard-stat {
+    display: flex;
+    min-width: 0;
+    min-height: 12rem;
+    flex-direction: column;
+    padding: 1.15rem;
+    border: 1px solid var(--merter-border);
+    border-radius: 0.8rem;
+    background: #fff;
+    color: var(--merter-ink);
+    text-decoration: none;
+    transition:
+        border-color 140ms ease,
+        transform 140ms ease,
+        box-shadow 140ms ease;
+}
+
+.merter-dashboard-stat:hover {
+    border-color: #c6c6c6;
+    box-shadow: 0 0.65rem 1.5rem rgba(0, 0, 0, 0.045);
+    transform: translateY(-2px);
+}
+
+.merter-dashboard-stat-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: #777;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.merter-dashboard-stat-icon {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.55rem;
+    background: #f3f3f3;
+    color: #676767;
+}
+
+.merter-dashboard-stat-icon svg {
+    width: 1.05rem;
+    height: 1.05rem;
+}
+
+.merter-dashboard-stat > strong {
+    margin-top: 1rem;
+    font-size: clamp(1.7rem, 2.6vw, 2.25rem);
+    font-weight: 600;
+    letter-spacing: -0.055em;
+    line-height: 1;
+}
+
+.merter-dashboard-stat > strong.is-alert {
+    color: var(--merter-orange);
+}
+
+.merter-dashboard-stat > small {
+    margin-top: 0.45rem;
+    color: #929292;
+    font-size: 0.68rem;
+}
+
+.merter-dashboard-stat-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 0.85rem;
+    border-top: 1px solid #ededed;
+    color: #555;
+    font-size: 0.67rem;
+    font-weight: 500;
+}
+
+.merter-dashboard-stat-link svg {
+    width: 0.85rem;
+}
+
+.merter-dashboard-lower {
+    display: grid;
+    grid-template-columns: minmax(0, 1.75fr) minmax(17rem, 0.75fr);
+    gap: 1rem;
+}
+
+.merter-dashboard-panel {
+    min-width: 0;
+    padding: 1.25rem;
+    border: 1px solid var(--merter-border);
+    border-radius: 0.8rem;
+    background: #fff;
+}
+
+.merter-dashboard-panel > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.merter-dashboard-panel > header span {
+    display: block;
+    margin-bottom: 0.22rem;
+    color: #999;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.merter-dashboard-panel > header h2 {
+    margin: 0;
+    color: var(--merter-ink);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+}
+
+.merter-dashboard-panel > header > svg {
+    width: 1.15rem;
+    color: #999;
+}
+
+.merter-dashboard-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.merter-dashboard-action {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 5.1rem;
+    padding: 0.9rem;
+    border: 1px solid #dedede;
+    border-radius: 0.65rem;
+    background: #fff;
+    color: #222;
+    text-decoration: none;
+    transition: border-color 140ms ease, background-color 140ms ease;
+}
+
+.merter-dashboard-action:hover {
+    border-color: #aaa;
+    background: #fafafa;
+}
+
+.merter-dashboard-action.is-primary {
+    border-color: #171717;
+    background: #171717;
+    color: #fff;
+}
+
+.merter-dashboard-action.is-primary:hover {
+    background: #000;
+}
+
+.merter-dashboard-action-icon {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    background: #f1f1f1;
+    color: #555;
+}
+
+.merter-dashboard-action.is-primary .merter-dashboard-action-icon {
+    background: #303030;
+    color: #fff;
+}
+
+.merter-dashboard-action-icon svg,
+.merter-dashboard-action > svg {
+    width: 0.95rem;
+}
+
+.merter-dashboard-action > svg {
+    color: #999;
+}
+
+.merter-dashboard-action strong,
+.merter-dashboard-action small {
+    display: block;
+}
+
+.merter-dashboard-action strong {
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.merter-dashboard-action small {
+    margin-top: 0.2rem;
+    color: #929292;
+    font-size: 0.64rem;
+}
+
+.merter-dashboard-action.is-primary small {
+    color: #999;
+}
+
+.merter-dashboard-shortcuts nav {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.merter-dashboard-shortcuts nav a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 2.8rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #e2e2e2;
+    border-radius: 0.55rem;
+    color: #555;
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.merter-dashboard-shortcuts nav a:hover {
+    border-color: #bdbdbd;
+    color: #171717;
+}
+
+.merter-dashboard-shortcuts nav a span {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.merter-dashboard-shortcuts nav a svg {
+    width: 0.95rem;
+    flex: none;
+}
+
+.merter-dashboard-shortcuts nav a > svg {
+    width: 0.75rem;
+    color: #aaa;
+}
+
+@media (max-width: 78rem) {
+    .merter-dashboard-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .merter-dashboard-lower {
+        grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.8fr);
+    }
+}
+
+@media (max-width: 56rem) {
+    .merter-dashboard-welcome {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .merter-dashboard-lower {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 40rem) {
+    .merter-dashboard {
+        gap: 0.75rem;
+    }
+
+    .merter-dashboard-welcome {
+        min-height: auto;
+        gap: 1.25rem;
+        padding: 1.25rem;
+        border-radius: 0.8rem;
+    }
+
+    .merter-dashboard-welcome-actions {
+        width: 100%;
+    }
+
+    .merter-dashboard-welcome-actions a {
+        flex: 1;
+        text-align: center;
+    }
+
+    .merter-dashboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem;
+    }
+
+    .merter-dashboard-stat {
+        min-height: 10.5rem;
+        padding: 0.9rem;
+    }
+
+    .merter-dashboard-stat-top {
+        align-items: flex-start;
+    }
+
+    .merter-dashboard-stat-icon {
+        width: 1.9rem;
+        height: 1.9rem;
+    }
+
+    .merter-dashboard-panel {
+        padding: 1rem;
+    }
+
+    .merter-dashboard-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Buton kontrastları: zemin rengine göre metin ve ikon sabitlenir. */
+.fi-btn.fi-color-primary,
+.fi-btn.fi-color-primary .fi-btn-label,
+.fi-btn.fi-color-primary .fi-icon,
+.fi-btn.fi-color-primary svg {
+    color: #fff !important;
+}
+
+.fi-btn.fi-color-gray,
+.fi-btn.fi-color-gray .fi-btn-label,
+.fi-btn.fi-color-gray .fi-icon,
+.fi-btn.fi-color-gray svg {
+    color: #171717 !important;
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-icon {
+    color: #fff !important;
+}
+
+.merter-dashboard-action.is-primary,
+.merter-dashboard-action.is-primary strong,
+.merter-dashboard-action.is-primary .merter-dashboard-action-icon,
+.merter-dashboard-action.is-primary > svg {
+    color: #fff !important;
+}
+
+.merter-dashboard-action.is-primary small {
+    color: #c9c9c9;
+}
+
+.merter-dashboard-action:not(.is-primary),
+.merter-dashboard-action:not(.is-primary) strong,
+.merter-dashboard-action:not(.is-primary) .merter-dashboard-action-icon,
+.merter-dashboard-action:not(.is-primary) > svg {
+    color: #171717;
+}
+
+.merter-dashboard-welcome-actions a:first-child,
+.merter-dashboard-welcome-actions a:first-child svg {
+    color: #171717 !important;
+}
+
+/* Semantik aksiyon renkleri: renk yalnızca işlemin anlamını destekler. */
+.fi-btn.fi-color-danger {
+    border-color: #c83f3f !important;
+    background: #c83f3f !important;
+    color: #fff !important;
+    box-shadow: none !important;
+}
+
+.fi-btn.fi-color-danger:hover {
+    border-color: #a83232 !important;
+    background: #a83232 !important;
+}
+
+.fi-btn.fi-color-danger .fi-btn-label,
+.fi-btn.fi-color-danger .fi-icon,
+.fi-btn.fi-color-danger svg {
+    color: #fff !important;
+}
+
+.fi-btn.fi-color-success {
+    border-color: #267a52 !important;
+    background: #267a52 !important;
+    color: #fff !important;
+    box-shadow: none !important;
+}
+
+.fi-btn.fi-color-success:hover {
+    border-color: #1f6544 !important;
+    background: #1f6544 !important;
+}
+
+.fi-btn.fi-color-success .fi-btn-label,
+.fi-btn.fi-color-success .fi-icon,
+.fi-btn.fi-color-success svg {
+    color: #fff !important;
+}
+
+.fi-btn.fi-color-warning {
+    border-color: #b86622 !important;
+    background: #b86622 !important;
+    color: #fff !important;
+    box-shadow: none !important;
+}
+
+.fi-btn.fi-color-warning:hover {
+    border-color: #98521a !important;
+    background: #98521a !important;
+}
+
+.fi-btn.fi-color-warning .fi-btn-label,
+.fi-btn.fi-color-warning .fi-icon,
+.fi-btn.fi-color-warning svg {
+    color: #fff !important;
+}
+
+.fi-btn.fi-color-info {
+    border-color: #386b91 !important;
+    background: #386b91 !important;
+    color: #fff !important;
+    box-shadow: none !important;
+}
+
+.fi-btn.fi-color-info:hover {
+    border-color: #2d5878 !important;
+    background: #2d5878 !important;
+}
+
+.fi-btn.fi-color-info .fi-btn-label,
+.fi-btn.fi-color-info .fi-icon,
+.fi-btn.fi-color-info svg {
+    color: #fff !important;
+}
+
+/* Satır içindeki riskli aksiyonlar dikkat çeker ama tabloyu renk kalabalığına çevirmez. */
+.fi-ta-actions > .fi-btn.fi-color-danger,
+.fi-ta-actions > .fi-link.fi-color-danger {
+    border-color: #e4b3af !important;
+    background: #fff !important;
+    color: #b73934 !important;
+}
+
+.fi-ta-actions > .fi-btn.fi-color-danger:hover,
+.fi-ta-actions > .fi-link.fi-color-danger:hover {
+    border-color: #d98e88 !important;
+    background: #fff3f2 !important;
+}
+
+.fi-ta-actions > .fi-btn.fi-color-danger .fi-btn-label,
+.fi-ta-actions > .fi-btn.fi-color-danger .fi-icon,
+.fi-ta-actions > .fi-btn.fi-color-danger svg,
+.fi-ta-actions > .fi-link.fi-color-danger .fi-link-label,
+.fi-ta-actions > .fi-link.fi-color-danger .fi-icon,
+.fi-ta-actions > .fi-link.fi-color-danger svg {
+    color: #b73934 !important;
+}
+
+.merter-color-option {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.55rem;
+    color: #171717;
+}
+
+.merter-color-option__swatch {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+    border: 1px solid rgb(23 23 23 / 24%);
+    border-radius: 999px;
+    background: var(--merter-option-color);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 32%);
+}
+
+.merter-stock-matrix {
+    overflow: hidden;
+    border: 1px solid #dedede;
+    border-radius: 0.75rem;
+    background: #fff;
+}
+
+.merter-stock-matrix__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    border-bottom: 1px solid #e7e7e7;
+}
+
+.merter-stock-matrix__heading > div {
+    display: grid;
+    gap: 0.2rem;
+}
+
+.merter-stock-matrix__heading strong {
+    color: #171717;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.merter-stock-matrix__heading span,
+.merter-stock-matrix__note {
+    color: #737373;
+    font-size: 0.75rem;
+}
+
+.merter-stock-matrix__unit {
+    flex: none;
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.35rem;
+    background: #f3f3f3;
+    color: #525252 !important;
+    font-weight: 600;
+}
+
+.merter-stock-matrix__scroll {
+    overflow-x: auto;
+}
+
+.merter-stock-matrix table {
+    width: 100%;
+    min-width: 42rem;
+    border-collapse: collapse;
+}
+
+.merter-stock-matrix th,
+.merter-stock-matrix td {
+    padding: 0.65rem 0.75rem;
+    border-right: 1px solid #ededed;
+    border-bottom: 1px solid #ededed;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.merter-stock-matrix tr > :last-child {
+    border-right: 0;
+}
+
+.merter-stock-matrix tbody tr:last-child > * {
+    border-bottom: 0;
+}
+
+.merter-stock-matrix thead th {
+    background: #f6f6f6;
+    color: #525252;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+}
+
+.merter-stock-matrix thead th:first-child,
+.merter-stock-matrix tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    min-width: 9.5rem;
+    background: #fff;
+    text-align: left;
+}
+
+.merter-stock-matrix thead th:first-child {
+    z-index: 2;
+    background: #f6f6f6;
+}
+
+.merter-stock-matrix__ratio th,
+.merter-stock-matrix__ratio td {
+    background: #faf7f3;
+    color: #8a4d1b;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.merter-stock-matrix__ratio th {
+    background: #faf7f3 !important;
+}
+
+.merter-stock-matrix input[type="number"] {
+    width: 4.5rem;
+    min-height: 2.25rem;
+    border: 1px solid #d5d5d5;
+    border-radius: 0.4rem;
+    background: #fff;
+    color: #171717;
+    font-size: 0.82rem;
+    font-weight: 650;
+    text-align: center;
+    outline: none;
+}
+
+.merter-stock-matrix input[type="number"]:focus {
+    border-color: #171717;
+    box-shadow: 0 0 0 2px rgb(23 23 23 / 10%);
+}
+
+.merter-stock-matrix__available {
+    min-width: 7.5rem;
+    color: #267a52;
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+
+.merter-stock-matrix__available b {
+    font-size: 0.9rem;
+}
+
+.merter-stock-matrix__missing {
+    color: #aaa;
+}
+
+.merter-stock-matrix__note,
+.merter-stock-matrix__empty {
+    margin: 0;
+    padding: 0.8rem 1.1rem;
+}
+
+.merter-stock-matrix__note {
+    border-top: 1px solid #ededed;
+}
+
+.merter-stock-matrix__empty {
+    color: #737373;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 48rem) {
+    .merter-stock-matrix__heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .merter-stock-matrix th,
+    .merter-stock-matrix td {
+        padding: 0.55rem;
+    }
 }

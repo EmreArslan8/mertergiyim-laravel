@@ -84,8 +84,8 @@ class StorefrontRepository
      */
     public function product(string $slug): ?array
     {
-        $data = $this->remember('product:'.$slug, function () use ($slug) {
-            $product = Product::query()->active()->with(['images', 'variants.size', 'variants.color'])->where('slug', $slug)->first();
+        $data = $this->remember('product:v2:'.$slug, function () use ($slug) {
+            $product = Product::query()->active()->with(['category', 'images', 'variants.size', 'variants.color'])->where('slug', $slug)->first();
 
             if (! $product) {
                 return ['product' => null];
@@ -96,7 +96,7 @@ class StorefrontRepository
                 'recommendations' => Product::query()->active()->with(['images', 'category'])
                     ->whereKeyNot($product->id)
                     ->orderByDesc('created_at')
-                    ->limit(2)
+                    ->limit(4)
                     ->get()
                     ->all(),
             ];

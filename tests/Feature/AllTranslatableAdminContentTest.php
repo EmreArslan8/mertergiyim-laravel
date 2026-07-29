@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Filament\Resources\BlogPosts\Pages\ListBlogPosts;
+use App\Filament\Resources\BlogPosts\Pages\CreateBlogPost;
 use App\Filament\Resources\Colors\Pages\CreateColor;
-use App\Filament\Resources\ContentPages\Pages\ListContentPages;
+use App\Filament\Resources\ContentPages\Pages\CreateContentPage;
 use App\Filament\Resources\HeroSlides\Pages\CreateHeroSlide;
-use App\Filament\Resources\Media\Pages\ListMedia;
+use App\Filament\Resources\Media\Pages\CreateMedia;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\SiteSettings\Pages\EditSiteSetting;
@@ -15,14 +15,13 @@ use App\Models\BlogPost;
 use App\Models\Color;
 use App\Models\ContentPage;
 use App\Models\HeroSlide;
-use App\Models\Media;
+use App\Models\MediaPost;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\SiteSetting;
 use App\Models\Size;
 use App\Models\User;
 use App\Services\TranslateService;
-use Filament\Actions\CreateAction;
 use Filament\Actions\Testing\TestAction;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
@@ -107,8 +106,8 @@ class AllTranslatableAdminContentTest extends TestCase
             'seo_description' => 'E2E teslimat açıklaması',
         ]);
 
-        Livewire::test(ListContentPages::class)
-            ->callAction(CreateAction::class, data: [
+        Livewire::test(CreateContentPage::class)
+            ->fillForm([
                 'title' => ['tr' => 'E2E Teslimat Rehberi'],
                 'slug' => 'e2e-teslimat-rehberi',
                 'content' => ['tr' => 'E2E teslimat içeriği'],
@@ -117,7 +116,8 @@ class AllTranslatableAdminContentTest extends TestCase
                 'sort_order' => 99,
                 'active' => true,
             ])
-            ->assertHasNoActionErrors();
+            ->call('create')
+            ->assertHasNoFormErrors();
 
         $this->assertTranslated(
             ContentPage::query()->where('slug', 'e2e-teslimat-rehberi')->firstOrFail(),
@@ -133,8 +133,8 @@ class AllTranslatableAdminContentTest extends TestCase
             'content' => 'E2E blog içeriği',
         ]);
 
-        Livewire::test(ListBlogPosts::class)
-            ->callAction(CreateAction::class, data: [
+        Livewire::test(CreateBlogPost::class)
+            ->fillForm([
                 'title' => ['tr' => 'E2E Yaz Modası'],
                 'slug' => 'e2e-yaz-modasi',
                 'excerpt' => ['tr' => 'E2E blog özeti'],
@@ -142,7 +142,8 @@ class AllTranslatableAdminContentTest extends TestCase
                 'published_at' => now(),
                 'active' => true,
             ])
-            ->assertHasNoActionErrors();
+            ->call('create')
+            ->assertHasNoFormErrors();
 
         $this->assertTranslated(
             BlogPost::query()->where('slug', 'e2e-yaz-modasi')->firstOrFail(),
@@ -154,25 +155,28 @@ class AllTranslatableAdminContentTest extends TestCase
     {
         $this->mockTranslations([
             'title' => 'E2E Koleksiyon Görseli',
-            'alt' => 'E2E elbise görseli',
-            'caption' => 'E2E medya açıklaması',
+            'description' => 'E2E medya açıklaması',
         ]);
 
-        Livewire::test(ListMedia::class)
-            ->callAction(CreateAction::class, data: [
-                'type' => 'image',
-                'file_path' => UploadedFile::fake()->image('e2e-media.jpg', 800, 1000),
+        Livewire::test(CreateMedia::class)
+            ->fillForm([
                 'title' => ['tr' => 'E2E Koleksiyon Görseli'],
-                'alt' => ['tr' => 'E2E elbise görseli'],
-                'caption' => ['tr' => 'E2E medya açıklaması'],
+                'description' => ['tr' => 'E2E medya açıklaması'],
+                'files' => [[
+                    'type' => 'image',
+                    'file_path' => [UploadedFile::fake()->image('e2e-media.jpg', 800, 1000)],
+                    'alt' => ['tr' => 'E2E elbise görseli'],
+                    'sort_order' => 0,
+                ]],
                 'sort_order' => 99,
                 'active' => true,
             ])
-            ->assertHasNoActionErrors();
+            ->call('create')
+            ->assertHasNoFormErrors();
 
         $this->assertTranslated(
-            Media::query()->where('sort_order', 99)->firstOrFail(),
-            ['title', 'alt', 'caption'],
+            MediaPost::query()->where('sort_order', 99)->firstOrFail(),
+            ['title', 'description'],
         );
     }
 

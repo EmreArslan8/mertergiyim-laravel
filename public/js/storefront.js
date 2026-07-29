@@ -51,38 +51,147 @@
       if (matches) visibleCount += 1;
     });
 
-    show(document.querySelector('[data-store-empty]'), visibleCount === 0);
+    var emptyState = document.querySelector('[data-store-empty]');
+    show(emptyState, visibleCount === 0);
+
+    if (emptyState && visibleCount === 0) {
+      var filtered = Boolean(selected);
+      var title = emptyState.querySelector('[data-empty-title]');
+      var description = emptyState.querySelector('[data-empty-description]');
+      var reset = emptyState.querySelector('[data-empty-reset]');
+
+      if (title) {
+        title.textContent = title.getAttribute(filtered ? 'data-filter-text' : 'data-default-text');
+      }
+      if (description) {
+        description.textContent = description.getAttribute(filtered ? 'data-filter-text' : 'data-default-text');
+      }
+      if (reset) reset.hidden = !filtered;
+    }
   }
 
   function initCategoryFilter() {
     var selected = readSelectedCategory();
     applyCategoryFilter(selected);
 
-    all('[data-category-pick]').forEach(function (button) {
-      button.addEventListener('click', function () {
-        var value = button.getAttribute('data-category-pick');
-        writeSelectedCategory(value);
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-category-pick]');
+      if (!button) return;
 
-        var nav = document.querySelector('[data-mobile-nav]');
-        var insideMenu = button.closest('[data-category-list]');
+      event.preventDefault();
+      var value = button.getAttribute('data-category-pick');
+      writeSelectedCategory(value);
 
-        // Menü içinden seçimde: menüyü kapat ve ürün listesine götür.
-        if (insideMenu && nav) {
-          closeMobileMenus();
-          var locale = nav.getAttribute('data-locale');
-          var target = '/' + locale + '#urunler';
-          if (document.querySelector('[data-product-grid]')) {
-            applyCategoryFilter(value);
-            window.location.hash = 'urunler';
-            return;
-          }
-          window.location.href = target;
+      var nav = document.querySelector('[data-mobile-nav]');
+      var insideMenu = button.closest('[data-category-list]');
+
+      // Menü içinden seçimde: menüyü kapat ve ürün listesine götür.
+      if (insideMenu && nav) {
+        closeMobileMenus();
+        var locale = nav.getAttribute('data-locale');
+        var target = '/' + locale + '#urunler';
+        if (document.querySelector('[data-product-grid]')) {
+          applyCategoryFilter(value);
+          window.location.hash = 'urunler';
           return;
         }
+        window.location.href = target;
+        return;
+      }
 
-        applyCategoryFilter(value);
-      });
+      applyCategoryFilter(value);
     });
+  }
+
+  function initCategoryOverflow() {
+    var pills = document.querySelector('[data-category-pills]');
+    if (!pills) return;
+
+    var items = all('[data-category-pill]', pills);
+    var overflow = pills.querySelector('[data-category-overflow]');
+    var trigger = pills.querySelector('[data-category-overflow-trigger]');
+    var menu = pills.querySelector('[data-category-overflow-menu]');
+    if (!items.length || !overflow || !trigger || !menu) return;
+
+    function close() {
+      trigger.setAttribute('aria-expanded', 'false');
+      menu.hidden = true;
+    }
+
+    function fitItems() {
+      close();
+      items.forEach(function (item) {
+        item.hidden = false;
+      });
+      overflow.hidden = true;
+      menu.replaceChildren();
+
+      var gap = parseFloat(window.getComputedStyle(pills).columnGap) || 0;
+      var widths = items.map(function (item) {
+        return item.getBoundingClientRect().width;
+      });
+      var required = widths.reduce(function (sum, width) {
+        return sum + width;
+      }, Math.max(0, items.length - 1) * gap);
+
+      if (required <= pills.clientWidth) return;
+
+      trigger.textContent = '+' + items.length;
+      overflow.hidden = false;
+      var overflowWidth = overflow.getBoundingClientRect().width;
+      var available = Math.max(0, pills.clientWidth - overflowWidth - gap);
+      var used = 0;
+      var visibleCount = 0;
+      var reachedLimit = false;
+
+      widths.forEach(function (width, index) {
+        var nextWidth = used + (visibleCount ? gap : 0) + width;
+        if (!reachedLimit && nextWidth <= available) {
+          used = nextWidth;
+          visibleCount += 1;
+        } else {
+          reachedLimit = true;
+          items[index].hidden = true;
+        }
+      });
+
+      var hiddenItems = items.filter(function (item) {
+        return item.hidden;
+      });
+
+      trigger.textContent = '+' + hiddenItems.length;
+      hiddenItems.forEach(function (item) {
+        var clone = item.cloneNode(true);
+        clone.hidden = false;
+        clone.removeAttribute('data-category-pill');
+        menu.appendChild(clone);
+      });
+    }
+
+    trigger.addEventListener('click', function () {
+      var open = menu.hidden;
+      menu.hidden = !open;
+      trigger.setAttribute('aria-expanded', String(open));
+    });
+
+    menu.addEventListener('click', function (event) {
+      if (event.target.closest('[data-category-pick]')) close();
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!overflow.contains(event.target)) close();
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') close();
+    });
+
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(fitItems).observe(pills);
+    } else {
+      window.addEventListener('resize', fitItems);
+    }
+    fitItems();
   }
 
   /* ---------- Ürün kartı görsel değiştirme (ToggleImage) ---------- */
@@ -184,6 +293,57 @@
     });
   }
 
+  function initDesktopCategoryMenu() {
+    var menu = document.querySelector('[data-desktop-category-menu]');
+    if (!menu) return;
+
+    var trigger = menu.querySelector('[data-desktop-category-trigger]');
+    var dropdown = menu.querySelector('[data-desktop-category-dropdown]');
+
+    function close() {
+      dropdown.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    trigger.addEventListener('click', function () {
+      var open = !dropdown.classList.contains('open');
+      dropdown.classList.toggle('open', open);
+      trigger.setAttribute('aria-expanded', String(open));
+    });
+
+    menu.addEventListener('mouseenter', function () {
+      trigger.setAttribute('aria-expanded', 'true');
+    });
+
+    menu.addEventListener('mouseleave', function () {
+      close();
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!menu.contains(event.target)) close();
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') close();
+    });
+  }
+
+  function initTrackingForm() {
+    var form = document.querySelector('[data-tracking-form]');
+    if (!form) return;
+
+    var submit = form.querySelector('[data-tracking-submit]');
+    var label = form.querySelector('[data-tracking-submit-label]');
+
+    form.addEventListener('submit', function () {
+      if (!form.checkValidity() || !submit) return;
+      submit.disabled = true;
+      if (label && label.getAttribute('data-loading-text')) {
+        label.textContent = label.getAttribute('data-loading-text');
+      }
+    });
+  }
+
   /* ---------- Ürün galerisi + büyüteç (ProductGallery) ---------- */
 
   function initGallery() {
@@ -275,21 +435,39 @@
 
   function money(amount, currency) {
     try {
+      var numericAmount = Number(amount) || 0;
+      var fractionDigits = numericAmount % 1 === 0 ? 0 : 2;
       return new Intl.NumberFormat(document.documentElement.lang || 'tr', {
         style: 'currency',
         currency: currency || 'TRY',
-        minimumFractionDigits: 2
-      }).format(Number(amount) || 0);
+        minimumFractionDigits: fractionDigits,
+        maximumFractionDigits: 2
+      }).format(numericAmount);
     } catch (error) {
       return (Number(amount) || 0).toFixed(2) + ' ' + (currency || '');
     }
   }
 
-  function cartToast(message) {
+  function cartToast(message, productName, linkLabel, cartHref) {
     var toast = document.createElement('div');
     toast.className = 'storefront-cart-toast';
-    toast.textContent = message;
     toast.setAttribute('role', 'status');
+
+    var title = document.createElement('strong');
+    title.textContent = message;
+    toast.appendChild(title);
+
+    if (productName) {
+      var product = document.createElement('span');
+      product.textContent = productName;
+      toast.appendChild(product);
+    }
+
+    var link = document.createElement('a');
+    link.href = cartHref || '/';
+    link.textContent = linkLabel || 'Sepete git';
+    toast.appendChild(link);
+
     document.body.appendChild(toast);
     requestAnimationFrame(function () { toast.classList.add('visible'); });
     window.setTimeout(function () {
@@ -305,14 +483,37 @@
     if (!form) return;
 
     var config = JSON.parse(form.getAttribute('data-order-config') || '{}');
-    var submit = form.querySelector('.whatsapp-order');
+    var submits = all('[data-order-submit]', form);
+    var submit = submits[0];
     var note = form.querySelector('[data-order-note]');
     var selectedColors = [];
     var colorButtons = all('[data-color]', form);
+    var quantityInput = form.querySelector('[name=quantity]');
+    var quantityValues = all('[data-quantity-value]', form);
+    var decreases = all('[data-quantity-decrease]', form);
+    var increases = all('[data-quantity-increase]', form);
+    var previousValues = all('[data-quantity-previous]', form);
+    var nextValues = all('[data-quantity-next]', form);
+
+    function setQuantity(value) {
+      var quantity = Math.min(99, Math.max(1, Number(value) || 1));
+      if (quantityInput) quantityInput.value = String(quantity);
+      quantityValues.forEach(function (element) {
+        element.textContent = String(quantity);
+      });
+      previousValues.forEach(function (element) {
+        element.textContent = quantity > 1 ? String(quantity - 1) : '';
+      });
+      nextValues.forEach(function (element) {
+        element.textContent = quantity < 99 ? String(quantity + 1) : '';
+      });
+    }
 
     function refresh() {
       var canSubmit = !colorButtons.length || selectedColors.length > 0;
-      submit.disabled = !canSubmit;
+      submits.forEach(function (button) {
+        button.disabled = !canSubmit;
+      });
       note.textContent = canSubmit ? config.ready : config.select;
     }
 
@@ -320,7 +521,8 @@
       button.addEventListener('click', function () {
         var color = {
           name: button.getAttribute('data-color') || '',
-          id: button.getAttribute('data-color-id') || ''
+          id: button.getAttribute('data-color-id') || '',
+          hex: button.getAttribute('data-color-hex') || ''
         };
         var index = selectedColors.findIndex(function (item) {
           return (item.id || item.name) === (color.id || color.name);
@@ -336,11 +538,24 @@
       });
     });
 
+    decreases.forEach(function (decrease) {
+      decrease.addEventListener('click', function () {
+        setQuantity((Number(quantityInput && quantityInput.value) || 1) - 1);
+      });
+    });
+    increases.forEach(function (increase) {
+      increase.addEventListener('click', function () {
+        setQuantity((Number(quantityInput && quantityInput.value) || 1) + 1);
+      });
+    });
+
+    /* Tek renkli ürünlerde gereksiz bir seçim adımı bırakma. */
+    if (colorButtons.length === 1) colorButtons[0].click();
+
     form.addEventListener('submit', function (event) {
       event.preventDefault();
       if (submit.disabled) return;
 
-      var quantityInput = form.querySelector('[name=quantity]');
       var quantity = Math.min(99, Math.max(1, Number(quantityInput && quantityInput.value) || 1));
       var items = readCart();
       var colorsToAdd = selectedColors.length ? selectedColors : [{ name: '', id: '' }];
@@ -356,6 +571,10 @@
           image: form.getAttribute('data-product-image') || '',
           color: color.name,
           color_id: color.id,
+          color_hex: color.hex,
+          pack_size: Number(form.getAttribute('data-product-pack-size')) || 1,
+          package_content: form.getAttribute('data-product-package-content') || '',
+          package_content_source: form.getAttribute('data-product-package-content-source') || '',
           quantity: quantity
         };
         var key = cartItemKey(item);
@@ -366,7 +585,12 @@
       });
 
       writeCart(items);
-      cartToast(config.added || 'Ürün sepete eklendi.');
+      cartToast(
+        config.added || 'Ürün sepete eklendi.',
+        form.getAttribute('data-product-name') || '',
+        config.goToCart || 'Sepete git',
+        config.cartHref || '/'
+      );
     });
 
     refresh();
@@ -402,6 +626,7 @@
       var items = readCart();
       list.innerHTML = '';
       show(empty, items.length === 0);
+      show(total.closest('.cart-total-row'), items.length > 0, 'flex');
       submit.disabled = submitted || items.length === 0;
 
       var sum = 0;
@@ -411,6 +636,7 @@
         var fragment = template.content.cloneNode(true);
         var row = fragment.querySelector('.cart-line');
         var image = row.querySelector('img');
+        var productHref = '/' + (document.documentElement.lang || 'tr') + '/product/' + (item.slug || '');
         var quantity = Math.min(99, Math.max(1, Number(item.quantity) || 1));
         var lineTotal = (Number(item.price) || 0) * quantity;
         sum += lineTotal;
@@ -421,14 +647,33 @@
         } else {
           row.querySelector('.cart-line-image').hidden = true;
         }
-        row.querySelector('[data-line-code]').textContent = item.code || '';
+        all('[data-line-product-link]', row).forEach(function (link) {
+          link.href = productHref;
+        });
+        row.querySelector('[data-line-code]').textContent = item.code ? 'KOD ' + item.code : '';
         row.querySelector('[data-line-name]').textContent = item.name || '';
-        row.querySelector('[data-line-options]').textContent = item.color || '';
-        row.querySelector('[data-line-total]').textContent = money(lineTotal, item.currency);
-        row.querySelector('[data-cart-quantity]').value = String(quantity);
+        row.querySelector('[data-line-package-price]').textContent = money(Number(item.price) || 0, item.currency);
+        row.querySelector('[data-line-color]').textContent = item.color || '—';
+        row.querySelector('[data-line-color-dot]').style.backgroundColor = item.color_hex || '#fff';
+        row.querySelector('[data-cart-quantity]').textContent = String(quantity);
 
-        row.querySelector('[data-cart-quantity]').addEventListener('change', function (event) {
-          item.quantity = Math.min(99, Math.max(1, Number(event.target.value) || 1));
+        var packSizeWrap = row.querySelector('[data-line-pack-size-wrap]');
+        if (item.pack_size) row.querySelector('[data-line-pack-size]').textContent = String(item.pack_size);
+        else packSizeWrap.hidden = true;
+
+        var packageWrap = row.querySelector('[data-line-package-wrap]');
+        if (item.package_content && ['database', 'fallback'].includes(item.package_content_source)) {
+          row.querySelector('[data-line-package]').textContent = item.package_content;
+        }
+        else packageWrap.hidden = true;
+
+        row.querySelector('[data-cart-decrease]').addEventListener('click', function () {
+          item.quantity = Math.max(1, quantity - 1);
+          writeCart(items);
+          render();
+        });
+        row.querySelector('[data-cart-increase]').addEventListener('click', function () {
+          item.quantity = Math.min(99, quantity + 1);
           writeCart(items);
           render();
         });
@@ -461,13 +706,254 @@
     writeCart([]);
   }
 
+  /* ---------- Multimedya albümü ve erişilebilir görüntüleyici ---------- */
+
+  function initMediaViewer() {
+    var viewer = document.querySelector('[data-media-viewer]');
+    var tiles = all('[data-media-post]');
+    if (!viewer || !tiles.length) return;
+
+    var panel = viewer.querySelector('.media-viewer-panel');
+    var stage = viewer.querySelector('.media-viewer-stage');
+    var asset = viewer.querySelector('[data-media-asset]');
+    var title = viewer.querySelector('[data-media-title]');
+    var description = viewer.querySelector('[data-media-description]');
+    var counter = viewer.querySelector('[data-media-counter]');
+    var thumbnails = viewer.querySelector('[data-media-thumbnails]');
+    var previous = viewer.querySelector('[data-media-previous]');
+    var next = viewer.querySelector('[data-media-next]');
+    var closeButton = viewer.querySelector('.media-viewer-close');
+    var posts = [];
+    var postIndex = 0;
+    var fileIndex = 0;
+    var lastFocused = null;
+    var closeTimer = null;
+    var touchStartX = 0;
+
+    tiles.forEach(function (tile) {
+      var source = tile.querySelector('[data-media-post-data]');
+      if (!source) return;
+
+      try {
+        posts.push(JSON.parse(source.textContent));
+      } catch (error) {
+        posts.push(null);
+      }
+    });
+
+    function currentPost() {
+      return posts[postIndex] || null;
+    }
+
+    function currentFile() {
+      var post = currentPost();
+      return post && post.files ? post.files[fileIndex] : null;
+    }
+
+    function makeAsset(file, post) {
+      var element;
+
+      if (file.type === 'video') {
+        element = document.createElement('video');
+        element.src = file.url;
+        element.controls = true;
+        element.autoplay = true;
+        element.playsInline = true;
+        element.setAttribute('aria-label', file.alt || post.title || '');
+        return element;
+      }
+
+      if (file.type === 'document') {
+        element = document.createElement('a');
+        element.className = 'media-viewer-document';
+        element.href = file.url;
+        element.target = '_blank';
+        element.rel = 'noreferrer';
+        element.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M7 3h7l5 5v13H7zM14 3v6h5M10 14h6M10 18h4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        var label = document.createElement('span');
+        label.textContent = viewer.getAttribute('data-label-open-document') || 'Belgeyi aç';
+        element.appendChild(label);
+        return element;
+      }
+
+      element = document.createElement('img');
+      element.src = file.url;
+      element.alt = file.alt || post.title || '';
+      element.decoding = 'async';
+      return element;
+    }
+
+    function renderAsset() {
+      var post = currentPost();
+      var file = currentFile();
+      if (!post || !file) return;
+
+      var playingVideo = asset.querySelector('video');
+      if (playingVideo) playingVideo.pause();
+
+      asset.replaceChildren(makeAsset(file, post));
+      title.textContent = post.title || '';
+      description.textContent = post.description || '';
+      counter.textContent = String(fileIndex + 1).padStart(2, '0') + ' / ' + String(post.files.length).padStart(2, '0');
+
+      var multiple = post.files.length > 1;
+      previous.hidden = !multiple;
+      next.hidden = !multiple;
+
+      all('.media-viewer-thumb', thumbnails).forEach(function (thumb, index) {
+        var active = index === fileIndex;
+        thumb.classList.toggle('is-active', active);
+        thumb.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+    }
+
+    function buildThumbnails() {
+      var post = currentPost();
+      thumbnails.replaceChildren();
+      if (!post || post.files.length < 2) {
+        thumbnails.hidden = true;
+        return;
+      }
+
+      thumbnails.hidden = false;
+      post.files.forEach(function (file, index) {
+        var thumb = document.createElement('button');
+        thumb.type = 'button';
+        thumb.className = 'media-viewer-thumb';
+        thumb.setAttribute('aria-label', (post.title || '') + ' ' + (index + 1));
+
+        if (file.type === 'image') {
+          var image = document.createElement('img');
+          image.src = file.url;
+          image.alt = '';
+          image.loading = 'lazy';
+          thumb.appendChild(image);
+        } else if (file.type === 'video') {
+          var video = document.createElement('video');
+          video.src = file.url;
+          video.muted = true;
+          video.playsInline = true;
+          video.preload = 'metadata';
+          thumb.appendChild(video);
+        } else {
+          var documentLabel = document.createElement('span');
+          documentLabel.textContent = 'PDF';
+          thumb.appendChild(documentLabel);
+        }
+
+        thumb.addEventListener('click', function () {
+          fileIndex = index;
+          renderAsset();
+        });
+        thumbnails.appendChild(thumb);
+      });
+    }
+
+    function move(direction) {
+      var post = currentPost();
+      if (!post || post.files.length < 2) return;
+      fileIndex = (fileIndex + direction + post.files.length) % post.files.length;
+      renderAsset();
+    }
+
+    function open(index, trigger) {
+      if (!posts[index]) return;
+      if (closeTimer) window.clearTimeout(closeTimer);
+
+      postIndex = index;
+      fileIndex = 0;
+      lastFocused = trigger;
+      buildThumbnails();
+      renderAsset();
+      viewer.hidden = false;
+      document.body.classList.add('media-viewer-open');
+
+      window.requestAnimationFrame(function () {
+        viewer.classList.add('is-open');
+        closeButton.focus({ preventScroll: true });
+      });
+    }
+
+    function close() {
+      if (viewer.hidden) return;
+      viewer.classList.remove('is-open');
+      document.body.classList.remove('media-viewer-open');
+
+      var video = asset.querySelector('video');
+      if (video) video.pause();
+
+      closeTimer = window.setTimeout(function () {
+        viewer.hidden = true;
+        asset.replaceChildren();
+        if (lastFocused) lastFocused.focus({ preventScroll: true });
+      }, 240);
+    }
+
+    tiles.forEach(function (tile, index) {
+      tile.addEventListener('click', function () {
+        open(index, tile);
+      });
+    });
+
+    all('[data-media-close]', viewer).forEach(function (button) {
+      button.addEventListener('click', close);
+    });
+    previous.addEventListener('click', function () { move(-1); });
+    next.addEventListener('click', function () { move(1); });
+
+    viewer.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        close();
+        return;
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        move(document.documentElement.dir === 'rtl' ? 1 : -1);
+        return;
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        move(document.documentElement.dir === 'rtl' ? -1 : 1);
+        return;
+      }
+      if (event.key !== 'Tab') return;
+
+      var focusable = all('button:not([hidden]), a[href], video[controls]', panel);
+      if (!focusable.length) return;
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+
+    stage.addEventListener('touchstart', function (event) {
+      touchStartX = event.changedTouches[0].clientX;
+    }, { passive: true });
+
+    stage.addEventListener('touchend', function (event) {
+      var distance = event.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(distance) < 48) return;
+      move(distance > 0 ? -1 : 1);
+    }, { passive: true });
+  }
+
   function init() {
     initCategoryFilter();
+    initCategoryOverflow();
     initToggleImages();
     initMobileNav();
+    initDesktopCategoryMenu();
+    initTrackingForm();
     initGallery();
     initOrderForm();
     initCartPage();
+    initMediaViewer();
     clearCartAfterOrder();
     refreshCartCount();
   }

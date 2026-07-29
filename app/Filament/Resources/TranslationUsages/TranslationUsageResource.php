@@ -22,6 +22,8 @@ class TranslationUsageResource extends ManagedResource
 {
     protected static ?string $model = TranslationUsage::class;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
     protected static ?string $navigationLabel = 'Çeviri Kullanımı';
@@ -29,7 +31,6 @@ class TranslationUsageResource extends ManagedResource
     protected static ?string $modelLabel = 'çeviri kaydı';
 
     protected static ?string $pluralModelLabel = 'çeviri kayıtları';
-
 
     protected static ?int $navigationSort = 14;
 

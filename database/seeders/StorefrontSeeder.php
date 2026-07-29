@@ -507,6 +507,9 @@ class StorefrontSeeder extends Seeder
                 'footerInfoTitle' => 'Bilgilendirmeler',
                 'footerAddress' => 'MERTER / İSTANBUL',
                 'copyright' => '© '.date('Y').' Merter Giyim. Tüm hakları saklıdır.',
+                'contactTitle' => 'İletişim',
+                'contactDescription' => 'Merter Giyim showroom ve toptan sipariş süreçleri için bizimle iletişime geçebilirsin.',
+                'contactAddress' => 'Mehmet Nesih Özmen Mahallesi, Savaş Caddesi, Vardarlı Çarşı, No: 21, Kat: 2, Dükkan: 37, Merter, İstanbul',
             ],
             'en' => [
                 'siteName' => 'Merter Clothing',
@@ -515,6 +518,9 @@ class StorefrontSeeder extends Seeder
                 'footerInfoTitle' => 'Information',
                 'footerAddress' => 'MERTER / ISTANBUL',
                 'copyright' => '© '.date('Y').' Merter Clothing. All rights reserved.',
+                'contactTitle' => 'Contact',
+                'contactDescription' => 'Contact us for the Merter Giyim showroom and wholesale ordering process.',
+                'contactAddress' => 'Mehmet Nesih Özmen District, Savaş Avenue, Vardarlı Bazaar, No: 21, Floor: 2, Shop: 37, Merter, Istanbul',
             ],
         ];
 
@@ -532,6 +538,16 @@ class StorefrontSeeder extends Seeder
         foreach ($footerInfoTitles as $locale => $title) {
             $perLocale[$locale]['footerInfoTitle'] = $title;
         }
+
+        $perLocale['general'] = [
+            'siteLogo' => null,
+            'whatsappNumber' => (string) config('storefront.whatsapp_number'),
+            'contactPhone' => '0532 325 97 88',
+            'contactEmail' => 'info@mertertextile.com',
+            'instagramUrl' => 'https://www.instagram.com/',
+            'facebookUrl' => 'https://www.facebook.com/',
+            'googleMapsIframe' => '',
+        ];
 
         SiteSetting::updateOrCreate(['key' => 'storefront'], ['value' => $perLocale, 'updated_at' => now()]);
     }

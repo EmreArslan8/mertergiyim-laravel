@@ -5,9 +5,9 @@ namespace App\Support;
 /**
  * Görsel yüklemelerinin hangi diske gideceğine karar verir.
  *
- * S3 anahtarları henüz yokken FILESYSTEM_SUPABASE_DISK boş bırakılır ve
- * yüklemeler lokal yedek diske düşer; kaydedilen storage_path değeri
- * her iki durumda da aynı formatta (bucket'a göreli yol) kalır.
+ * Alwaysdata'da dosyalar public_media diskine, isteğe bağlı Supabase
+ * kurulumunda S3 uyumlu diske yazılır. Veritabanında her iki hedef için de
+ * yalnızca ilgili klasöre göreli dosya yolu saklanır.
  */
 class UploadTarget
 {
@@ -21,7 +21,7 @@ class UploadTarget
      */
     public static function disk(string $bucketKey): string
     {
-        return self::usesSupabase() ? 'supabase_'.$bucketKey : 'local_supabase_stub';
+        return self::usesSupabase() ? 'supabase_'.$bucketKey : 'public_media';
     }
 
     public static function bucket(string $bucketKey): string

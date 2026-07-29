@@ -13,9 +13,10 @@ use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Middleware\SetStorefrontLocale;
+use App\Support\BrandSettings;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/'.config('storefront.default_locale'));
+Route::get('/', fn () => redirect('/'.BrandSettings::defaultLocale()));
 
 Route::get('/sitemap.xml', SitemapController::class)->name('storefront.sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('storefront.robots');

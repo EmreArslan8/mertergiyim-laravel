@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Support\BrandSettings;
 use App\Support\PhoneNumber;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -143,7 +144,8 @@ class WhatsAppNotifier
 
     private function recipient(): string
     {
-        $number = (string) config('storefront.whatsapp.recipient')
+        $number = (string) BrandSettings::general('orderNotificationNumber')
+            ?: (string) config('storefront.whatsapp.recipient')
             ?: (string) config('storefront.whatsapp_number');
 
         return PhoneNumber::normalize($number);

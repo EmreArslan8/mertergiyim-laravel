@@ -7,7 +7,8 @@ use App\Models\Category;
 use App\Models\Color;
 use App\Models\ContentPage;
 use App\Models\HeroSlide;
-use App\Models\Media;
+use App\Models\MediaFile;
+use App\Models\MediaPost;
 use App\Models\Product;
 use App\Models\SiteLink;
 use App\Models\Size;
@@ -48,7 +49,8 @@ class CheckTranslations extends Command
         Category::class => ['name_i18n'],
         Color::class => ['name_i18n'],
         Size::class => ['name_i18n'],
-        Media::class => ['title', 'alt', 'caption'],
+        MediaPost::class => ['title', 'description'],
+        MediaFile::class => ['alt'],
         SiteLink::class => ['label'],
     ];
 

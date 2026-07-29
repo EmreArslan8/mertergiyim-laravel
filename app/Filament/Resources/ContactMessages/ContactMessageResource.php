@@ -21,10 +21,15 @@ use Filament\Tables\Table;
 class ContactMessageResource extends ManagedResource
 {
     protected static ?string $model = ContactMessage::class;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChatBubbleLeftRight;
+
     protected static ?string $navigationLabel = 'İletişim Mesajları';
+
     protected static ?string $modelLabel = 'iletişim mesajı';
+
     protected static ?string $pluralModelLabel = 'iletişim mesajları';
+
     protected static ?int $navigationSort = 11;
 
     public static function canCreate(): bool

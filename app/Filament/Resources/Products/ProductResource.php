@@ -6,8 +6,6 @@ use App\Filament\Resources\ManagedResource;
 use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
-use App\Filament\Resources\Products\RelationManagers\ImagesRelationManager;
-use App\Filament\Resources\Products\RelationManagers\VariantsRelationManager;
 use App\Filament\Resources\Products\Schemas\ProductForm;
 use App\Filament\Resources\Products\Tables\ProductsTable;
 use App\Models\Product;
@@ -43,10 +41,7 @@ class ProductResource extends ManagedResource
 
     public static function getRelations(): array
     {
-        return [
-            ImagesRelationManager::class,
-            VariantsRelationManager::class,
-        ];
+        return [];
     }
 
     public static function getPages(): array

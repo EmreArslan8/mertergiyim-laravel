@@ -7,14 +7,19 @@ return [
 
     'default_locale' => 'tr',
 
+    // Veritabanında henüz Site Ayarları kaydı yokken kullanılan nötr marka adı.
+    'brand_name' => env('STOREFRONT_BRAND_NAME', 'Mağaza'),
+
     'rtl_locales' => ['ar', 'fa'],
 
-    // Supabase Storage public base URL. Bucket + path bunun altına eklenir.
-    'storage_url' => env('SUPABASE_STORAGE_URL', 'https://whcylakuagonefgjdqhx.supabase.co/storage/v1/object/public'),
+    // Yalnızca Supabase seçilirse kullanılır; Alwaysdata'da /storage üretilir.
+    'storage_url' => env('SUPABASE_STORAGE_URL', ''),
 
     'buckets' => [
-        'products' => 'product-images',
-        'site' => 'site-media',
+        // Eski Supabase kayıtlarıyla geriye uyumlu klasör adları. Alwaysdata
+        // kurulumunda istenirse env üzerinden products/site yapılabilir.
+        'products' => env('STOREFRONT_PRODUCTS_DIRECTORY', 'product-images'),
+        'site' => env('STOREFRONT_SITE_DIRECTORY', 'site-media'),
     ],
 
     // Görsel yoksa kullanılacak yer tutucu (boş bırakılırsa görsel basılmaz).
@@ -40,15 +45,15 @@ return [
         'template_language' => env('WHATSAPP_TEMPLATE_LANGUAGE', 'tr'),
     ],
 
-    'site_url' => env('STOREFRONT_SITE_URL', 'https://www.mertergiyim.com'),
+    'site_url' => env('STOREFRONT_SITE_URL', env('APP_URL', 'http://localhost')),
 
     // Sorgu cache süresi (saniye). Kaynak Next.js projesindeki revalidate = 3600.
     'cache_ttl' => (int) env('STOREFRONT_CACHE_TTL', 3600),
 
     // Panelden yapılan görsel yüklemeleri.
     'upload' => [
-        // 'supabase' -> S3 uyumlu Supabase Storage, aksi halde lokal yedek disk.
-        'target' => env('FILESYSTEM_SUPABASE_DISK', 'local_supabase_stub'),
+        // Alwaysdata'da 'local'; gerektiğinde geriye uyumlu olarak 'supabase'.
+        'target' => env('STOREFRONT_UPLOAD_DISK', env('FILESYSTEM_SUPABASE_DISK', 'local')),
 
         // Yükleme öncesi yeniden boyutlandırma (kaynak compress-image.ts ile aynı).
         'max_size' => (int) env('STOREFRONT_UPLOAD_MAX_SIZE', 1600),

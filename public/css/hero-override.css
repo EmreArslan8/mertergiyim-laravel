@@ -31,20 +31,49 @@
 .language-bar a.selected{border-color:#f97316;background:#ea580c;color:#fff}
 .mobile-header-actions{display:none}
 
-/* ---- Ürün kartı — kaynak index.html ile birebir ---- */
-body{background:#f8fafc}                                    /* bg-slate-50 */
-.product-card{box-shadow:0 20px 25px -5px #0000001a,0 8px 10px -6px #0000001a} /* shadow-xl */
-.product-card-body{padding:24px}                            /* p-6, mobilde de aynı */
-.product-card-head{gap:0;margin-bottom:4px}                 /* mb-1 */
-.product-card-head h3{min-height:0;line-height:32px}        /* text-2xl */
-.detail-button{padding:4px 12px;border-radius:6px;background:#dbeafe;color:#1e3a8a;font-size:14px;font-weight:700;line-height:20px;text-transform:uppercase}
-.product-description{font-size:14px;line-height:20px}       /* text-sm, mobilde de 14px */
-.product-card h4{min-height:0;color:#334155;font-size:18px;font-weight:700;line-height:28px}
-.product-divider{border-top-color:#e5e7eb}
-.product-card .price{margin-bottom:16px;color:#ea580c;line-height:36px}
-.buy-button,.whatsapp-button{padding:16px 0;border-radius:8px;font-size:16px;font-weight:700;line-height:24px;text-transform:uppercase}
-.buy-button{margin-bottom:8px;background:#ea580c}
-.whatsapp-button{background:#22c55e}
+/* ---- Ürün kartı — mertertextile.com ile birebir ---- */
+body{background:var(--surface)}                             /* bg-slate-50 */
+.products{padding:56px 32px}
+.catalog-heading{display:flex;width:min(100%,1280px);align-items:flex-end;justify-content:space-between;gap:32px;margin:0 auto 40px;padding-bottom:20px;border-bottom:1px solid #e4e4e7}
+.catalog-heading span{display:block;color:#a1a1aa;font-size:12px;font-weight:600;line-height:16px;letter-spacing:.1em;text-transform:uppercase}
+.catalog-heading h2{margin:4px 0 0;color:#09090b;font-size:30px;font-weight:400;line-height:1.2;letter-spacing:-.025em}
+.catalog-heading p{max-width:448px;margin:0;color:#71717a;font-size:12px;line-height:20px}
+.product-grid{width:min(100%,1280px);margin:0 auto;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+.products .store-empty{display:flex;width:min(100%,1280px);min-height:260px;align-items:center;flex-direction:column;justify-content:center;margin:0 auto;padding:48px 24px;border:1px solid #e4e4e7;border-radius:14px;background:linear-gradient(145deg,#fff 0%,#fffaf7 100%);color:#71717a;text-align:center;box-shadow:0 10px 32px #18181b0a}
+.store-empty-icon{display:grid;width:64px;height:64px;place-items:center;margin-bottom:20px;border-radius:50%;background:#ffedd5;color:#ea580c;box-shadow:inset 0 0 0 1px #fed7aa}
+.store-empty-icon svg{width:30px;height:30px;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.products .store-empty h3{margin:0;color:#18181b;font-size:24px;font-weight:700;line-height:1.25;letter-spacing:-.025em}
+.products .store-empty p{max-width:520px;margin:10px 0 0;color:#71717a;font-size:14px;line-height:1.7}
+.products .store-empty button{margin-top:24px;padding:12px 20px;border:0;border-radius:8px;background:#18181b;color:#fff;font:700 12px/1.4 'Montserrat',sans-serif;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:background-color .15s ease,transform .15s ease}
+.products .store-empty button:hover{background:#ea580c;transform:translateY(-1px)}
+.products .store-empty button[hidden]{display:none}
+.product-card{padding:0;border:1px solid var(--soft);border-radius:8px;background:#fff;box-shadow:0 1px 3px #0000001a,0 1px 2px -1px #0000001a;overflow:hidden;transition:box-shadow .3s cubic-bezier(.4,0,.2,1)}
+.product-card:hover{box-shadow:0 4px 6px -1px #0000001a,0 2px 4px -2px #0000001a}
+.product-image{aspect-ratio:3/4;border-radius:0;background:var(--soft)}
+.product-image img{transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)}
+/* Görsel üstündeki paket rozeti */
+.pack-badge{position:absolute;z-index:2;top:12px;left:12px;padding:4px 10px;border-radius:9999px;background:#fffc;color:#27272a;font-size:10px;font-weight:500;line-height:1.4;letter-spacing:.02em;backdrop-filter:blur(4px)}
+.product-card-body{padding:20px}
+/* KOD + fiyat aynı satırda, taban hizasında */
+.product-card-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0}
+.product-card-head h3{margin:0;min-height:0;color:var(--muted);font:400 12px/1.4 'Montserrat',sans-serif;letter-spacing:.05em}
+.product-card .price{display:block;margin:0;color:var(--ink);font-size:20px;font-weight:700;line-height:1.4}
+.product-card .product-category{margin-top:7px;color:var(--accent);font-size:12px;font-weight:600;line-height:1.4}
+.product-card h4{min-height:0;margin:8px 0 0;color:#27272a;font:500 16px/1.5 'Montserrat',sans-serif}
+.product-divider{margin:20px 0 16px;border-top-color:var(--line)}
+/* SEPETE EKLE + WHATSAPP yan yana, altında ürün detayları bağlantısı */
+.product-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.product-actions--single{grid-template-columns:1fr}
+.buy-button,.whatsapp-button{margin:0;padding:10px 8px;border-radius:8px;font-size:12px;font-weight:600;line-height:1.4;letter-spacing:.025em;text-transform:uppercase;transition:color .15s cubic-bezier(.4,0,.2,1),background-color .15s cubic-bezier(.4,0,.2,1)}
+.buy-button{background:var(--ink);color:#fff}
+.buy-button:hover{background:#27272a}
+.whatsapp-button{display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid #a4f4cfb3;background:#ecfdf5;color:#007a55}
+.whatsapp-icon{width:16px;height:16px;flex:none}
+.whatsapp-button:hover{background:#d1fae5}
+.detail-link{display:block;padding:4px 0;margin-top:8px;color:var(--muted);font-size:11px;font-weight:500;text-align:center;text-decoration:none;transition:color .15s cubic-bezier(.4,0,.2,1)}
+.detail-link:hover{color:var(--ink)}
+/* Referans kartta açıklama ve ÜRÜN DETAY pill'i yok */
+.product-description,.detail-button{display:none}
 .mobil-kategori-goster{display:none}
 
 /* ---- Footer — kaynak index.html ile birebir ---- */
@@ -79,10 +108,14 @@ body{background:#f8fafc}                                    /* bg-slate-50 */
   .footer-logo{font-size:30px}
   .toggle-img.is-active img.main{opacity:1}
   .toggle-img.is-active img.alt{opacity:0}
-  .product-image:hover img.main{opacity:0}
-  .product-image:hover img.alt{opacity:1}
+  .product-card:hover .product-image img{transform:scale(1.05)}
+  .product-card:hover .product-image img.main{opacity:0}
+  .product-card:hover .product-image img.alt{opacity:1}
 }
 @media(max-width:767px){
+  .products{padding-right:16px;padding-left:16px}
+  .catalog-heading{align-items:flex-start;flex-direction:column;gap:16px;margin-bottom:32px}
+  .catalog-heading h2{font-size:28px}
   .product-grid{grid-template-columns:1fr;gap:32px}         /* gap-8 */
   .touch-tip{display:block}
   .mobil-urun-detay-gizle{display:none}
@@ -123,4 +156,209 @@ body{background:#f8fafc}                                    /* bg-slate-50 */
   .footer-policy-links{grid-template-columns:minmax(0,1fr);gap:14px}
   .footer-policy-links a{display:block;padding:3px 0;line-height:1.5;overflow-wrap:normal;word-break:normal}
   .site-footer-bottom{padding-top:24px}
+}
+
+/* Header — canlı mertertextile.com SiteHeader ile ortak ölçüler. */
+.site-header {
+  width: 100%;
+  height: auto;
+  padding: 20px max(32px, calc((100vw - 1280px) / 2 + 32px));
+}
+
+.site-header .brand {
+  color: #fff;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -.025em;
+  line-height: 36px;
+}
+
+.site-header .main-nav {
+  gap: 24px;
+}
+
+.site-header .main-nav a,
+.site-header .desktop-category-menu > button {
+  color: inherit;
+  font: 700 12px/16px Montserrat, sans-serif;
+  text-transform: uppercase;
+}
+
+.site-header--solid {
+  position: static;
+  border-bottom: 1px solid #e4e4e7;
+  background: #fff;
+  color: #09090b;
+}
+
+.site-header--solid .brand,
+.site-header--solid .main-nav a,
+.site-header--solid .desktop-category-menu > button {
+  color: #09090b;
+}
+
+.desktop-category-menu {
+  position: relative;
+}
+
+.desktop-category-menu > button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: color .15s ease;
+}
+
+.desktop-category-menu > button:hover,
+.desktop-category-menu > button[aria-expanded="true"] {
+  color: #f97316;
+}
+
+.desktop-category-menu > button svg {
+  transition: transform .2s ease;
+}
+
+.desktop-category-menu > button[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.desktop-category-dropdown {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 18px);
+  left: 50%;
+  display: grid;
+  width: min(calc(var(--category-columns) * 190px + 16px), calc(100vw - 32px));
+  padding: 8px;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 18px 42px #18181b1f;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 8px);
+  visibility: hidden;
+  transition: opacity .16s ease, transform .16s ease, visibility .16s ease;
+}
+
+.desktop-category-dropdown::before {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: 18px;
+  content: "";
+}
+
+.desktop-category-menu:hover .desktop-category-dropdown,
+.desktop-category-menu:focus-within .desktop-category-dropdown,
+.desktop-category-dropdown.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+  visibility: visible;
+}
+
+.desktop-category-all {
+  margin-bottom: 6px;
+  border-bottom: 1px solid #e4e4e7;
+  font-weight: 800;
+}
+
+.desktop-category-list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(var(--category-columns), minmax(0, 1fr));
+  grid-template-rows: repeat(5, auto);
+  gap: 4px 8px;
+}
+
+.site-header .desktop-category-dropdown a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: #3f3f46;
+  text-transform: none;
+}
+
+.site-header .desktop-category-dropdown a:hover {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.site-header:not(.site-header--solid) .desktop-category-dropdown {
+  border-color: #ffffff33;
+  background: #09090be8;
+  box-shadow: 0 18px 42px #0006;
+  backdrop-filter: blur(14px);
+}
+
+.site-header:not(.site-header--solid) .desktop-category-all {
+  border-bottom-color: #ffffff29;
+}
+
+.site-header:not(.site-header--solid) .desktop-category-dropdown a {
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.site-header:not(.site-header--solid) .desktop-category-dropdown a:hover {
+  background: #ea580c;
+  color: #fff;
+}
+
+@media(min-width:768px) and (max-width:1023px) {
+  .site-header .main-nav {
+    display: none;
+  }
+
+  .site-header .mobile-header-actions {
+    display: flex;
+  }
+}
+
+@media(max-width:1023px) {
+  .site-header {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .site-header--solid .mobile-language-trigger {
+    height: 40px;
+    gap: 8px;
+    padding: 0 12px;
+    border: 1px solid #e4e4e7;
+    border-radius: 8px;
+    background: #fafafa;
+    color: #09090b;
+    text-transform: uppercase;
+  }
+
+  .site-header--solid .mobile-menu-trigger {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #f4f4f5;
+    color: #09090b;
+  }
+
+  body.mobile-menu-open .site-header--solid .mobile-menu-trigger {
+    background: transparent;
+    color: #fff;
+  }
+}
+
+@media(max-width:639px) {
+  .site-header {
+    padding: 20px 16px;
+  }
+
+  .site-header .brand {
+    font-size: 24px;
+    line-height: 32px;
+  }
 }

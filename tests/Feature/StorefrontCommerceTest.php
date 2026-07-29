@@ -81,15 +81,27 @@ class StorefrontCommerceTest extends TestCase
     {
         [$categoryId] = $this->insertProduct();
 
-        DB::table('media')->insert([
-            'id' => (string) Str::uuid(),
-            'type' => 'image',
-            'file_path' => 'lookbook/test.jpg',
+        $mediaPostId = (string) Str::uuid();
+
+        DB::table('media_posts')->insert([
+            'id' => $mediaPostId,
+            'legacy_media_id' => null,
             'title' => json_encode(['tr' => 'Yeni Koleksiyon']),
-            'alt' => json_encode(['tr' => 'Yeni Koleksiyon']),
-            'caption' => json_encode(['tr' => 'Sezon çekimi']),
+            'description' => json_encode(['tr' => 'Sezon çekimi']),
             'active' => true,
             'sort_order' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('media_files')->insert([
+            'id' => (string) Str::uuid(),
+            'media_post_id' => $mediaPostId,
+            'legacy_media_id' => null,
+            'type' => 'image',
+            'file_path' => 'lookbook/test.jpg',
+            'alt' => json_encode(['tr' => 'Yeni Koleksiyon']),
+            'sort_order' => 0,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -112,6 +124,46 @@ class StorefrontCommerceTest extends TestCase
             'name' => 'Test Müşteri',
             'phone' => '05000000000',
             'locale' => 'tr',
+        ]);
+    }
+
+    public function test_package_price_content_and_size_stocks_are_applied_to_order(): void
+    {
+        [, $productId, $variantId] = $this->insertProduct();
+        $sizeId = DB::table('product_variants')->where('id', $variantId)->value('size_id');
+
+        DB::table('products')->where('id', $productId)->update([
+            'pack_size' => 5,
+            'pack_contents' => json_encode([
+                ['size_id' => $sizeId, 'quantity' => 5],
+            ]),
+        ]);
+        DB::table('product_variants')->where('id', $variantId)->update(['stock_quantity' => 10]);
+
+        $this->get('/tr/product/test-urun')
+            ->assertOk()
+            ->assertSee('M: 5', escape: false)
+            ->assertSee('Paket toplam: 6.000');
+
+        $this->post('/tr/siparisler', [
+            'customer_name' => 'Paket Müşterisi',
+            'phone' => '05321111111',
+            'address' => 'Merter, İstanbul',
+            'cart' => json_encode([[
+                'product_id' => $productId,
+                'color' => 'Siyah',
+                'quantity' => 2,
+            ]]),
+        ])->assertRedirect();
+
+        $order = DB::table('orders')->where('phone', '05321111111')->first();
+        $this->assertNotNull($order);
+        $this->assertEquals(12000.00, (float) $order->total);
+        $this->assertSame(0, DB::table('product_variants')->where('id', $variantId)->value('stock_quantity'));
+        $this->assertDatabaseHas('order_items', [
+            'order_id' => $order->id,
+            'unit_price' => 6000,
+            'quantity' => 2,
         ]);
     }
 

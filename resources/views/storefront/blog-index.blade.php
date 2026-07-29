@@ -11,10 +11,12 @@
 
 @section('content')
     <main class="editorial-page" dir="{{ $dir }}">
-        <header class="editorial-list-head">
-            <span class="editorial-kicker">{{ $messages['blog']['kicker'] ?? 'MERTER GİYİM' }}</span>
-            <h1>{{ $messages['blog']['title'] ?? 'Blog' }}</h1>
-        </header>
+        @include('storefront.partials.page-heading', [
+            'class' => 'page-heading--embedded page-heading--narrow',
+            'eyebrow' => $messages['blog']['kicker'] ?? 'MERTER GİYİM',
+            'title' => $messages['blog']['title'] ?? 'Blog',
+            'description' => $messages['blog']['subtitle'] ?? '',
+        ])
         <section class="editorial-grid">
             @foreach ($posts as $post)
                 <a class="editorial-tile" href="/{{ $locale }}/blog/{{ $post->slug }}">

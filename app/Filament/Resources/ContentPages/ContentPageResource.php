@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\ContentPages;
 
-use App\Filament\Resources\ManagedResource;
+use App\Filament\Resources\ContentPages\Pages\CreateContentPage;
+use App\Filament\Resources\ContentPages\Pages\EditContentPage;
 use App\Filament\Resources\ContentPages\Pages\ListContentPages;
+use App\Filament\Resources\ManagedResource;
 use App\Filament\Support\Multilingual;
 use App\Models\ContentPage;
 use App\Support\Storefront;
@@ -18,16 +20,20 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class ContentPageResource extends ManagedResource
 {
     protected static ?string $model = ContentPage::class;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
+
     protected static ?string $navigationLabel = 'Bilgilendirme Sayfaları';
+
     protected static ?string $modelLabel = 'bilgilendirme sayfası';
+
     protected static ?string $pluralModelLabel = 'bilgilendirme sayfaları';
+
     protected static ?int $navigationSort = 7;
 
     public static function form(Schema $schema): Schema
@@ -70,13 +76,18 @@ class ContentPageResource extends ManagedResource
                 TextColumn::make('updated_at')->label('Güncellendi')->dateTime('d.m.Y H:i'),
             ])
             ->recordActions([
-                EditAction::make()->mutateDataUsing(fn (array $data, $livewire, ?Model $record): array => $livewire->fillAutomaticTranslationsFor($data, $record)),
+                EditAction::make()
+                    ->url(fn ($record): string => self::getUrl('edit', ['record' => $record])),
                 DeleteAction::make(),
             ]);
     }
 
     public static function getPages(): array
     {
-        return ['index' => ListContentPages::route('/')];
+        return [
+            'index' => ListContentPages::route('/'),
+            'create' => CreateContentPage::route('/create'),
+            'edit' => EditContentPage::route('/{record}/edit'),
+        ];
     }
 }

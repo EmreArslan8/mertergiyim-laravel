@@ -6,6 +6,7 @@ use App\Models\BlogPost;
 use App\Models\Category;
 use App\Models\ContentPage;
 use App\Models\Product;
+use App\Support\BrandSettings;
 use App\Support\Storefront;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
@@ -19,7 +20,7 @@ class SitemapController extends Controller
     public function __invoke(): Response
     {
         $xml = Cache::remember('storefront:sitemap', config('storefront.cache_ttl'), function () {
-            $base = rtrim((string) config('storefront.site_url'), '/');
+            $base = BrandSettings::siteUrl();
             $locales = Storefront::locales();
             $slugs = Product::query()->active()->pluck('slug')->filter()->all();
             $pageSlugs = ContentPage::query()->where('active', true)->pluck('slug')->filter()->all();

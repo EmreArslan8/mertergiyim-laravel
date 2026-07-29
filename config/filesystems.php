@@ -38,6 +38,19 @@ return [
             'report' => false,
         ],
 
+        /*
+        | Alwaysdata/Plesk benzeri sunucularda ürün ve site dosyaları.
+        | public/storage sembolik bağlantısı bu diski doğrudan yayınlar.
+        */
+        'public_media' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+            'throw' => true,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

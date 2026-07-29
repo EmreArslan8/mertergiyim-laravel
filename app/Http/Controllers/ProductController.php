@@ -49,14 +49,39 @@ class ProductController extends Controller
         }, $data['recommendations']);
 
         $options = $this->repository->productOptions($product, $locale);
+        $packSize = max(1, (int) ($product->pack_size ?? 1));
+        $sizeNames = collect($options['sizes'])->keyBy('id');
+        $packageBreakdown = collect($product->pack_contents ?? [])
+            ->map(function (array $item) use ($sizeNames): ?array {
+                $size = $sizeNames->get($item['size_id'] ?? null);
+                $quantity = max(0, (int) ($item['quantity'] ?? 0));
+
+                if (! $size || $quantity < 1) {
+                    return null;
+                }
+
+                return [
+                    'name' => $size['name'],
+                    'quantity' => $quantity,
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
 
         return view('storefront.product', [
             'product' => $product,
             'productName' => Storefront::text($product->name, $locale),
+            'productDescription' => Storefront::text($product->description, $locale),
+            'categoryName' => $product->category
+                ? (Storefront::text($product->category->name_i18n, $locale) ?: $product->category->name)
+                : '',
             'price' => Storefront::formatPrice($numericPrice, $currency),
             'numericPrice' => (float) $numericPrice,
             'currencyCode' => $product->currencyForLocale($locale),
             'currencyDisplay' => $currency,
+            'packSize' => $packSize,
+            'packageBreakdown' => $packageBreakdown,
             'sizes' => $options['sizes'],
             'colors' => $options['colors'],
             'gallery' => $gallery,

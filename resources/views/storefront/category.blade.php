@@ -12,12 +12,14 @@
 
 @section('content')
     <main class="collection-page" dir="{{ $dir }}">
-        <header class="collection-hero">
-            <span>{{ $messages['home']['categories'] ?? 'Kategoriler' }}</span>
+        <header class="collection-summary">
             <h1>{{ $categoryName }}</h1>
             <p>{{ count($cards) }} {{ $messages['category']['productCount'] ?? 'ürün' }}</p>
         </header>
 
-        @include('storefront.partials.catalog', ['showCategoryFilter' => false])
+        @include('storefront.partials.catalog', [
+            'showCategoryFilter' => false,
+            'showCatalogHeading' => false,
+        ])
     </main>
 @endsection

@@ -2,12 +2,14 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Dashboard;
+use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Widgets\StorefrontStatsWidget;
+use App\Support\BrandSettings;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -23,7 +25,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 class AdminPanelProvider extends PanelProvider
 {
     /** Tarayıcı önbelleğini kırmak için tema sürümü. */
-    public const THEME_VERSION = '11';
+    public const THEME_VERSION = '22';
 
     public function panel(Panel $panel): Panel
     {
@@ -32,18 +34,21 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            // Panelin açılışı ve giriş sonrası yönlendirme: kontrol paneli yerine
+            // ürün listesi. Dashboard sayfası duruyor (topbar bağlantısı + widget).
+            ->homeUrl(fn (): string => ProductResource::getUrl('index'))
             // Kullanıcı menü öğesinin üzerine geldiğinde hedef sayfayı önceden
             // getirir; uzak veritabanı gecikmesini tıklamadan önce başlatır.
             ->spa(hasPrefetching: true)
-            ->brandName('Merter Giyim')
-            ->brandLogo(asset('merter-tekstil.png'))
+            ->brandName(fn (): string => BrandSettings::name('tr'))
+            ->brandLogo(fn (): ?string => BrandSettings::logoUrl())
             ->brandLogoHeight('2.25rem')
-            ->favicon(asset('icon.png'))
+            ->favicon(fn (): string => BrandSettings::faviconUrl() ?? asset('icon.png'))
             ->sidebarWidth('13.5rem')
             ->maxContentWidth(Width::Full)
             ->colors([
-                'primary' => Color::hex('#126df5'),
-                'gray' => Color::Slate,
+                'primary' => Color::hex('#171717'),
+                'gray' => Color::Stone,
             ])
             ->darkMode(false)
             ->userMenu(false)
@@ -91,5 +96,4 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
     }
-
 }

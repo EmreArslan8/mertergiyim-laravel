@@ -13,7 +13,8 @@
         <div class="success-mark" aria-hidden="true">✓</div>
         <span>{{ $messages['orderSuccess']['eyebrow'] ?? 'SİPARİŞ OLUŞTURULDU' }}</span>
         <h1>{{ $messages['orderSuccess']['title'] ?? 'Siparişiniz alındı' }}</h1>
-        <p>{{ $messages['orderSuccess']['text'] ?? 'Siparişiniz mağazaya iletildi. Onay için sizinle telefon üzerinden iletişime geçilecektir.' }}</p>
+        <p>{{ trim((string) ($footerSettings['orderSuccessText'] ?? ''))
+            ?: ($messages['orderSuccess']['text'] ?? 'Siparişiniz mağazaya iletildi. Onay için sizinle telefon üzerinden iletişime geçilecektir.') }}</p>
 
         <section class="success-codes">
             <div>

@@ -1,10 +1,16 @@
 @php
     use App\Support\Storefront;
 
-    $metaTitle = $productName.' | Merter Giyim';
+    $metaTitle = $productName.' | '.$siteName;
     $metaDescription = Storefront::text($product->description, $locale) ?: ($messages['meta']['description'] ?? '');
     $metaKeywords = '';
     $ogImage = $gallery[0] ?? null;
+    $packageTotal = Storefront::formatPrice($numericPrice * $packSize, $currencyDisplay);
+    $bodyClass = 'product-detail-body';
+
+    $packageContent = collect($packageBreakdown)
+        ->map(fn ($item) => $item['name'].': '.$item['quantity'])
+        ->join(' / ');
 @endphp
 
 @extends('layouts.app')
@@ -18,30 +24,34 @@
     <main class="detail-page" dir="{{ $dir }}">
         <div class="detail-layout">
             <section class="detail-gallery">
-                {{-- ProductGallery.tsx --}}
                 <div class="product-image-wrap">
                     <div class="zoom-wrap" data-zoom-wrap>
                         @if (count($gallery))
-                            <img class="zoom-main-image" src="{{ $gallery[0] }}" alt="{{ $productName }}" data-zoom-main>
+                            <img class="zoom-main-image" src="{{ $gallery[0] }}" alt="{{ $productName }}"
+                                 fetchpriority="high" data-zoom-main>
                             <div class="magnifier-lens" aria-hidden="true" data-zoom-lens
                                  style="background-image:url({{ $gallery[0] }});background-position:50% 50%;left:50%;top:50%"></div>
-                            <div class="zoom-hint"><span class="zoom-icon">⌕</span> {{ $messages['gallery']['zoomHint'] ?? '' }}</div>
+                            <div class="zoom-hint">
+                                <span class="zoom-icon" aria-hidden="true">⌕</span>
+                                {{ $messages['gallery']['zoomHint'] ?? '' }}
+                            </div>
+                        @else
+                            <div class="detail-image-empty">{{ $productName }}</div>
                         @endif
                     </div>
                 </div>
 
-                <div class="detail-thumbs" id="thumbs" data-thumbs>
-                    @foreach ($gallery as $index => $image)
-                        <button type="button"
-                                aria-label="{{ $index + 1 }}. {{ $messages['gallery']['showImage'] ?? '' }}"
-                                class="detail-thumb {{ $index === 0 ? 'active' : '' }}"
-                                data-thumb="{{ $image }}">
-                            <img src="{{ $image }}" alt="" width="78" height="60" loading="lazy" style="object-fit:contain">
-                        </button>
-                    @endforeach
-                </div>
-                @if (count($gallery))
-                    <div class="detail-gallery-note">{{ $messages['gallery']['galleryNote'] ?? '' }}</div>
+                @if (count($gallery) > 1)
+                    <div class="detail-thumbs" id="thumbs" data-thumbs>
+                        @foreach ($gallery as $index => $image)
+                            <button type="button"
+                                    aria-label="{{ $index + 1 }}. {{ $messages['gallery']['showImage'] ?? '' }}"
+                                    class="detail-thumb {{ $index === 0 ? 'active' : '' }}"
+                                    data-thumb="{{ $image }}">
+                                <img src="{{ $image }}" alt="" width="96" height="112" loading="lazy">
+                            </button>
+                        @endforeach
+                    </div>
                 @endif
 
                 @if ($product->video_url)
@@ -63,77 +73,167 @@
             </section>
 
             <section class="detail-info">
-                <p class="detail-category">{{ $messages['product']['category'] ?? '' }}</p>
                 <h1>{{ $productName }}</h1>
-                <p class="detail-code">{{ $messages['product']['code'] ?? '' }}: {{ $product->code }}</p>
+                <div class="detail-meta">
+                    <span>{{ $categoryName ?: ($messages['product']['category'] ?? '') }}</span>
+                    <b>{{ $product->code }}</b>
+                </div>
 
-                {{-- OrderForm.tsx --}}
+                <div class="detail-pricing">
+                    <span>{{ $packSize > 1 ? 'ADET FİYATI' : ($messages['product']['price'] ?? 'Fiyat') }}</span>
+                    <strong>{{ $price }}</strong>
+                    @if ($packSize > 1)
+                        <p>Paket toplam: {{ $packageTotal }} / Paket: {{ $packSize }} adet</p>
+                    @endif
+                </div>
+
+                @if ($productDescription)
+                    <div class="detail-description">
+                        <span>ÜRÜN AÇIKLAMASI</span>
+                        <p>{!! nl2br(e($productDescription)) !!}</p>
+                    </div>
+                @endif
+
                 <form class="detail-order-form"
                       data-order-form
                       data-product-id="{{ $product->id }}"
                       data-product-slug="{{ $product->slug }}"
                       data-product-name="{{ $productName }}"
                       data-product-code="{{ $product->code }}"
-                      data-product-price="{{ $numericPrice }}"
+                      data-product-price="{{ $numericPrice * $packSize }}"
                       data-product-currency="{{ $currencyCode }}"
                       data-product-image="{{ $primaryImage }}"
+                      data-product-pack-size="{{ $packSize }}"
+                      data-product-package-content="{{ $packageContent }}"
+                      data-product-package-content-source="database"
                       data-order-config="{{ json_encode([
                           'ready' => $messages['cart']['ready'] ?? 'Ürün sepete eklenmeye hazır.',
                           'select' => $messages['cart']['selectVariant'] ?? 'Devam etmek için renk seçin.',
                           'added' => $messages['cart']['added'] ?? 'Ürün sepete eklendi.',
+                          'goToCart' => $messages['cart']['goToCart'] ?? 'Sepete git',
+                          'cartHref' => '/'.$locale.'/sepet',
                       ], JSON_UNESCAPED_UNICODE) }}">
-                    <div class="detail-price">
-                        <div>
-                            <span>{{ $messages['product']['price'] ?? '' }}</span>
-                            <strong>{{ $price }}</strong>
-                        </div>
-                        <b>{{ $messages['product']['wholesale'] ?? '' }}</b>
-                    </div>
-                    {{-- Beden seçimi müşteri isteğiyle vitrinden kaldırıldı; toptan
-                         satışta beden asorti gidiyor. Varyant verisi panelde duruyor. --}}
                     <fieldset>
-                        <legend>
-                            {{ $messages['product']['color'] ?? '' }}
-                            <small>{{ $messages['product']['multiple'] ?? 'Birden fazla seçebilirsiniz' }}</small>
-                        </legend>
+                        <legend>{{ $messages['product']['color'] ?? 'Renk' }}</legend>
                         <div class="choice-row color-choices">
                             @foreach ($colors as $color)
-                                <button type="button" aria-pressed="false"
+                                <button type="button"
+                                        class="{{ count($colors) === 1 ? 'selected' : '' }}"
+                                        aria-pressed="{{ count($colors) === 1 ? 'true' : 'false' }}"
                                         data-color-id="{{ $color['id'] }}"
-                                        data-color="{{ $color['name'] }}">
-                                    <i style="background: {{ $color['hex'] }}"></i>{{ $color['name'] }}
+                                        data-color="{{ $color['name'] }}"
+                                        data-color-hex="{{ $color['hex'] }}">
+                                    <span class="choice-label">
+                                        <i style="background: {{ $color['hex'] }}"></i>
+                                        <span>{{ $color['name'] }}</span>
+                                    </span>
+                                    <span class="choice-check" aria-hidden="true">✓</span>
                                 </button>
                             @endforeach
                         </div>
                     </fieldset>
+
+                    @if ($packSize > 1 || count($sizes))
+                        <div class="detail-package">
+                            <div class="detail-section-heading">
+                                <span>PAKET İÇERİĞİ</span>
+                                @if ($packSize > 1)
+                                    <b>{{ $packSize }} adet</b>
+                                @endif
+                            </div>
+                            @if (count($packageBreakdown))
+                                <div class="detail-size-list" aria-label="Paket bedenleri">
+                                    @foreach ($packageBreakdown as $item)
+                                        <span>
+                                            <strong>{{ $item['name'] }}</strong>
+                                            <small>{{ $item['quantity'] }} adet</small>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    <div class="detail-quantity-row">
+                        <span>{{ $messages['cart']['quantity'] ?? 'Adet' }}</span>
+                        <div class="detail-stepper">
+                            <button type="button" aria-label="Azalt" data-quantity-decrease>−</button>
+                            <output data-quantity-value>1</output>
+                            <button type="button" aria-label="Arttır" data-quantity-increase>+</button>
+                        </div>
+                    </div>
                     <input name="quantity" type="hidden" value="1">
-                    <button class="whatsapp-order" type="submit" disabled>{{ $messages['cart']['add'] ?? 'Sepete Ekle' }}</button>
-                    <p class="order-note" data-order-note>{{ $messages['cart']['selectVariant'] ?? 'Devam etmek için renk seçin.' }}</p>
+                    <button class="whatsapp-order" type="submit" data-order-submit
+                            @if (count($colors) > 1) disabled @endif>
+                        <span>{{ $messages['cart']['add'] ?? 'Sepete Ekle' }}</span>
+                    </button>
+                    <p class="order-note" data-order-note>
+                        {{ count($colors) <= 1
+                            ? ($messages['cart']['ready'] ?? 'Ürün sepete eklenmeye hazır.')
+                            : ($messages['cart']['selectVariant'] ?? 'Devam etmek için renk seçin.') }}
+                    </p>
+
+                    <div class="detail-mobile-purchase">
+                        <div class="detail-mobile-purchase-inner">
+                            <div class="detail-mobile-purchase-grid">
+                                <div class="detail-mobile-add-cluster">
+                                    <div class="detail-mobile-wheel">
+                                        <button type="button" aria-label="Azalt" data-quantity-decrease>
+                                            <span data-quantity-previous></span>
+                                        </button>
+                                        <output data-quantity-value>1</output>
+                                        <button type="button" aria-label="Arttır" data-quantity-increase>
+                                            <span data-quantity-next>2</span>
+                                        </button>
+                                    </div>
+                                    <button class="detail-mobile-add" type="submit" data-order-submit
+                                            @if (count($colors) > 1) disabled @endif>
+                                        {{ $messages['cart']['add'] ?? 'Sepete Ekle' }}
+                                    </button>
+                                </div>
+                                <a class="detail-mobile-cart" href="/{{ $locale }}/sepet"
+                                   aria-label="{{ $messages['cart']['title'] ?? 'Sepet' }}">
+                                    @include('storefront.partials.icon', ['name' => 'shopping-cart', 'size' => 28, 'strokeWidth' => 2.4])
+                                    <span class="cart-count" data-cart-count hidden>0</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </section>
-
-            @if (count($recommendations))
-                <section class="recommended-products">
-                    <hr>
-                    <div class="section-title">{{ $messages['product']['recommended'] ?? '' }}</div>
-                    <div class="recommended-grid">
-                        @foreach ($recommendations as $item)
-                            @php $name = Storefront::text($item['product']->name, $locale); @endphp
-                            <a class="recommended-card" href="{{ Storefront::productHref($locale, $item['product']->slug) }}">
-                                <div class="recommended-image">
-                                    @if ($item['image'])
-                                        <img src="{{ $item['image'] }}" alt="{{ $name }}" loading="lazy" style="object-fit:contain">
-                                    @endif
-                                </div>
-                                <div class="recommended-body">
-                                    <strong>{{ $name }}</strong>
-                                    <span>{{ $item['price'] }}</span>
-                                </div>
-                            </a>
-                        @endforeach
-                    </div>
-                </section>
-            @endif
         </div>
+
+        @if (count($recommendations))
+            <section class="recommended-products">
+                <div class="recommended-heading">
+                    <span>SİZİN İÇİN SEÇTİK</span>
+                    <h2>{{ $messages['product']['recommended'] ?? 'Beğenebileceğiniz Ürünler' }}</h2>
+                </div>
+                <div class="recommended-grid">
+                    @foreach ($recommendations as $item)
+                        @php
+                            $name = Storefront::text($item['product']->name, $locale);
+                            $recommendationCategory = Storefront::text($item['product']->category?->name_i18n, $locale)
+                                ?: $item['product']->category?->name;
+                        @endphp
+                        <a class="recommended-card" href="{{ Storefront::productHref($locale, $item['product']->slug) }}">
+                            <div class="recommended-image">
+                                @if ($item['image'])
+                                    <img src="{{ $item['image'] }}" alt="{{ $name }}" loading="lazy">
+                                @endif
+                            </div>
+                            <div class="recommended-body">
+                                <div class="recommended-meta">
+                                    <small>{{ $recommendationCategory }}</small>
+                                    <b>{{ $item['product']->code }}</b>
+                                </div>
+                                <strong>{{ $name }}</strong>
+                                <span>{{ $item['price'] }}</span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @endif
     </main>
 @endsection

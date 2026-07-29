@@ -22,6 +22,8 @@ class Product extends Model
         'price_try' => 'decimal:2',
         'price_usd' => 'decimal:2',
         'price_eur' => 'decimal:2',
+        'pack_size' => 'integer',
+        'pack_contents' => 'array',
         'active' => 'boolean',
     ];
 

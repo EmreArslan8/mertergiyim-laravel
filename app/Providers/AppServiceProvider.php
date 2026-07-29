@@ -9,13 +9,15 @@ use App\Models\ContentPage;
 use App\Models\Currency;
 use App\Models\HeroSlide;
 use App\Models\Language;
-use App\Models\Media;
+use App\Models\MediaFile;
+use App\Models\MediaPost;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\SiteLink;
 use App\Models\SiteSetting;
 use App\Models\Size;
+use App\Observers\ProductImageObserver;
 use App\Observers\StorefrontCacheObserver;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -46,7 +48,8 @@ class AppServiceProvider extends ServiceProvider
         SiteSetting::class,
         ContentPage::class,
         BlogPost::class,
-        Media::class,
+        MediaPost::class,
+        MediaFile::class,
     ];
 
     public function register(): void
@@ -59,6 +62,8 @@ class AppServiceProvider extends ServiceProvider
         foreach (self::CACHED_MODELS as $model) {
             $model::observe(StorefrontCacheObserver::class);
         }
+
+        ProductImage::observe(ProductImageObserver::class);
 
         // Kaynak Next.js panelindeki CRUD akışı sayfa değiştirmez:
         // yeni/düzenle/sil işlemleri listenin üzerinde modal olarak açılır.

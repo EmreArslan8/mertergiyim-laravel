@@ -72,12 +72,12 @@ return new class extends Migration
                 ? array_filter($existing, fn ($value) => trim((string) $value) !== '')
                 : [];
 
+            // categories tablosunda updated_at kolonu yok (yalnızca created_at).
             DB::table('categories')->where('slug', $slug)->update([
                 'name_i18n' => json_encode(
                     array_merge($translations, $existing),
                     JSON_UNESCAPED_UNICODE,
                 ),
-                'updated_at' => now(),
             ]);
         }
     }

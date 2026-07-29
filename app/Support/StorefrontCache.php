@@ -69,8 +69,14 @@ class StorefrontCache
             return;
         }
 
-        if ($model instanceof Language || $model instanceof SiteLink || $model instanceof SiteSetting) {
+        if ($model instanceof Language || $model instanceof SiteLink) {
             Cache::forget('storefront:chrome');
+
+            return;
+        }
+
+        if ($model instanceof SiteSetting) {
+            self::forgetMany(['chrome', 'sitemap']);
 
             return;
         }

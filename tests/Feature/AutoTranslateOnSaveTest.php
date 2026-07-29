@@ -4,9 +4,15 @@ namespace Tests\Feature;
 
 use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Filament\Resources\Products\Pages\EditProduct;
+use App\Models\Category;
+use App\Models\Color;
 use App\Models\Product;
+use App\Models\Size;
 use App\Models\User;
 use App\Services\TranslateService;
+use App\Support\UploadTarget;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Mockery;
 use RuntimeException;
@@ -22,6 +28,12 @@ class AutoTranslateOnSaveTest extends TestCase
 {
     private ?Product $product = null;
 
+    private ?Category $category = null;
+
+    private ?Size $size = null;
+
+    private ?Color $color = null;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -34,8 +46,28 @@ class AutoTranslateOnSaveTest extends TestCase
         $descriptionTranslations = array_fill_keys($languages, 'Test description');
         $nameTranslations['de'] = 'Test Produkt';
         $descriptionTranslations['de'] = 'Test Beschreibung';
+        Storage::disk(UploadTarget::disk('products'))->put('tests/phpunit-product.jpg', 'test-image');
+
+        $this->category = Category::query()->create([
+            'name' => 'PHPUnit kategori '.$suffix,
+            'name_i18n' => ['tr' => 'PHPUnit kategori '.$suffix],
+            'slug' => 'phpunit-kategori-'.$suffix,
+            'active' => true,
+        ]);
+        $this->size = Size::query()->create([
+            'name' => 'STD-'.$suffix,
+            'name_i18n' => ['tr' => 'STD-'.$suffix],
+            'active' => true,
+        ]);
+        $this->color = Color::query()->create([
+            'name' => 'Siyah-'.$suffix,
+            'name_i18n' => ['tr' => 'Siyah-'.$suffix],
+            'hex' => '#000000',
+            'active' => true,
+        ]);
 
         $this->product = Product::query()->create([
+            'category_id' => $this->category->id,
             'code' => 'PHPUNIT-'.$suffix,
             'slug' => 'phpunit-'.$suffix,
             'name' => ['tr' => 'Test Ürün', ...$nameTranslations],
@@ -45,18 +77,39 @@ class AutoTranslateOnSaveTest extends TestCase
             'price_try' => 1,
             'price_usd' => 1,
             'price_eur' => 1,
+            'pack_size' => 1,
             'stock_status' => 'in_stock',
             'active' => false,
+        ]);
+        $this->product->images()->create([
+            'storage_path' => 'tests/phpunit-product.jpg',
+            'alt' => ['tr' => 'PHPUnit ürün görseli'],
+            'sort_order' => 0,
+            'is_primary' => true,
+        ]);
+        $this->product->variants()->create([
+            'size_id' => $this->size->id,
+            'color_id' => $this->color->id,
+            'stock_quantity' => 1,
         ]);
     }
 
     protected function tearDown(): void
     {
+        $this->product?->images()->get()->each->delete();
         $this->product?->delete();
         $this->product = null;
 
         // Oluşturma testinin bıraktığı geçici kayıtlar.
-        Product::query()->where('code', 'like', 'PHPUNIT-%')->delete();
+        Product::query()->where('code', 'like', 'PHPUNIT-%')->get()->each(function (Product $product): void {
+            $product->images()->get()->each->delete();
+            $product->delete();
+        });
+
+        $this->size?->delete();
+        $this->color?->delete();
+        $this->category?->delete();
+        Storage::disk(UploadTarget::disk('products'))->delete('tests/phpunit-product.jpg');
 
         parent::tearDown();
     }
@@ -82,8 +135,18 @@ class AutoTranslateOnSaveTest extends TestCase
                 'name' => ['tr' => 'Yeni Ürün'],
                 'description' => ['tr' => 'Yeni açıklama'],
                 'price_try' => 100,
+                'pack_size' => 1,
+                'category_id' => $this->category->id,
                 'stock_status' => 'in_stock',
                 'active' => false,
+                'images' => [[
+                    'storage_path' => [UploadedFile::fake()->image('phpunit-product.jpg', 800, 1000)],
+                    'alt' => ['tr' => 'Yeni ürün görseli'],
+                    'is_primary' => true,
+                    'sort_order' => 0,
+                ]],
+                'variant_size_ids' => [$this->size->id],
+                'variant_color_ids' => [$this->color->id],
             ])
             ->call('create')
             ->assertHasNoFormErrors();

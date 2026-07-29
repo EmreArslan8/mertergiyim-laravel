@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\AdminUsers;
 
+use App\Filament\Resources\AdminUsers\Pages\CreateAdminUser;
+use App\Filament\Resources\AdminUsers\Pages\EditAdminUser;
 use App\Filament\Resources\AdminUsers\Pages\ListAdminUsers;
 use App\Models\User;
 use BackedEnum;
@@ -21,10 +23,15 @@ use Filament\Tables\Table;
 class AdminUserResource extends Resource
 {
     protected static ?string $model = User::class;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
+
     protected static ?string $navigationLabel = 'Admin Ayarları';
+
     protected static ?string $modelLabel = 'Yönetici';
+
     protected static ?string $pluralModelLabel = 'Yöneticiler';
+
     protected static ?int $navigationSort = 20;
 
     public static function canAccess(): bool
@@ -65,11 +72,19 @@ class AdminUserResource extends Resource
                 default => 'İçerik Editörü',
             }),
             IconColumn::make('is_active')->label('Aktif')->boolean(),
-        ])->recordActions([EditAction::make(), DeleteAction::make()]);
+        ])->recordActions([
+            EditAction::make()
+                ->url(fn ($record): string => self::getUrl('edit', ['record' => $record])),
+            DeleteAction::make(),
+        ]);
     }
 
     public static function getPages(): array
     {
-        return ['index' => ListAdminUsers::route('/')];
+        return [
+            'index' => ListAdminUsers::route('/'),
+            'create' => CreateAdminUser::route('/create'),
+            'edit' => EditAdminUser::route('/{record}/edit'),
+        ];
     }
 }

@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\BlogPost;
+use App\Models\ContentPage;
 use App\Models\HeroSlide;
+use App\Models\MediaPost;
 use App\Models\Product;
 use App\Models\SiteLink;
 use App\Models\SiteSetting;
@@ -20,6 +23,18 @@ class AdminPanelSmokeTest extends TestCase
     public function test_login_page_is_reachable(): void
     {
         $this->get('/admin/login')->assertOk();
+    }
+
+    public function test_dashboard_renders_summary_and_quick_actions(): void
+    {
+        $this->actingAs(User::query()->firstOrFail())
+            ->get('/admin')
+            ->assertOk()
+            ->assertSee('Yönetim özeti')
+            ->assertSee('Yeni ürün')
+            ->assertSee('Kısayollar')
+            ->assertDontSee('Çeviri Kullanımı')
+            ->assertDontSee('Siteyi görüntüle');
     }
 
     #[DataProvider('panelPages')]
@@ -57,9 +72,13 @@ class AdminPanelSmokeTest extends TestCase
             '/admin/orders/create',
             '/admin/translation-usages',
             '/admin/content-pages',
+            '/admin/content-pages/create',
             '/admin/blog-posts',
+            '/admin/blog-posts/create',
             '/admin/media',
+            '/admin/media/create',
             '/admin/admin-users',
+            '/admin/admin-users/create',
         ]);
     }
 
@@ -74,8 +93,12 @@ class AdminPanelSmokeTest extends TestCase
         $paths = array_filter([
             ($id = Product::query()->value('id')) ? '/admin/products/'.$id.'/edit' : null,
             ($id = HeroSlide::query()->value('id')) ? '/admin/hero-slides/'.$id.'/edit' : null,
+            ($id = ContentPage::query()->value('id')) ? '/admin/content-pages/'.$id.'/edit' : null,
+            ($id = BlogPost::query()->value('id')) ? '/admin/blog-posts/'.$id.'/edit' : null,
+            ($id = MediaPost::query()->value('id')) ? '/admin/media/'.$id.'/edit' : null,
             ($id = SiteLink::query()->value('id')) ? '/admin/site-links/'.$id.'/edit' : null,
             ($key = SiteSetting::query()->value('key')) ? '/admin/site-settings/'.$key.'/edit' : null,
+            ($id = User::query()->value('id')) ? '/admin/admin-users/'.$id.'/edit' : null,
         ]);
 
         $this->assertNotEmpty($paths);

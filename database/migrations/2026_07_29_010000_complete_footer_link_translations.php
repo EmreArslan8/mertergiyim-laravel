@@ -24,6 +24,7 @@ return new class extends Migration
                 ? array_filter($existing, fn ($value) => trim((string) $value) !== '')
                 : [];
 
+            // site_links tablosunda updated_at kolonu yok.
             DB::table('site_links')
                 ->where('location', 'footer')
                 ->where('link_key', $key)
@@ -32,7 +33,6 @@ return new class extends Migration
                         array_merge($translations, $existing),
                         JSON_UNESCAPED_UNICODE,
                     ),
-                    'updated_at' => now(),
                 ]);
         }
     }

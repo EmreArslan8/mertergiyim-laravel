@@ -16,6 +16,16 @@ class EditSiteSetting extends EditRecord
 
     protected static string $resource = SiteSettingResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Site Ayarları';
+    }
+
+    public function getSubheading(): string
+    {
+        return 'Genel · Marka · Satış · SEO · İletişim · Sosyal · Analitik';
+    }
+
     /**
      * site_settings.updated_at kolonu Eloquent timestamp'ı olmadığı için
      * elle tazelenir.

@@ -24,6 +24,6 @@
 @if ($activeSection)
     <div class="merter-topbar-section">
         <x-filament::icon :icon="$activeSection[1]" />
-        <span>{{ $activeSection[0] }}</span>
+        <strong>{{ $activeSection[0] }}</strong>
     </div>
 @endif

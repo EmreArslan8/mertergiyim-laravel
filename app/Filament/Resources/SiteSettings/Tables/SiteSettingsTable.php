@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\SiteSettings\Tables;
 
+use App\Filament\Resources\SiteSettings\SiteSettingResource;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 
 class SiteSettingsTable
 {
@@ -22,12 +22,7 @@ class SiteSettingsTable
             ])
             ->recordActions([
                 EditAction::make()
-                    ->mutateDataUsing(function (array $data, $livewire, ?Model $record): array {
-                        $data = $livewire->fillAutomaticTranslationsFor($data, $record);
-                        $data['updated_at'] = now();
-
-                        return $data;
-                    }),
+                    ->url(fn ($record): string => SiteSettingResource::getUrl('edit', ['record' => $record])),
             ]);
     }
 }

@@ -50,6 +50,22 @@
                     @endif
                 </div>
             @endif
+            @php
+                $socialLinks = array_filter([
+                    'Instagram' => $siteSettings['instagramUrl'] ?? null,
+                    'Facebook' => $siteSettings['facebookUrl'] ?? null,
+                    'TikTok' => $siteSettings['tiktokUrl'] ?? null,
+                    'YouTube' => $siteSettings['youtubeUrl'] ?? null,
+                    'LinkedIn' => $siteSettings['linkedinUrl'] ?? null,
+                ]);
+            @endphp
+            @if ($socialLinks)
+                <nav class="footer-contact-links" aria-label="Sosyal medya">
+                    @foreach ($socialLinks as $label => $url)
+                        <a href="{{ $url }}" target="_blank" rel="noreferrer">{{ $label }}</a>
+                    @endforeach
+                </nav>
+            @endif
         </div>
     </div>
 </footer>

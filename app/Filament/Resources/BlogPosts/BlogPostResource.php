@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\BlogPosts;
 
-use App\Filament\Resources\ManagedResource;
+use App\Filament\Resources\BlogPosts\Pages\CreateBlogPost;
+use App\Filament\Resources\BlogPosts\Pages\EditBlogPost;
 use App\Filament\Resources\BlogPosts\Pages\ListBlogPosts;
+use App\Filament\Resources\ManagedResource;
 use App\Filament\Support\Multilingual;
 use App\Filament\Support\StorageUpload;
 use App\Models\BlogPost;
@@ -16,19 +18,23 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class BlogPostResource extends ManagedResource
 {
     protected static ?string $model = BlogPost::class;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedNewspaper;
+
     protected static ?string $navigationLabel = 'Blog Sayfaları';
+
     protected static ?string $modelLabel = 'blog yazısı';
+
     protected static ?string $pluralModelLabel = 'blog yazıları';
+
     protected static ?int $navigationSort = 8;
 
     public static function form(Schema $schema): Schema
@@ -55,13 +61,18 @@ class BlogPostResource extends ManagedResource
             TextColumn::make('published_at')->label('Yayın tarihi')->dateTime('d.m.Y H:i'),
             ToggleColumn::make('active')->label('Yayında'),
         ])->recordActions([
-            EditAction::make()->mutateDataUsing(fn (array $data, $livewire, ?Model $record): array => $livewire->fillAutomaticTranslationsFor($data, $record)),
+            EditAction::make()
+                ->url(fn ($record): string => self::getUrl('edit', ['record' => $record])),
             DeleteAction::make(),
         ]);
     }
 
     public static function getPages(): array
     {
-        return ['index' => ListBlogPosts::route('/')];
+        return [
+            'index' => ListBlogPosts::route('/'),
+            'create' => CreateBlogPost::route('/create'),
+            'edit' => EditBlogPost::route('/{record}/edit'),
+        ];
     }
 }

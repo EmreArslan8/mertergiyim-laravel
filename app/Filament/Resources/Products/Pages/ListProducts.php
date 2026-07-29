@@ -4,9 +4,10 @@ namespace App\Filament\Resources\Products\Pages;
 
 use App\Filament\Concerns\TranslatesJsonFields;
 use App\Filament\Resources\Products\ProductResource;
-use Filament\Actions\CreateAction;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Support\Enums\Width;
+use Filament\Support\Icons\Heroicon;
+
 
 class ListProducts extends ListRecords
 {
@@ -17,11 +18,14 @@ class ListProducts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()
-                ->modalHeading('Yeni ürün ekle')
-                ->modalWidth(Width::FiveExtraLarge)
-                ->extraModalWindowAttributes(['class' => 'merter-product-modal'])
-                ->mutateDataUsing(fn (array $data): array => $this->fillAutomaticTranslationsFor($data, null)),
+            // Bilerek CreateAction değil: ListRecords, CreateAction'a ürün formunu
+            // bağlayıp modal açtırıyor. Düz bağlantı action'ı doğrudan
+            // /admin/products/create sayfasına gider. Otomatik çeviri doldurma
+            // orada CreateProduct'taki mutateFormDataBeforeCreate() ile yapılır.
+            Action::make('create')
+                ->label('Yeni ürün ekle')
+                ->icon(Heroicon::Plus)
+                ->url(fn (): string => ProductResource::getUrl('create')),
         ];
     }
 

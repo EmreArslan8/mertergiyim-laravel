@@ -44,9 +44,15 @@ class SetStorefrontLocale
 
         $localeSettings = $chrome['settingValue'][$locale] ?? [];
         $siteSettings = $chrome['settingValue']['general'] ?? [];
+        $timezone = (string) ($siteSettings['timezone'] ?? config('app.timezone'));
+        if (in_array($timezone, timezone_identifiers_list(), true)) {
+            config(['app.timezone' => $timezone]);
+            date_default_timezone_set($timezone);
+        }
+
         $siteName = $localeSettings['siteName']
             ?? $this->dictionary->all($locale)['common']['brand']
-            ?? 'Merter Giyim';
+            ?? config('storefront.brand_name');
 
         View::share([
             'locale' => $locale,
@@ -60,10 +66,22 @@ class SetStorefrontLocale
             'siteSettings' => $siteSettings,
             'footerSettings' => array_filter(
                 $localeSettings,
-                fn ($key) => str_starts_with($key, 'footer') || $key === 'copyright',
+                fn ($key) => str_starts_with($key, 'footer')
+                    || str_starts_with($key, 'contact')
+                    || str_starts_with($key, 'seo')
+                    || str_starts_with($key, 'maintenance')
+                    || str_starts_with($key, 'whatsapp')
+                    || str_starts_with($key, 'order')
+                    || $key === 'copyright',
                 ARRAY_FILTER_USE_KEY,
             ),
         ]);
+
+        if ((bool) ($siteSettings['maintenanceMode'] ?? false)) {
+            return response()
+                ->view('storefront.maintenance', status: 503)
+                ->header('Retry-After', '3600');
+        }
 
         return $next($request);
     }

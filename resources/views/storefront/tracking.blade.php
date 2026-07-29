@@ -1,10 +1,9 @@
 @php
     $t = $messages['tracking'] ?? [];
-    $metaTitle = $messages['meta']['trackingTitle'] ?? '';
+    $metaTitle = ($t['heading'] ?? 'Sipariş Takibi').' | '.$siteName;
     $metaDescription = $messages['meta']['description'] ?? '';
     $metaKeywords = '';
 
-    $stepIcons = ['🧾', '✅', '💳', '🚚', '📦'];
     $stepKeys = ['new', 'confirmed', 'paid', 'shipped', 'completed'];
 
     // OrderTrackingForm.tsx: activeStepFor / progressFor
@@ -44,19 +43,31 @@
 @section('content')
     <main class="tracking-page" dir="{{ $dir }}">
         <section class="tracking-content">
-            <div class="tracking-intro">
-                <h1>{{ $t['heading'] ?? '' }}</h1>
-                <p>{{ $t['subheading'] ?? '' }}</p>
-            </div>
+            @include('storefront.partials.page-heading', [
+                'class' => 'page-heading--embedded',
+                'title' => $t['heading'] ?? '',
+                'description' => $t['subheading'] ?? '',
+            ])
 
             <div class="tracking-panel">
-                <form class="tracking-form" method="get" action="/{{ $locale }}/siparis-takibi" novalidate>
+                <form class="tracking-form" method="get" action="/{{ $locale }}/siparis-takibi" data-tracking-form>
                     <label for="tracking-query">{{ $t['inputLabel'] ?? '' }}</label>
                     <div class="tracking-query-row">
-                        <input id="tracking-query" name="q" value="{{ $query }}"
-                               placeholder="{{ $t['placeholder'] ?? '' }}" autocomplete="off" spellcheck="false"
-                               @if ($error) aria-describedby="tracking-error" aria-invalid="true" @endif>
-                        <button type="submit">{{ $t['submit'] ?? '' }}</button>
+                        <div class="tracking-query-field">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle cx="11" cy="11" r="7"/>
+                                <path d="m20 20-4-4"/>
+                            </svg>
+                            <input id="tracking-query" name="q" value="{{ $query }}"
+                                   placeholder="{{ $t['placeholder'] ?? '' }}" autocomplete="off" spellcheck="false" required
+                                   @if ($error) aria-describedby="tracking-error" aria-invalid="true" @endif>
+                        </div>
+                        <button type="submit" data-tracking-submit>
+                            <span data-tracking-submit-label data-loading-text="{{ $t['loading'] ?? '' }}">{{ $t['submit'] ?? '' }}</span>
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M5 12h14M13 6l6 6-6 6"/>
+                            </svg>
+                        </button>
                     </div>
                 </form>
 
@@ -124,7 +135,6 @@
                                             <div class="os-step {{ $state }}" role="listitem" @if ($index === $activeStep) aria-current="step" @endif>
                                                 <div class="os-cap">
                                                     <span class="os-num">{{ $index + 1 }}</span>
-                                                    <span class="os-icon" aria-hidden="true">{{ $stepIcons[$index] }}</span>
                                                 </div>
                                                 <div class="os-body">
                                                     <strong class="os-label">{{ $t['statuses'][$stepKey] ?? '' }}</strong>

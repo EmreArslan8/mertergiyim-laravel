@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
+use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Support\Multilingual;
 use App\Models\Category;
 use App\Models\ProductImage;
@@ -14,13 +15,11 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Enums\PaginationMode;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
-use Filament\Tables\Enums\PaginationMode;
 use Filament\Tables\Table;
-use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class ProductsTable
 {
@@ -87,10 +86,7 @@ class ProductsTable
             ])
             ->recordActions([
                 EditAction::make()
-                    ->modalHeading('Ürün düzenle')
-                    ->modalWidth(Width::FiveExtraLarge)
-                    ->extraModalWindowAttributes(['class' => 'merter-product-modal'])
-                    ->mutateDataUsing(fn (array $data, $livewire, ?Model $record): array => $livewire->fillAutomaticTranslationsFor($data, $record)),
+                    ->url(fn ($record): string => ProductResource::getUrl('edit', ['record' => $record])),
                 DeleteAction::make(),
             ])
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);

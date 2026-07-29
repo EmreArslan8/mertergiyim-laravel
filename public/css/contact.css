@@ -1,0 +1,334 @@
+.contact-page {
+  --contact-ink: #18181b;
+  --contact-muted: #71717a;
+  --contact-line: #e4e4e7;
+  --contact-accent: #ea580c;
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0 0 96px;
+  background: #fafafa;
+  color: var(--contact-ink);
+}
+
+.contact-heading-wrap {
+  width: min(calc(100% - 32px), 1216px);
+  margin: 0 auto;
+  padding-top: 40px;
+  border-bottom: 1px solid var(--contact-line);
+}
+
+.contact-heading-wrap .page-heading {
+  padding-bottom: 32px;
+}
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 390px;
+  gap: clamp(32px, 4vw, 64px);
+  width: min(calc(100% - 32px), 1216px);
+  margin: 0 auto;
+  padding: 40px 0 72px;
+}
+
+.contact-map-column {
+  min-width: 0;
+}
+
+.contact-map {
+  position: relative;
+  min-height: 560px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #e4e4e7;
+}
+
+.contact-map iframe {
+  display: block;
+  width: 100%;
+  height: 560px;
+  border: 0;
+  filter: saturate(.72) contrast(1.04);
+}
+
+.contact-map-label {
+  position: absolute;
+  z-index: 2;
+  top: 18px;
+  inset-inline-start: 18px;
+  display: grid;
+  gap: 3px;
+  min-width: 176px;
+  padding: 12px 15px;
+  border: 1px solid rgb(255 255 255 / .72);
+  border-radius: 10px;
+  background: rgb(255 255 255 / .92);
+  box-shadow: 0 8px 30px rgb(24 24 27 / .1);
+  backdrop-filter: blur(10px);
+}
+
+.contact-map-label span,
+.contact-label,
+.contact-direct-heading > span,
+.contact-social > span {
+  color: var(--contact-accent);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 16px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.contact-map-label strong {
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.contact-address {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: start;
+  padding: 24px 4px 0;
+}
+
+.contact-address address {
+  max-width: 680px;
+  margin-top: 6px;
+  color: #3f3f46;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.75;
+}
+
+.contact-address > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid currentColor;
+  color: var(--contact-ink);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  transition: color .2s ease, gap .2s ease;
+}
+
+.contact-address > a:hover {
+  gap: 12px;
+  color: var(--contact-accent);
+}
+
+.contact-address svg {
+  width: 15px;
+  height: 15px;
+}
+
+.contact-direct {
+  align-self: start;
+  padding-top: 12px;
+}
+
+.contact-direct-heading h2 {
+  margin: 12px 0 0;
+  font-size: clamp(30px, 3vw, 42px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -.045em;
+}
+
+.contact-direct-heading p {
+  margin: 16px 0 0;
+  color: var(--contact-muted);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.contact-whatsapp {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) 20px;
+  gap: 16px;
+  align-items: center;
+  margin-top: 30px;
+  min-height: 80px;
+  border-top: 1px solid var(--contact-line);
+  border-bottom: 1px solid var(--contact-line);
+  color: var(--contact-ink);
+  transition: padding-inline .2s ease, color .2s ease;
+}
+
+.contact-whatsapp:hover {
+  padding-inline: 6px;
+  color: var(--contact-accent);
+}
+
+.contact-whatsapp > svg {
+  width: 24px;
+  height: 24px;
+}
+
+.contact-whatsapp small,
+.contact-whatsapp strong {
+  display: block;
+}
+
+.contact-whatsapp small {
+  color: #a1a1aa;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.contact-whatsapp strong {
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.contact-whatsapp .contact-arrow {
+  width: 18px;
+  height: 18px;
+}
+
+.contact-channels {
+  margin-top: 0;
+}
+
+.contact-channels > a {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  min-height: 80px;
+  border-bottom: 1px solid var(--contact-line);
+  color: var(--contact-ink);
+  transition: padding-inline .2s ease, color .2s ease;
+}
+
+.contact-channels > a:hover {
+  padding-inline: 6px;
+  color: var(--contact-accent);
+}
+
+.contact-channels small,
+.contact-channels strong {
+  display: block;
+  min-width: 0;
+}
+
+.contact-channels small {
+  color: #a1a1aa;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.contact-channels strong {
+  margin-top: 3px;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contact-channels svg {
+  width: 19px;
+  height: 19px;
+}
+
+.contact-social {
+  margin-top: 30px;
+}
+
+.contact-social nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.contact-social a {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 9px;
+  padding: 0 14px 0 11px;
+  border: 1px solid var(--contact-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--contact-ink);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color .2s ease, background .2s ease, color .2s ease, transform .2s ease;
+}
+
+.contact-social a:hover {
+  transform: translateY(-2px);
+  border-color: var(--contact-accent);
+  background: var(--contact-accent);
+  color: #fff;
+}
+
+.contact-social svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 960px) {
+  .contact-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-direct {
+    max-width: 620px;
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .contact-page {
+    padding-bottom: 64px;
+  }
+
+  .contact-heading-wrap,
+  .contact-layout {
+    width: calc(100% - 26px);
+  }
+
+  .contact-heading-wrap {
+    padding-top: 28px;
+  }
+
+  .contact-layout {
+    gap: 42px;
+    padding: 28px 0 52px;
+  }
+
+  .contact-map,
+  .contact-map iframe {
+    min-height: 380px;
+    height: 380px;
+  }
+
+  .contact-address {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding-top: 18px;
+  }
+
+  .contact-address > a {
+    width: fit-content;
+    margin-top: 2px;
+  }
+
+  .contact-direct-heading h2 {
+    font-size: 31px;
+  }
+}

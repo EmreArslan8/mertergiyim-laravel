@@ -92,7 +92,7 @@ class Storefront
     }
 
     /**
-     * Supabase Storage public URL üretir. Zaten tam URL olan path'ler korunur.
+     * Yerel veya Supabase Storage public URL'sini üretir.
      */
     public static function storageUrl(string $bucketKey, ?string $path): string
     {
@@ -106,18 +106,26 @@ class Storefront
 
         $bucket = config('storefront.buckets.'.$bucketKey, $bucketKey);
 
-        // S3 anahtarları yokken yüklenen dosyalar lokal yedek diskte durur.
+        // Alwaysdata: görseller storage/app/public altında kalıcı tutulur.
         if (! UploadTarget::usesSupabase()) {
-            $local = Storage::disk('local_supabase_stub');
+            $local = Storage::disk('public_media');
 
             if ($local->exists($bucket.'/'.ltrim($path, '/'))) {
                 return $local->url($bucket.'/'.ltrim($path, '/'));
+            }
+
+            // Önceki lokal geliştirme dizinindeki dosyaları kırmadan göster.
+            $legacy = Storage::disk('local_supabase_stub');
+            if ($legacy->exists($bucket.'/'.ltrim($path, '/'))) {
+                return $legacy->url($bucket.'/'.ltrim($path, '/'));
             }
         }
 
         $base = rtrim((string) config('storefront.storage_url'), '/');
 
-        return $base.'/'.$bucket.'/'.ltrim($path, '/');
+        return $base !== ''
+            ? $base.'/'.$bucket.'/'.ltrim($path, '/')
+            : '';
     }
 
     /**

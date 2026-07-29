@@ -5,11 +5,11 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * supabase/*.sql şemasının SQLite'a uyarlanmış hali.
+ * Vitrinin veritabanından bağımsız ana şeması.
  *
- * DİKKAT: Canlı veritabanı Supabase Postgres'tir ve şema orada zaten kuruludur.
- * Bu migration yalnızca lokal geliştirme/test içindir; pgsql_supabase bağlantısına
- * karşı ÇALIŞTIRILMAMALIDIR.
+ * Laravel Schema API kullanıldığı için Alwaysdata MariaDB/MySQL ve yerel SQLite
+ * kurulumlarında aynı migration zinciri çalışır. Mevcut şemalarda ürünler tablosu
+ * varsa eski Supabase kurulumlarını değiştirmemek için güvenli biçimde atlanır.
  */
 return new class extends Migration
 {
@@ -23,22 +23,22 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->text('name');
-            $table->text('slug')->unique();
+            $table->string('slug')->unique();
             $table->boolean('active')->default(true);
             $table->timestampTz('created_at')->useCurrent();
         });
 
         Schema::create('sizes', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->text('name')->unique();
+            $table->string('name')->unique();
             $table->boolean('active')->default(true);
             $table->integer('sort_order')->default(0);
         });
 
         Schema::create('colors', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->text('name')->unique();
-            $table->text('hex')->default('#ffffff');
+            $table->string('name')->unique();
+            $table->string('hex', 16)->default('#ffffff');
             $table->boolean('active')->default(true);
             $table->integer('sort_order')->default(0);
         });
@@ -46,14 +46,14 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('category_id')->nullable();
-            $table->text('code')->unique();
-            $table->text('slug')->unique();
+            $table->string('code')->unique();
+            $table->string('slug')->unique();
             // jsonb karşılığı: SQLite'ta text, modelde array cast.
             $table->json('name');
             $table->json('description');
             $table->decimal('price', 12, 2)->nullable();
-            $table->text('currency')->default('TRY');
-            $table->text('stock_status')->default('in_stock');
+            $table->string('currency', 8)->default('TRY');
+            $table->string('stock_status', 32)->default('in_stock');
             $table->text('video_url')->nullable();
             $table->boolean('active')->default(true);
             $table->timestampTz('created_at')->useCurrent();
@@ -99,13 +99,13 @@ return new class extends Migration
 
         Schema::create('orders', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->text('order_number')->unique();
-            $table->text('tracking_code')->nullable();
+            $table->string('order_number')->unique();
+            $table->string('tracking_code')->nullable();
             $table->text('customer_name');
             $table->text('phone');
             $table->text('address')->nullable();
             $table->text('note')->nullable();
-            $table->text('status')->default('new');
+            $table->string('status', 32)->default('new');
             $table->decimal('total', 12, 2)->nullable();
             $table->text('cargo_company')->nullable();
             $table->text('cargo_tracking_url')->nullable();
@@ -128,7 +128,7 @@ return new class extends Migration
 
         Schema::create('languages', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->text('code')->unique();
+            $table->string('code', 16)->unique();
             $table->text('name');
             $table->boolean('active')->default(true);
             $table->integer('sort_order')->default(0);
@@ -137,24 +137,24 @@ return new class extends Migration
 
         Schema::create('currencies', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->text('code')->unique();
-            $table->text('symbol');
-            $table->text('position')->default('suffix');
+            $table->string('code', 8)->unique();
+            $table->string('symbol', 16);
+            $table->string('position', 16)->default('suffix');
             $table->boolean('is_default')->default(false);
             $table->integer('sort_order')->default(0);
             $table->timestampTz('created_at')->useCurrent();
         });
 
         Schema::create('site_settings', function (Blueprint $table) {
-            $table->text('key')->primary();
+            $table->string('key')->primary();
             $table->json('value');
             $table->timestampTz('updated_at')->useCurrent();
         });
 
         Schema::create('site_links', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->text('location');
-            $table->text('link_key');
+            $table->string('location', 64);
+            $table->string('link_key', 128);
             $table->json('label');
             $table->text('url');
             $table->integer('sort_order')->default(0);

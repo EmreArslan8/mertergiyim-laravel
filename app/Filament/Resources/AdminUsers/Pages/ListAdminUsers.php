@@ -3,8 +3,9 @@
 namespace App\Filament\Resources\AdminUsers\Pages;
 
 use App\Filament\Resources\AdminUsers\AdminUserResource;
-use Filament\Actions\CreateAction;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Icons\Heroicon;
 
 class ListAdminUsers extends ListRecords
 {
@@ -12,6 +13,11 @@ class ListAdminUsers extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [CreateAction::make()];
+        return [
+            Action::make('create')
+                ->label('Yeni yönetici')
+                ->icon(Heroicon::Plus)
+                ->url(fn (): string => AdminUserResource::getUrl('create')),
+        ];
     }
 }
