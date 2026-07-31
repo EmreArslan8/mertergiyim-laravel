@@ -198,6 +198,7 @@ class OrderDetailPageTest extends TestCase
                 'order_number' => 'MG-TEST-CREATE',
                 'customer_name' => 'Yeni Müşteri',
                 'phone' => '05551112233',
+                'address' => 'Test Mahallesi No: 1, İstanbul',
                 'status' => 'new',
                 'currency' => 'TRY',
                 'items' => [

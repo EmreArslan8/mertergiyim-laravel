@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Orders\Schemas;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Support\OrderStatus;
+use App\Support\PhoneNumber;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -142,10 +143,24 @@ class OrderDetail
             ->fillForm(fn (Order $record): array => $record->only([
                 'customer_name', 'phone', 'address',
             ]))
+            // Asgari bilgi seti oluşturma formuyla aynı: mevcut bir sipariş de
+            // adresi boşaltılarak ya da telefonu bozularak kaydedilemez.
             ->schema([
-                TextInput::make('customer_name')->label('Ad soyad')->required(),
-                TextInput::make('phone')->label('Telefon')->tel()->required(),
-                Textarea::make('address')->label('Teslimat adresi')->rows(4),
+                TextInput::make('customer_name')
+                    ->label('Ad soyad')
+                    ->required()
+                    ->maxLength(120),
+                TextInput::make('phone')
+                    ->label('Telefon')
+                    ->tel()
+                    ->required()
+                    ->maxLength(30)
+                    ->rule(fn () => PhoneNumber::rule('Geçerli bir telefon numarası girin.')),
+                Textarea::make('address')
+                    ->label('Teslimat adresi')
+                    ->rows(4)
+                    ->required()
+                    ->maxLength(2000),
             ])
             ->action(function (array $data, Order $record): void {
                 $record->update($data);

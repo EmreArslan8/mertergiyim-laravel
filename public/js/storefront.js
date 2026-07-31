@@ -490,6 +490,7 @@
       thumb.addEventListener('click', function () {
         var source = thumb.getAttribute('data-thumb');
         main.src = source;
+        main.alt = thumb.getAttribute('data-thumb-alt') || main.alt;
         lens.style.backgroundImage = 'url(' + source + ')';
         lensVisible = false;
         lens.classList.remove('visible');

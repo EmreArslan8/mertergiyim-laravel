@@ -27,7 +27,7 @@
                 <div class="product-image-wrap">
                     <div class="zoom-wrap" data-zoom-wrap>
                         @if (count($gallery))
-                            <img class="zoom-main-image" src="{{ $gallery[0] }}" alt="{{ $productName }}"
+                            <img class="zoom-main-image" src="{{ $gallery[0] }}" alt="{{ $galleryAlts[0] ?? $productName }}"
                                  fetchpriority="high" data-zoom-main>
                             <div class="magnifier-lens" aria-hidden="true" data-zoom-lens
                                  style="background-image:url({{ $gallery[0] }});background-position:50% 50%;left:50%;top:50%"></div>
@@ -45,9 +45,10 @@
                     <div class="detail-thumbs" id="thumbs" data-thumbs>
                         @foreach ($gallery as $index => $image)
                             <button type="button"
-                                    aria-label="{{ $index + 1 }}. {{ $messages['gallery']['showImage'] ?? '' }}"
+                                    aria-label="{{ $index + 1 }}. {{ $galleryAlts[$index] ?? $productName }}"
                                     class="detail-thumb {{ $index === 0 ? 'active' : '' }}"
-                                    data-thumb="{{ $image }}">
+                                    data-thumb="{{ $image }}"
+                                    data-thumb-alt="{{ $galleryAlts[$index] ?? $productName }}">
                                 <img src="{{ $image }}" alt="" width="96" height="112" loading="lazy">
                             </button>
                         @endforeach

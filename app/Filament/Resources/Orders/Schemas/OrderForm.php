@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Models\Currency;
 use App\Support\OrderStatus;
+use App\Support\PhoneNumber;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -97,6 +98,8 @@ class OrderForm
                                     ->hiddenLabel()
                                     ->addActionLabel('Kalem ekle')
                                     ->defaultItems(1)
+                                    // Kalemsiz sipariş kaydedilemez: sipariş kalemlerdir.
+                                    ->minItems(1)
                                     ->itemLabel(fn (array $state): ?string => $state['product_name'] ?? null)
                                     ->columns(['default' => 1, 'md' => 12])
                                     ->mutateRelationshipDataBeforeCreateUsing(
@@ -111,10 +114,28 @@ class OrderForm
                     ->schema([
                         Section::make('Müşteri')
                             ->schema([
-                                TextInput::make('customer_name')->label('Ad soyad')->required(),
-                                TextInput::make('phone')->label('Telefon')->tel()->required(),
-                                Textarea::make('address')->label('Teslimat adresi')->rows(3),
-                                Textarea::make('note')->label('Müşteri notu')->rows(2),
+                                // Vitrindeki checkout ile aynı asgari bilgi seti:
+                                // ad soyad, geçerli telefon ve teslimat adresi.
+                                // Panelden de eksik sipariş açılamamalı.
+                                TextInput::make('customer_name')
+                                    ->label('Ad soyad')
+                                    ->required()
+                                    ->maxLength(120),
+                                TextInput::make('phone')
+                                    ->label('Telefon')
+                                    ->tel()
+                                    ->required()
+                                    ->maxLength(30)
+                                    // Kural closure'ı sarmalanmadan verilirse Filament
+                                    // onu kendi parametre enjeksiyonuyla çağırmaya çalışır.
+                                    ->rule(fn () => PhoneNumber::rule('Geçerli bir telefon numarası girin.'))
+                                    ->helperText('Ülke koduyla veya 0 ile başlayarak girebilirsiniz.'),
+                                Textarea::make('address')
+                                    ->label('Teslimat adresi')
+                                    ->rows(3)
+                                    ->required()
+                                    ->maxLength(2000),
+                                Textarea::make('note')->label('Müşteri notu')->rows(2)->maxLength(2000),
                             ]),
 
                         Section::make('Kargo')

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Products\Schemas;
 use App\Filament\Support\Multilingual;
 use App\Filament\Support\StorageUpload;
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Services\AdminOptionService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
@@ -132,6 +133,22 @@ class ProductForm
                                             ->hiddenLabel()
                                             ->relationship('images')
                                             ->orderColumn('sort_order')
+                                            // Gömülü repeater, ayrı görsel ilişki yöneticisinin
+                                            // çeviri kancalarını çalıştırmaz; alt metni burada çevir.
+                                            ->mutateRelationshipDataBeforeCreateUsing(
+                                                fn (array $data, $livewire): array => $livewire->fillAutomaticTranslationsForFields(
+                                                    $data,
+                                                    null,
+                                                    ['alt' => 'Alternatif metin'],
+                                                ),
+                                            )
+                                            ->mutateRelationshipDataBeforeSaveUsing(
+                                                fn (array $data, ProductImage $record, $livewire): array => $livewire->fillAutomaticTranslationsForFields(
+                                                    $data,
+                                                    $record,
+                                                    ['alt' => 'Alternatif metin'],
+                                                ),
+                                            )
                                             ->required()
                                             ->minItems(1)
                                             ->schema([

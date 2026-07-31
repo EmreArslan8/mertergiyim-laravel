@@ -8,7 +8,14 @@
  * resize olayı gönderiliyor: FilePond kendini o anda doğru ölçüyor.
  */
 (function () {
-    const remeasure = () => window.dispatchEvent(new Event('resize'));
+    const observers = new Set();
+    let isNavigating = false;
+
+    const remeasure = () => {
+        if (!isNavigating) {
+            window.dispatchEvent(new Event('resize'));
+        }
+    };
 
     const observeTabs = () => {
         document.querySelectorAll('.fi-sc-tabs').forEach((tabs) => {
@@ -20,18 +27,37 @@
 
             // Sekme değişimi sınıf değişikliğiyle oluyor; DOM'u izlemek
             // Alpine/Livewire sürümünden bağımsız çalışır.
-            new MutationObserver(() => {
+            const observer = new MutationObserver(() => {
+                if (isNavigating || !tabs.isConnected) {
+                    return;
+                }
+
                 // İki kare bekle: sekme görünür olduktan sonra ölçülmeli.
-                requestAnimationFrame(() => requestAnimationFrame(remeasure));
-            }).observe(tabs, {
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    if (tabs.isConnected) {
+                        remeasure();
+                    }
+                }));
+            });
+            observer.observe(tabs, {
                 subtree: true,
                 attributes: true,
                 attributeFilter: ['class', 'style', 'aria-selected'],
             });
+
+            observers.add(observer);
         });
     };
 
     document.addEventListener('DOMContentLoaded', observeTabs);
-    document.addEventListener('livewire:navigated', observeTabs);
+    document.addEventListener('livewire:navigating', () => {
+        isNavigating = true;
+        observers.forEach((observer) => observer.disconnect());
+        observers.clear();
+    });
+    document.addEventListener('livewire:navigated', () => {
+        isNavigating = false;
+        observeTabs();
+    });
     document.addEventListener('livewire:initialized', observeTabs);
 })();

@@ -62,6 +62,26 @@ class StorefrontTranslationIntegrityTest extends TestCase
         }
     }
 
+    public function test_product_gallery_uses_localized_image_alt_text(): void
+    {
+        $product = Product::query()
+            ->where('active', true)
+            ->whereHas('images')
+            ->firstOrFail();
+        $image = $product->images()->orderByDesc('is_primary')->orderBy('sort_order')->firstOrFail();
+        $image->update([
+            'alt' => [
+                'tr' => 'Ürünün önden görünümü',
+                'de' => 'Vorderansicht des Produkts',
+            ],
+        ]);
+
+        $this->get('/de/product/'.$product->slug)
+            ->assertOk()
+            ->assertSee('alt="Vorderansicht des Produkts"', false)
+            ->assertSee('data-thumb-alt="Vorderansicht des Produkts"', false);
+    }
+
     /**
      * @return array<string, mixed>
      */

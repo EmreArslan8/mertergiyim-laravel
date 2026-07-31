@@ -42,6 +42,13 @@ trait TranslatesJsonFields
     protected ?Model $translationRecordOverride = null;
 
     /**
+     * İlişki repeater'ları aynı çeviri akışını farklı alanlarla kullanabilir.
+     *
+     * @var array<string, string>|null
+     */
+    protected ?array $translationFieldsOverride = null;
+
+    /**
      * Relation manager aksiyonları için: ilgili satır kaydı elle verilir.
      *
      * @param  array<string, mixed>  $data
@@ -55,6 +62,26 @@ trait TranslatesJsonFields
             return $this->fillAutomaticTranslations($data);
         } finally {
             $this->translationRecordOverride = null;
+        }
+    }
+
+    /**
+     * Üst sayfadaki ilişki repeater'ları için alan listesini geçici değiştir.
+     *
+     * @param  array<string, mixed>  $data
+     * @param  array<string, string>  $fields
+     * @return array<string, mixed>
+     */
+    public function fillAutomaticTranslationsForFields(array $data, ?Model $record, array $fields): array
+    {
+        $this->translationRecordOverride = $record;
+        $this->translationFieldsOverride = $fields;
+
+        try {
+            return $this->fillAutomaticTranslations($data);
+        } finally {
+            $this->translationRecordOverride = null;
+            $this->translationFieldsOverride = null;
         }
     }
 
@@ -79,7 +106,7 @@ trait TranslatesJsonFields
         /** @var array<string, string> $changed */
         $changed = [];
 
-        foreach (array_keys($this->translatableJsonFields()) as $field) {
+        foreach (array_keys($this->resolvedTranslatableJsonFields()) as $field) {
             $value = $this->currentTrValue($data, $field);
 
             // Alan bu formda yoksa dokunma.
@@ -119,7 +146,7 @@ trait TranslatesJsonFields
      */
     protected function warnAboutIncompleteTranslations(array $data, array $fields): void
     {
-        $labels = $this->translatableJsonFields();
+        $labels = $this->resolvedTranslatableJsonFields();
         $missing = [];
 
         foreach ($fields as $field) {
@@ -274,5 +301,15 @@ trait TranslatesJsonFields
         }
 
         return method_exists($this, 'getRecord') ? $this->getRecord() : null;
+    }
+
+    /**
+     * Normal sayfa alanları veya ilişki repeater'ının geçici alanları.
+     *
+     * @return array<string, string>
+     */
+    protected function resolvedTranslatableJsonFields(): array
+    {
+        return $this->translationFieldsOverride ?? $this->translatableJsonFields();
     }
 }
