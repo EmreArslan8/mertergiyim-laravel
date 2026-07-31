@@ -28,6 +28,11 @@ class CreateHeroSlide extends CreateRecord
         ];
     }
 
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
+    }
+
     protected function backToListLabel(): string
     {
         return 'Slider\'a dön';

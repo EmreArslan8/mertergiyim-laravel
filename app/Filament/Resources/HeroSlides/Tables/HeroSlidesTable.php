@@ -18,6 +18,10 @@ class HeroSlidesTable
     {
         return $table
             ->stackedOnMobile()
+            // Satırın tamamı slaytı açar; düzenleme modalda değil kendi
+            // sayfasında yapılıyor (görsel yükleme ve iki dilli metinler
+            // modal içinde sıkışıyordu).
+            ->recordUrl(fn ($record): string => HeroSlideResource::getUrl('edit', ['record' => $record]))
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
             ->columns([
@@ -40,6 +44,8 @@ class HeroSlidesTable
             ])
             ->recordActions([
                 EditAction::make()
+                    // Global EditAction ayarı modal açıyor; burada tam sayfa.
+                    ->modal(false)
                     ->url(fn ($record): string => HeroSlideResource::getUrl('edit', ['record' => $record])),
                 DeleteAction::make(),
             ]);

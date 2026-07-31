@@ -23,6 +23,23 @@ class EditHeroSlide extends EditRecord
         ];
     }
 
+    /**
+     * Kaydetme anında yönlendirilmez: "kaydedildi" bildirimi görüldükten
+     * sonra listeye SPA geçişiyle dönülür (sipariş detayıyla aynı davranış).
+     */
+    protected function getRedirectUrl(): ?string
+    {
+        return null;
+    }
+
+    protected function afterSave(): void
+    {
+        $this->js(sprintf(
+            'setTimeout(() => Livewire.navigate(%s), 1000)',
+            json_encode(static::getResource()::getUrl('index'), JSON_THROW_ON_ERROR),
+        ));
+    }
+
     protected function translatableJsonFields(): array
     {
         return [
