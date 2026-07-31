@@ -61,7 +61,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          script_stop: true
+          # Hata durumunda durma script içindeki `set -e` ile sağlanıyor;
+          # bu action'da script_stop diye bir girdi yok.
           script: |
             set -e
             cd ${{ secrets.APP_PATH }}
