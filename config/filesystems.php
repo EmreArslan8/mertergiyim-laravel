@@ -98,6 +98,28 @@ return [
         | storage/app/public/<bucket>/<path> altına yazılır; böylece
         | kaydedilen storage_path formatı canlıdakiyle birebir aynı kalır.
         */
+        // Panel yükleme alanı, veritabanındaki yolu (ör. "xxx.webp") diskte
+        // doğrudan arıyor. public_media kökü storage/app/public olduğu için
+        // "product-images/xxx.webp" bulunamıyor ve alan boşaltılıyordu. Bu
+        // diskler doğrudan bucket klasörüne kök salar, yol birebir eşleşir.
+        'public_media_products' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/'.env('STOREFRONT_PRODUCTS_DIRECTORY', 'product-images')),
+            'url' => env('APP_URL').'/storage/'.env('STOREFRONT_PRODUCTS_DIRECTORY', 'product-images'),
+            'visibility' => 'public',
+            'throw' => true,
+            'report' => false,
+        ],
+
+        'public_media_site' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/'.env('STOREFRONT_SITE_DIRECTORY', 'site-media')),
+            'url' => env('APP_URL').'/storage/'.env('STOREFRONT_SITE_DIRECTORY', 'site-media'),
+            'visibility' => 'public',
+            'throw' => true,
+            'report' => false,
+        ],
+
         'local_supabase_stub' => [
             'driver' => 'local',
             'root' => storage_path('app/public/supabase'),

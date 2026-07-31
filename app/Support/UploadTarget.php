@@ -21,7 +21,7 @@ class UploadTarget
      */
     public static function disk(string $bucketKey): string
     {
-        return self::usesSupabase() ? 'supabase_'.$bucketKey : 'public_media';
+        return self::usesSupabase() ? 'supabase_'.$bucketKey : 'public_media_'.$bucketKey;
     }
 
     public static function bucket(string $bucketKey): string
@@ -30,11 +30,13 @@ class UploadTarget
     }
 
     /**
-     * Yedek diskte dosyalar bucket adıyla başlayan bir klasöre yazılır ki
-     * storage_path değeri canlıdaki ile aynı kalsın.
+     * Her iki hedefte de disk zaten bucket klasörüne kök saldığı için yola
+     * ayrıca önek eklenmez. Böylece veritabanındaki yol (ör. "xxx.webp")
+     * diskteki konumla birebir aynı olur; panelin yükleme alanı dosyayı
+     * bulabilir, dosya adı Supabase kurulumuyla da uyumlu kalır.
      */
     public static function pathPrefix(string $bucketKey): string
     {
-        return self::usesSupabase() ? '' : self::bucket($bucketKey).'/';
+        return '';
     }
 }
