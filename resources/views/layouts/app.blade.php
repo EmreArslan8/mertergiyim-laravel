@@ -82,10 +82,10 @@
 
     {{-- Kaynak projedeki import sırası korunuyor. --}}
     <link rel="stylesheet" href="/css/storefront.css?v=20260730-1">
-    <link rel="stylesheet" href="/css/styles.css?v=20260731-5">
-    <link rel="stylesheet" href="/css/hero-override.css?v=20260731-5">
+    <link rel="stylesheet" href="/css/styles.css?v=20260731-6">
+    <link rel="stylesheet" href="/css/hero-override.css?v=20260731-6">
     <link rel="stylesheet" href="/css/category-filter.css">
-    <link rel="stylesheet" href="/css/page-heading.css?v=20260731-5">
+    <link rel="stylesheet" href="/css/page-heading.css?v=20260731-6">
     <link rel="stylesheet" href="/css/site-links.css">
     @stack('styles')
 

@@ -37,7 +37,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/order-tracking.css?v=20260731-5">
+    <link rel="stylesheet" href="/css/order-tracking.css?v=20260731-6">
 @endpush
 
 @section('content')

@@ -89,6 +89,10 @@ return [
     // Gemini otomatik çeviri.
     'translation' => [
         'api_key' => env('GEMINI_API_KEY'),
+
+        // Barındırma IP'si Gemini tarafından reddediliyorsa (User location is
+        // not supported) vekil adres; boşsa doğrudan Google'a gidilir.
+        'base_url' => env('GEMINI_BASE_URL', ''),
         'model' => env('GEMINI_MODEL', 'gemini-3.5-flash-lite'),
         // Kaynak app/api/translate/route.ts ile birebir aynı liste ve sıra.
         'languages' => ['en', 'ar', 'ru', 'fa', 'uk', 'fr', 'de', 'es', 'it'],

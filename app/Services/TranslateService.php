@@ -17,6 +17,19 @@ class TranslateService
     private const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/';
 
     /**
+     * Gemini bazı barındırma IP'lerini "desteklenmeyen bölge" sayıp isteği
+     * reddediyor (User location is not supported). Sunucu böyle bir ağdaysa
+     * GEMINI_BASE_URL ile araya kendi vekil adresin konabilir; boşken doğrudan
+     * Google'a gidilir.
+     */
+    private function endpoint(): string
+    {
+        $base = rtrim((string) config('storefront.translation.base_url', ''), '/');
+
+        return $base !== '' ? $base.'/v1beta/models/' : self::ENDPOINT;
+    }
+
+    /**
      * @return array<int, string>
      */
     public function languages(): array
@@ -72,7 +85,7 @@ class TranslateService
 
         $response = Http::timeout(60)
             ->withHeaders(['x-goog-api-key' => (string) config('storefront.translation.api_key')])
-            ->post(self::ENDPOINT.$this->model().':generateContent', [
+            ->post($this->endpoint().$this->model().':generateContent', [
                 'contents' => [['parts' => [['text' => $prompt]]]],
                 'generationConfig' => ['responseMimeType' => 'application/json'],
             ]);
@@ -136,7 +149,7 @@ class TranslateService
         try {
             $response = Http::timeout(30)
                 ->withHeaders(['x-goog-api-key' => (string) config('storefront.translation.api_key')])
-                ->post(self::ENDPOINT.$this->model().':generateContent', [
+                ->post($this->endpoint().$this->model().':generateContent', [
                     'contents' => [['parts' => [['text' => 'ping']]]],
                     'generationConfig' => ['maxOutputTokens' => 1],
                 ]);

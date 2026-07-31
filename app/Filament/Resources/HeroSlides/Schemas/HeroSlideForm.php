@@ -29,6 +29,10 @@ class HeroSlideForm
                                     ->label('Slider görseli')
                                     ->required()
                                     ->columnSpanFull(),
+                                // Kayıtlı görsel, yükleme alanının JS önizlemesi
+                                // gelene kadar boş beklemesin diye doğrudan basılır.
+                                StorageUpload::preview('image_path', 'site')
+                                    ->columnSpanFull(),
                             ]),
 
                         Section::make('Metinler')
