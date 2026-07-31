@@ -6,6 +6,9 @@ use App\Services\ImageUploader;
 use App\Support\Storefront;
 use App\Support\UploadTarget;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
+use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -18,6 +21,40 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
  */
 class StorageUpload
 {
+    /**
+     * Kayıtlı görselin sunucu tarafında basılan önizlemesi.
+     *
+     * Yükleme alanının (FilePond) kendi önizlemesi JS kurulup dosyayı ayrı bir
+     * istekle çektikten sonra beliriyor: düzenlemeye girildiğinde alan bir süre
+     * boş duruyor. Bu bileşen yolu doğrudan veritabanından okuyup <img> olarak
+     * bastığı için ilk boyamada hazır olur; yükleme alanı altında kalır.
+     *
+     * @param  string  $bucketKey  'products' | 'site'
+     */
+    public static function preview(string $field, string $bucketKey, string $label = 'Mevcut görsel'): Placeholder
+    {
+        return Placeholder::make($field.'_preview')
+            ->label($label)
+            // Yeni kayıtta ve görsel silindiğinde gizli: boş çerçeve durmasın.
+            ->visible(fn (Get $get): bool => filled($get($field)))
+            ->content(function (Get $get) use ($field, $bucketKey): HtmlString {
+                $value = $get($field);
+
+                // FileUpload state'i yüklemeden sonra dizi tutabilir.
+                $path = is_array($value) ? (string) (reset($value) ?: '') : (string) $value;
+
+                if ($path === '' || str_starts_with($path, 'livewire-file:')) {
+                    return new HtmlString('');
+                }
+
+                $url = Storefront::storageUrl($bucketKey, $path);
+
+                return new HtmlString(
+                    '<img src="'.e($url).'" alt="" loading="lazy" class="merter-upload-preview">'
+                );
+            });
+    }
+
     /**
      * @param  string  $bucketKey  'products' | 'site'
      * @param  (callable(mixed): string)|string  $directory  Bucket içindeki klasör

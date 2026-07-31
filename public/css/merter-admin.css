@@ -5144,3 +5144,17 @@ input[type='radio'].fi-radio-input:disabled:checked {
         padding: 0.5rem;
     }
 }
+
+/* Yükleme alanının altındaki kayıtlı görsel önizlemesi (StorageUpload::preview).
+   FilePond'un kendi önizlemesi JS kurulup dosyayı çektikten sonra beliriyor;
+   bu <img> sunucudan basıldığı için ilk boyamada hazır. */
+.merter-upload-preview {
+    display: block;
+    width: 100%;
+    max-width: 22rem;
+    max-height: 11rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.625rem;
+    background: #f7f9fc;
+    object-fit: contain;
+}

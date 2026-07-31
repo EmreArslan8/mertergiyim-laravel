@@ -1,0 +1,84 @@
+name: Test ve Deploy
+
+# master'a her push'ta testler koşar; geçerse alwaysdata'ya yayınlanır.
+# Actions sekmesinden "Run workflow" ile elle de tetiklenebilir.
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  # Arka arkaya gelen push'lar üst üste deploy etmesin.
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Testler
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP kurulumu
+        uses: shivammathur/setup-php@v2
+        with:
+          # composer.json: "php": "^8.2" — sunucudaki sürümle aynı ailede kal.
+          php-version: '8.2'
+          # Testler sqlite :memory: kullanıyor (phpunit.xml), harici veritabanı yok.
+          extensions: mbstring, fileinfo, intl, gd, bcmath, sodium, pdo_sqlite, zip
+          coverage: none
+
+      - name: Composer önbelleği
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Bağımlılıklar
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Uygulama anahtarı
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Testler
+        run: php artisan test
+
+  deploy:
+    name: Yayınla
+    needs: test
+    # PR'larda deploy yok: yalnızca master'a push ve elle tetikleme.
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sunucuda güncelle
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script_stop: true
+          script: |
+            set -e
+            cd ${{ secrets.APP_PATH }}
+
+            git fetch origin
+            git reset --hard origin/master
+
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            # Silinen sınıflar composer'ın sınıf haritasında ve Filament'in
+            # bileşen önbelleğinde kalırsa panel 500 veriyor (bkz. 2026-07-31,
+            # TranslationUsageResource). Her deployda ikisi de tazelenir.
+            composer dump-autoload --no-dev --optimize --no-interaction
+            php artisan filament:clear-cached-components || true
+            rm -rf bootstrap/cache/filament
+
+            php artisan optimize:clear
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan view:cache

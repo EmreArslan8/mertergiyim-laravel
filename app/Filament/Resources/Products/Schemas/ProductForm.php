@@ -57,11 +57,14 @@ class ProductForm
                                             ->placeholder('Örn: MG-1001')
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(fn ($state, $get, $set) => $set('slug', self::slug($get('name.tr'), $state))),
+                                        // searchable() Select'i JS bileşenine çeviriyor ve
+                                        // seçenekleri Livewire isteğiyle çekiyor; alan açılınca
+                                        // "Yükleniyor…" görünüyordu. Kategori sayısı iki haneli,
+                                        // arama gereksiz: native select seçenekleri doğrudan
+                                        // sayfayla birlikte basar, bekleme olmaz.
                                         Select::make('category_id')
                                             ->label('Kategori')
                                             ->options(fn () => app(AdminOptionService::class)->categories())
-                                            ->searchable()
-                                            ->preload()
                                             ->required(),
                                         // Paket adedi ayrı bir alan olarak sorulmaz: ekranda iki ayrı
                                         // sayı olması (buradaki hedef ve tablodaki toplam) çelişki
@@ -163,6 +166,10 @@ class ProductForm
                                                     // `.fi-fo-file-upload`) tanımlı.
                                                     ->imagePreviewHeight('150')
                                                     ->helperText('En uzun kenar '.config('storefront.upload.max_size').'px olacak şekilde küçültülüp WebP\'e çevrilir.')
+                                                    ->columnSpan(4),
+                                                // Kayıtlı görsel, FilePond önizlemesi gelene kadar
+                                                // alan boş beklemesin diye doğrudan basılır.
+                                                StorageUpload::preview('storage_path', 'products')
                                                     ->columnSpan(4),
                                                 Grid::make(6)
                                                     ->columnSpan(8)

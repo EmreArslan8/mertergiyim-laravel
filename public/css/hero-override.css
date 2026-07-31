@@ -6,7 +6,8 @@
 .hero-copy{padding:0 16px}
 .hero-eyebrow{margin:0 0 12px;color:rgba(255,255,255,.75);font-size:12px;font-weight:700;line-height:16px;letter-spacing:.35em;text-transform:uppercase}
 /* text-5xl / sm:text-7xl / md:text-8xl + max-w-5xl + font-black italic */
-.hero-copy h1{max-width:1024px;margin:0 0 32px;font-family:'Montserrat',sans-serif;font-size:48px;font-style:italic;font-weight:600;line-height:1;letter-spacing:-.025em;white-space:pre-line}
+/* Hero başlığı marka tipografisi: font-black italic (Tailwind font-black = 900). */
+.hero-copy h1{max-width:1024px;margin:0 0 32px;font-family:'Montserrat',sans-serif;font-size:48px;font-style:italic;font-weight:900;line-height:1;letter-spacing:-.025em;white-space:pre-line}
 /* border-2 border-white px-10 py-4 uppercase font-bold + transition (150ms) */
 .hero-copy a{padding:16px 36px;font-size:14px;font-weight:700;line-height:20px;text-transform:uppercase;transition:background-color .15s,color .15s}
 .hero-copy a:hover{background:#fff;color:#000}

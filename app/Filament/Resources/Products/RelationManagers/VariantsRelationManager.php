@@ -23,16 +23,15 @@ class VariantsRelationManager extends RelationManager
     public function form(Schema $schema): Schema
     {
         return $schema->components([
+            // Beden/renk listeleri tek haneli: searchable() alanı JS bileşenine
+            // çevirip seçenekleri istekle çektiği için "Yükleniyor…" görünüyordu.
+            // Native select ile seçenekler sayfayla birlikte gelir.
             Select::make('size_id')
                 ->label('Beden')
-                ->options(fn () => app(AdminOptionService::class)->sizes())
-                ->searchable()
-                ->preload(),
+                ->options(fn () => app(AdminOptionService::class)->sizes()),
             Select::make('color_id')
                 ->label('Renk')
-                ->options(fn () => app(AdminOptionService::class)->colors())
-                ->searchable()
-                ->preload(),
+                ->options(fn () => app(AdminOptionService::class)->colors()),
             TextInput::make('stock_quantity')->label('Stok adedi')->numeric()->default(0),
         ]);
     }
