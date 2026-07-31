@@ -1,6 +1,6 @@
 @php
     $t = $messages['tracking'] ?? [];
-    $metaTitle = ($t['heading'] ?? 'Sipariş Takibi').' | '.$siteName;
+    $metaTitle = data_get($messages, 'tracking.heading').' | '.$siteName;
     $metaDescription = $messages['meta']['description'] ?? '';
     $metaKeywords = '';
 
@@ -37,7 +37,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/order-tracking.css">
+    <link rel="stylesheet" href="/css/order-tracking.css?v=20260731-5">
 @endpush
 
 @section('content')
@@ -187,13 +187,6 @@
                 </section>
             @endif
 
-            <section class="tracking-map-card">
-                <div class="tracking-map-title">
-                    <h2>{{ $t['mapTitle'] ?? '' }}</h2>
-                    <p>{{ $t['mapSubtitle'] ?? '' }}</p>
-                </div>
-                <img src="/assets/siparis-takip.webp" alt="{{ $t['mapAlt'] ?? '' }}" width="1536" height="1024">
-            </section>
         </section>
     </main>
 @endsection

@@ -20,12 +20,11 @@ class SizeResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Bedenler';
 
+    protected static ?int $navigationSort = 5;
+
     protected static ?string $modelLabel = 'beden';
 
     protected static ?string $pluralModelLabel = 'bedenler';
-
-
-    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {

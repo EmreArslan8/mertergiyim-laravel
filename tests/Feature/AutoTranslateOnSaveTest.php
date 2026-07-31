@@ -44,8 +44,10 @@ class AutoTranslateOnSaveTest extends TestCase
         $languages = config('storefront.translation.languages');
         $nameTranslations = array_fill_keys($languages, 'Test Product');
         $descriptionTranslations = array_fill_keys($languages, 'Test description');
+        $imageAltTranslations = array_fill_keys($languages, 'PHPUnit product image');
         $nameTranslations['de'] = 'Test Produkt';
         $descriptionTranslations['de'] = 'Test Beschreibung';
+        $imageAltTranslations['de'] = 'PHPUnit Produktbild';
         Storage::disk(UploadTarget::disk('products'))->put('tests/phpunit-product.jpg', 'test-image');
 
         $this->category = Category::query()->create([
@@ -83,7 +85,7 @@ class AutoTranslateOnSaveTest extends TestCase
         ]);
         $this->product->images()->create([
             'storage_path' => 'tests/phpunit-product.jpg',
-            'alt' => ['tr' => 'PHPUnit ürün görseli'],
+            'alt' => ['tr' => 'PHPUnit ürün görseli', ...$imageAltTranslations],
             'sort_order' => 0,
             'is_primary' => true,
         ]);
@@ -122,9 +124,17 @@ class AutoTranslateOnSaveTest extends TestCase
         $this->mock(TranslateService::class, function ($mock) use ($languages) {
             $mock->shouldReceive('translateFields')
                 ->once()
+                ->with(Mockery::on(fn ($fields) => ($fields['name'] ?? null) === 'Yeni Ürün'
+                    && ($fields['description'] ?? null) === '<p>Yeni açıklama</p>'))
                 ->andReturn([
                     'name' => array_combine($languages, array_map(fn ($lang) => 'name-'.$lang, $languages)),
                     'description' => array_combine($languages, array_map(fn ($lang) => 'desc-'.$lang, $languages)),
+                ]);
+            $mock->shouldReceive('translateFields')
+                ->once()
+                ->with(['alt' => 'Yeni ürün görseli'])
+                ->andReturn([
+                    'alt' => array_combine($languages, array_map(fn ($lang) => 'alt-'.$lang, $languages)),
                 ]);
         });
 
@@ -157,6 +167,11 @@ class AutoTranslateOnSaveTest extends TestCase
         $this->assertSame('Yeni Ürün', $created->name['tr']);
         $this->assertSame('name-en', $created->name['en']);
         $this->assertSame('desc-ar', $created->description['ar']);
+
+        $imageAlt = $created->images()->firstOrFail()->alt;
+        $this->assertCount(10, $imageAlt);
+        $this->assertSame('Yeni ürün görseli', $imageAlt['tr']);
+        $this->assertSame('alt-de', $imageAlt['de']);
     }
 
     public function test_it_does_not_translate_when_turkish_text_is_unchanged(): void

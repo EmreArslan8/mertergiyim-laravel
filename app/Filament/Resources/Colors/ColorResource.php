@@ -20,12 +20,11 @@ class ColorResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Renkler';
 
+    protected static ?int $navigationSort = 6;
+
     protected static ?string $modelLabel = 'renk';
 
     protected static ?string $pluralModelLabel = 'renkler';
-
-
-    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
     {

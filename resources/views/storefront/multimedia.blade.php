@@ -1,14 +1,14 @@
 @php
     use App\Support\Storefront;
 
-    $metaTitle = ($messages['media']['title'] ?? 'Multimedya').' | '.$siteName;
+    $metaTitle = data_get($messages, 'media.title').' | '.$siteName;
     $mediaUi = [
-        'close' => $messages['media']['close'] ?? 'Kapat',
-        'previous' => $messages['media']['previous'] ?? 'Önceki',
-        'next' => $messages['media']['next'] ?? 'Sonraki',
-        'open' => $messages['media']['open'] ?? 'Galeriyi aç',
-        'openDocument' => $messages['media']['openDocument'] ?? 'Belgeyi aç',
-        'collection' => $messages['media']['collection'] ?? 'Koleksiyon',
+        'close' => data_get($messages, 'media.close'),
+        'previous' => data_get($messages, 'media.previous'),
+        'next' => data_get($messages, 'media.next'),
+        'open' => data_get($messages, 'media.open'),
+        'openDocument' => data_get($messages, 'media.openDocument'),
+        'collection' => data_get($messages, 'media.collection'),
     ];
 @endphp
 
@@ -21,15 +21,15 @@
 @section('content')
     <main class="media-page" dir="{{ $dir }}">
         @include('storefront.partials.page-heading', [
-            'eyebrow' => $messages['media']['eyebrow'] ?? 'Multimedya',
-            'title' => $messages['media']['title'] ?? 'Koleksiyondan Kareler',
+            'eyebrow' => data_get($messages, 'media.eyebrow'),
+            'title' => data_get($messages, 'media.title'),
         ])
 
-        <section class="media-gallery-section" aria-label="{{ $messages['media']['title'] ?? 'Multimedya' }}">
+        <section class="media-gallery-section" aria-label="{{ data_get($messages, 'media.title') }}">
             @forelse ($mediaPosts as $post)
                 @php
                     $cover = $post->files->first();
-                    $postTitle = Storefront::text($post->title, $locale) ?: ($messages['media']['untitled'] ?? 'Koleksiyondan bir kare');
+                    $postTitle = Storefront::text($post->title, $locale) ?: data_get($messages, 'media.untitled');
                     $postDescription = Storefront::text($post->description, $locale);
                     $postData = [
                         'title' => $postTitle,
@@ -82,7 +82,7 @@
                     </span>
 
                     @if ($post->files->count() > 1)
-                        <span class="media-tile-count" aria-label="{{ $post->files->count() }} dosya">
+                        <span class="media-tile-count" aria-label="{{ strtr(data_get($messages, 'media.fileCount'), ['{count}' => $post->files->count()]) }}">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                                 <rect x="6" y="6" width="13" height="13" rx="1.5" stroke-width="1.7"/>
                                 <path d="M16 6V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h1" stroke-width="1.7"/>
@@ -110,8 +110,8 @@
                             <path d="m5.5 17 4.5-4 3 2.5 2.5-2 3 3.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </span>
-                    <strong>{{ $messages['media']['emptyTitle'] ?? 'Galeri hazırlanıyor' }}</strong>
-                    <p>{{ $messages['media']['empty'] ?? 'Yeni koleksiyon kareleri çok yakında burada olacak.' }}</p>
+                    <strong>{{ data_get($messages, 'media.emptyTitle') }}</strong>
+                    <p>{{ data_get($messages, 'media.empty') }}</p>
                 </div>
             @endforelse
         </section>

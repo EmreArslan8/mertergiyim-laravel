@@ -30,7 +30,6 @@ class ContactController extends Controller
                 PhoneNumber::rule((string) app(DictionaryService::class)->get(
                     $locale,
                     'cart.errors.phone',
-                    'Geçerli bir telefon numarası girin. Örnek: 0532 325 97 88',
                 )),
             ],
             'email' => ['nullable', 'email', 'max:190'],

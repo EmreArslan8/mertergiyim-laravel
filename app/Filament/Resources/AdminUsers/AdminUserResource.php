@@ -28,11 +28,11 @@ class AdminUserResource extends Resource
 
     protected static ?string $navigationLabel = 'Admin Ayarları';
 
+    protected static ?int $navigationSort = 13;
+
     protected static ?string $modelLabel = 'Yönetici';
 
     protected static ?string $pluralModelLabel = 'Yöneticiler';
-
-    protected static ?int $navigationSort = 20;
 
     public static function canAccess(): bool
     {

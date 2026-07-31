@@ -22,12 +22,11 @@ class ProductResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Ürünler';
 
+    protected static ?int $navigationSort = 3;
+
     protected static ?string $modelLabel = 'ürün';
 
     protected static ?string $pluralModelLabel = 'ürünler';
-
-
-    protected static ?int $navigationSort = 4;
 
     public static function form(Schema $schema): Schema
     {

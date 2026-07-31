@@ -26,17 +26,33 @@ class ContactMessageResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'İletişim Mesajları';
 
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $modelLabel = 'iletişim mesajı';
 
     protected static ?string $pluralModelLabel = 'iletişim mesajları';
-
-    protected static ?int $navigationSort = 11;
 
     public static function canCreate(): bool
     {
         return false;
     }
 
+
+    /**
+     * Okunmamış mesaj sayısı: sipariş rozetiyle aynı amaç, bekleyen işi
+     * menüde göstermek.
+     */
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::query()->where('read', false)->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
     public static function form(Schema $schema): Schema
     {
         return $schema->components([

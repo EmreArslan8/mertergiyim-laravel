@@ -1,5 +1,5 @@
 @php
-    $categoriesTitle = ($messages['home']['categories'] ?? null) ?: 'Kategoriler';
+    $categoriesTitle = data_get($messages, 'home.categories');
     $metaTitle = $categoriesTitle.' | '.$siteName;
 @endphp
 
@@ -12,8 +12,8 @@
 @section('content')
     <main class="collection-page" dir="{{ $dir }}">
         <header class="collection-summary">
-            <h1>{{ $messages['category']['allProducts'] ?? 'Tüm Ürünler' }}</h1>
-            <p>{{ count($cards) }} {{ $messages['category']['productCount'] ?? 'ürün' }}</p>
+            <h1>{{ data_get($messages, 'category.allProducts') }}</h1>
+            <p>{{ count($cards) }} {{ data_get($messages, 'category.productCount') }}</p>
         </header>
 
         @include('storefront.partials.catalog', [

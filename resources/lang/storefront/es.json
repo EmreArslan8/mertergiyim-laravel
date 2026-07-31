@@ -4,7 +4,15 @@
         "home": "Inicio",
         "categories": "Categorías",
         "contact": "Contacto",
-        "language": "Idioma"
+        "language": "Idioma",
+        "menu": "Menú",
+        "showMoreCategories": "Mostrar más categorías",
+        "openProductDetail": "Abrir detalles de {product}",
+        "imageNumber": "{product} · imagen {number}",
+        "decrease": "Disminuir",
+        "increase": "Aumentar",
+        "piece": "uds.",
+        "information": "Información"
     },
     "home": {
         "home": "INICIO",
@@ -42,7 +50,13 @@
         "wholesale": "Mayorista",
         "size": "Talla",
         "color": "Color",
-        "multiple": "Puedes elegir más de uno"
+        "multiple": "Puedes elegir más de uno",
+        "unitPrice": "PRECIO UNITARIO",
+        "packageSummary": "Total del paquete: {total} / Paquete: {count} uds.",
+        "descriptionTitle": "DESCRIPCIÓN DEL PRODUCTO",
+        "packageContent": "CONTENIDO DEL PAQUETE",
+        "packageSizes": "Tallas del paquete",
+        "recommendedKicker": "SELECCIONADO PARA TI"
     },
     "order": {
         "name": "Nombre completo",
@@ -126,6 +140,7 @@
     },
     "cart": {
         "title": "Tu carrito",
+        "kicker": "PEDIDO",
         "subtitle": "Revisa tus productos y completa los datos del pedido.",
         "add": "Añadir al carrito",
         "added": "Producto añadido al carrito.",
@@ -138,6 +153,12 @@
         "emptyText": "Explora los productos y añade tu selección al carrito.",
         "continueShopping": "Volver a productos",
         "placeOrder": "Crear pedido",
+        "goToCart": "Ir al carrito",
+        "orderInformation": "Información del pedido",
+        "bankAccounts": "Nuestras cuentas bancarias",
+        "packagePrice": "Precio del paquete",
+        "packageContent": "Contenido del paquete",
+        "color": "Color",
         "paymentNote": "No se realiza pago en línea. La tienda confirmará el pedido por teléfono.",
         "errors": {
             "empty": "Tu carrito está vacío.",
@@ -145,7 +166,8 @@
             "outOfStock": "Un producto está agotado.",
             "variant": "No se encontró la combinación seleccionada.",
             "stock": "No hay suficiente stock.",
-            "phone": "Introduce un número de teléfono válido con el código de país."
+            "phone": "Introduce un número de teléfono válido con el código de país.",
+            "minimumOrder": "El pedido mínimo es de {amount} {currency}."
         }
     },
     "orderSuccess": {
@@ -160,6 +182,14 @@
         "title": "Multimedia",
         "subtitle": "Imágenes, vídeos y documentos de nuestras últimas colecciones.",
         "openDocument": "Abrir documento",
+        "close": "Cerrar",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "open": "Abrir galería",
+        "collection": "Colección",
+        "untitled": "Un momento de la colección",
+        "fileCount": "{count} archivos",
+        "emptyTitle": "La galería se está preparando",
         "empty": "Aún no hay contenido multimedia."
     },
     "contact": {
@@ -185,8 +215,16 @@
         "send": "Enviar mensaje",
         "success": "Hemos recibido tu mensaje. Te contactaremos pronto."
     },
+    "maintenance": {
+        "kicker": "MODO MANTENIMIENTO",
+        "title": "Volveremos pronto",
+        "message": "Estamos mejorando nuestra tienda. Vuelve a visitarnos pronto."
+    },
     "blog": {
         "kicker": "MERTER ROPA",
-        "title": "Blog"
+        "title": "Blog",
+        "empty": "Todavía no hay entradas de blog.",
+        "emptyDescription": "Los nuevos contenidos llegarán muy pronto. Vuelve más tarde.",
+        "backHome": "Volver al inicio"
     }
 }

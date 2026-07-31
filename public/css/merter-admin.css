@@ -810,6 +810,40 @@ textarea.fi-input {
     overflow-y: auto;
 }
 
+/* Form içeren oluştur/düzenle pencereleri — masaüstü.
+   Scroll kuralı yalnızca mobilde ve ürün modalında vardı; uzun formlar
+   (bilgilendirme sayfası, blog) ekranın altından taşıp kesiliyordu. */
+@media (min-width: 48rem) {
+    .fi-modal-window:has(.fi-fo-field-wrp) {
+        display: flex;
+        flex-direction: column;
+        width: min(56rem, calc(100vw - 3rem));
+        max-width: 56rem;
+        max-height: calc(100dvh - 3rem);
+    }
+
+    .fi-modal-window:has(.fi-fo-field-wrp) > .fi-modal-header,
+    .fi-modal-window:has(.fi-fo-field-wrp) > .fi-modal-footer {
+        flex: none;
+    }
+
+    .fi-modal-window:has(.fi-fo-field-wrp) > .fi-modal-content {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    /* Form kartı pencerenin tamamını kullansın: tek kolona sıkışıp
+       sağda boş alan bırakmasın. */
+    .fi-modal-content > .fi-fo,
+    .fi-modal-content .fi-section,
+    .fi-modal-content .fi-section-content-ctn {
+        width: 100%;
+        max-width: none;
+    }
+}
+
 /* ---------------------------------------------------------------
    Mobil yönetim sistemi
    - Tablolar yatay kaymaz, etiketli kayıt kartlarına dönüşür.
@@ -1361,6 +1395,24 @@ textarea.fi-input {
         overflow: hidden;
         overscroll-behavior: none;
         will-change: translate;
+    }
+
+    /* Drawer açıkken arka plan kaydırılamaz.
+       Filament `fi-sidebar-open` sınıfını body'ye değil sidebar'a koyuyor;
+       kilit olmayınca parmak nav dışına denk geldiğinde sayfa kayıyor, mobil
+       adres çubuğu açılıp kapanıyor ve fixed sidebar onunla zıplıyordu. */
+    html.fi:has(.fi-main-sidebar.fi-sidebar-open),
+    .fi-body:has(.fi-main-sidebar.fi-sidebar-open) {
+        overflow: hidden;
+        overscroll-behavior: none;
+    }
+
+    /* Kapatma katmanı hareketi yutar; kaydırma yalnızca menü listesinde kalır.
+       (touch-action ata zincirindeki değerlerin kesişimi olduğu için body'ye
+       `none` yazılamaz — sidebar'ın kendi kaydırmasını da öldürürdü.) */
+    .fi-sidebar-close-overlay {
+        touch-action: none;
+        overscroll-behavior: none;
     }
 
     .fi-sidebar .fi-sidebar-nav {
@@ -3773,6 +3825,22 @@ nav.fi-topbar {
     font-weight: 600;
 }
 
+@media (max-width: 47.999rem) {
+    /* Uzun ayar sekmeleri yatayda kesilip gizlenmesin. Ürün formundaki kısa
+       sekmeler yine tek satırda kalır; yalnızca gerektiğinde yeni satır açılır. */
+    .fi-tabs {
+        flex-wrap: wrap;
+        overflow-x: visible;
+        white-space: normal;
+    }
+
+    .fi-tabs-item {
+        flex: 1 1 auto;
+        justify-content: center;
+        min-height: 2.75rem;
+    }
+}
+
 @media (hover: hover) {
     .fi-tabs-item:hover {
         background-color: #fff;
@@ -4258,6 +4326,43 @@ nav.fi-topbar {
     }
 }
 
+/* Tablet tabloları gerektiğinde kendi içinde yatay kayar. En sağdaki işlem
+   sütununu sabit tutarak Düzenle/Sil eylemlerinin ekran dışında kalmasını önle. */
+@media (min-width: 48rem) and (max-width: 79.999rem) {
+    .fi-ta-table > thead > tr > :is(.fi-ta-header-cell, .fi-ta-actions-header-cell):last-child {
+        position: sticky;
+        z-index: 3;
+        inset-inline-end: 0;
+        background: #f8f9fa;
+        box-shadow: -8px 0 12px -12px rgba(32, 38, 45, 0.55);
+    }
+
+    .fi-ta-table > tbody > tr > .fi-ta-cell:last-child {
+        position: sticky;
+        z-index: 2;
+        inset-inline-end: 0;
+        background: #fff;
+        box-shadow: -8px 0 12px -12px rgba(32, 38, 45, 0.55);
+    }
+
+    /* Tablet yatay alanını asıl tüketen iki işlem etiketiydi. Metin DOM'da
+       erişilebilir isim olarak kalır; ekranda düzenle/sil ikonları gösterilir. */
+    .fi-ta-table > tbody > tr > .fi-ta-cell:last-child .fi-ta-actions > .fi-btn,
+    .fi-ta-table > tbody > tr > .fi-ta-cell:last-child .fi-ta-actions > .fi-link {
+        width: 2.5rem;
+        min-width: 2.5rem;
+        min-height: 2.5rem;
+        justify-content: center;
+        padding-inline: 0;
+        font-size: 0;
+    }
+
+    .fi-ta-table > tbody > tr > .fi-ta-cell:last-child .fi-ta-actions .fi-icon {
+        width: 1rem;
+        height: 1rem;
+    }
+}
+
 /* ===============================================================
    SİPARİŞ DETAY SAYFASI
    Kartların çerçevesi/başlığı Filament section'larından geliyor;
@@ -4699,6 +4804,15 @@ a.merter-order-field-link:hover {
         flex: 1 1 auto;
         justify-content: center;
         min-height: 2.75rem;
+    }
+
+    /* Filament sabit çubuğa ilk ölçümden kalan inline genişliği yazabiliyor.
+       Mobil sayfa dolgusu sonradan daralınca çubuk iki yandan 6px taşıyordu. */
+    .fi-sc-actions.fi-sticky > .fi-ac {
+        width: auto !important;
+        inset-inline: 0;
+        margin-inline: 0;
+        padding-inline: 0.625rem;
     }
 }
 

@@ -90,10 +90,6 @@ class SiteSettingForm
                                             ->regex('/^[0-9]{10,15}$/')
                                             ->placeholder('905321234567')
                                             ->helperText('Ülke koduyla, sadece rakam kullanın.'),
-                                        Toggle::make('value.general.whatsappOrderingEnabled')
-                                            ->label('WhatsApp ile sipariş')
-                                            ->formatStateUsing(fn ($state): bool => $state === null ? true : (bool) $state)
-                                            ->default(true),
                                         Textarea::make('value.tr.whatsappMessage')
                                             ->label(self::FIELDS['whatsappMessage'].' (Türkçe)')
                                             ->rows(2)

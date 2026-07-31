@@ -21,9 +21,6 @@
                 $cart = Storefront::isCartLink($link);
                 $href = Storefront::navigationHref($link, $locale);
                 $label = Storefront::text($link->label, $locale);
-                if ($locale === 'tr' && $link->link_key === 'home') {
-                    $label = 'Ana Sayfa';
-                }
             @endphp
             @if ($link->link_key === 'categories' && count($categories))
                 <div class="desktop-category-menu" data-desktop-category-menu>
@@ -34,7 +31,7 @@
                     <div class="desktop-category-dropdown" data-desktop-category-dropdown
                          style="--category-columns: {{ $categoryColumnCount }}">
                         <a class="desktop-category-all" href="/{{ $locale }}/kategori">
-                            {{ ($messages['home']['allCategories'] ?? null) ?: 'Tümü' }}
+                            {{ data_get($messages, 'home.allCategories') }}
                         </a>
                         <div class="desktop-category-list">
                             @foreach ($categories as $category)

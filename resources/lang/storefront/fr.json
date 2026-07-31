@@ -4,7 +4,15 @@
         "home": "Accueil",
         "categories": "Catégories",
         "contact": "Contact",
-        "language": "Langue"
+        "language": "Langue",
+        "menu": "Menu",
+        "showMoreCategories": "Afficher plus de catégories",
+        "openProductDetail": "Ouvrir les détails de {product}",
+        "imageNumber": "{product} · image {number}",
+        "decrease": "Diminuer",
+        "increase": "Augmenter",
+        "piece": "pièces",
+        "information": "Informations"
     },
     "home": {
         "home": "ACCUEIL",
@@ -42,7 +50,13 @@
         "wholesale": "Vente en gros",
         "size": "Taille",
         "color": "Couleur",
-        "multiple": "Vous pouvez en choisir plusieurs"
+        "multiple": "Vous pouvez en choisir plusieurs",
+        "unitPrice": "PRIX UNITAIRE",
+        "packageSummary": "Total du colis : {total} / Colis : {count} pièces",
+        "descriptionTitle": "DESCRIPTION DU PRODUIT",
+        "packageContent": "CONTENU DU COLIS",
+        "packageSizes": "Tailles du colis",
+        "recommendedKicker": "SÉLECTIONNÉ POUR VOUS"
     },
     "order": {
         "name": "Nom complet",
@@ -126,6 +140,7 @@
     },
     "cart": {
         "title": "Votre panier",
+        "kicker": "COMMANDE",
         "subtitle": "Vérifiez vos produits et complétez vos informations de commande.",
         "add": "Ajouter au panier",
         "added": "Produit ajouté au panier.",
@@ -138,6 +153,12 @@
         "emptyText": "Découvrez les produits et ajoutez votre sélection au panier.",
         "continueShopping": "Retour aux produits",
         "placeOrder": "Passer la commande",
+        "goToCart": "Voir le panier",
+        "orderInformation": "Informations de commande",
+        "bankAccounts": "Nos comptes bancaires",
+        "packagePrice": "Prix du colis",
+        "packageContent": "Contenu du colis",
+        "color": "Couleur",
         "paymentNote": "Aucun paiement en ligne. La boutique confirmera votre commande par téléphone.",
         "errors": {
             "empty": "Votre panier est vide.",
@@ -145,7 +166,8 @@
             "outOfStock": "Un produit est épuisé.",
             "variant": "La combinaison sélectionnée est introuvable.",
             "stock": "Stock insuffisant pour ce produit.",
-            "phone": "Saisissez un numéro de téléphone valide avec l’indicatif du pays."
+            "phone": "Saisissez un numéro de téléphone valide avec l’indicatif du pays.",
+            "minimumOrder": "Le montant minimum de commande est de {amount} {currency}."
         }
     },
     "orderSuccess": {
@@ -160,6 +182,14 @@
         "title": "Médias",
         "subtitle": "Images, vidéos et documents de nos dernières collections.",
         "openDocument": "Ouvrir le document",
+        "close": "Fermer",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "open": "Ouvrir la galerie",
+        "collection": "Collection",
+        "untitled": "Un instant de la collection",
+        "fileCount": "{count} fichiers",
+        "emptyTitle": "La galerie est en préparation",
         "empty": "Aucun contenu multimédia pour le moment."
     },
     "contact": {
@@ -185,8 +215,16 @@
         "send": "Envoyer",
         "success": "Votre message a été reçu. Nous vous contacterons rapidement."
     },
+    "maintenance": {
+        "kicker": "MODE MAINTENANCE",
+        "title": "Nous revenons bientôt",
+        "message": "Nous améliorons notre boutique. Revenez nous voir très prochainement."
+    },
     "blog": {
         "kicker": "MERTER VÊTEMENTS",
-        "title": "Blog"
+        "title": "Blog",
+        "empty": "Aucun article de blog pour le moment.",
+        "emptyDescription": "De nouveaux contenus arrivent très bientôt. Reviens plus tard.",
+        "backHome": "Retour à l'accueil"
     }
 }

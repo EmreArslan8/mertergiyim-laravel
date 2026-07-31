@@ -14,7 +14,7 @@
     <main class="collection-page" dir="{{ $dir }}">
         <header class="collection-summary">
             <h1>{{ $categoryName }}</h1>
-            <p>{{ count($cards) }} {{ $messages['category']['productCount'] ?? 'ürün' }}</p>
+            <p>{{ count($cards) }} {{ data_get($messages, 'category.productCount') }}</p>
         </header>
 
         @include('storefront.partials.catalog', [

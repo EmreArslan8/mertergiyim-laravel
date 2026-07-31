@@ -66,7 +66,6 @@ class ListSiteSettings extends ListRecords
                 'socialShareImage' => null,
                 'seoShareImage' => null,
                 'whatsappNumber' => (string) config('storefront.whatsapp_number'),
-                'whatsappOrderingEnabled' => true,
                 'contactPhone' => '',
                 'contactEmail' => '',
                 'instagramUrl' => '',

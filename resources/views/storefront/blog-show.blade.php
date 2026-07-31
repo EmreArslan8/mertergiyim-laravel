@@ -9,7 +9,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/content.css">
+    <link rel="stylesheet" href="/css/content.css?v=20260731-5">
 @endpush
 
 @section('content')

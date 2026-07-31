@@ -76,16 +76,35 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     {{-- italic ekseni bilerek yok: kaynak index.html ile birebir sahte eğim (synthetic oblique) --}}
+    {{-- preload: swap penceresini kısaltıp başlıklardaki font kaynaklı kaymayı azaltır --}}
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     {{-- Kaynak projedeki import sırası korunuyor. --}}
     <link rel="stylesheet" href="/css/storefront.css?v=20260730-1">
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/hero-override.css?v=20260729-4">
+    <link rel="stylesheet" href="/css/styles.css?v=20260731-5">
+    <link rel="stylesheet" href="/css/hero-override.css?v=20260731-5">
     <link rel="stylesheet" href="/css/category-filter.css">
-    <link rel="stylesheet" href="/css/page-heading.css">
+    <link rel="stylesheet" href="/css/page-heading.css?v=20260731-5">
     <link rel="stylesheet" href="/css/site-links.css">
     @stack('styles')
+
+    {{-- Aynı origindeki sayfaları hover/dokunuş anında önden çeker: geçiş beklemesini kısaltır.
+         prerender değil prefetch — analytics/pixel sayımlarını bozmaması için. --}}
+    <script type="speculationrules">
+    {
+      "prefetch": [{
+        "where": {
+          "and": [
+            {"href_matches": "/*"},
+            {"not": {"href_matches": "/admin/*"}},
+            {"not": {"selector_matches": "[data-no-prefetch]"}}
+          ]
+        },
+        "eagerness": "moderate"
+      }]
+    }
+    </script>
 
     @if ($googleTagManagerId)
         <script>

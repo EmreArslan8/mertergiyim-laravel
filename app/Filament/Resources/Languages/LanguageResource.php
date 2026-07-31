@@ -20,12 +20,19 @@ class LanguageResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Diller';
 
+    protected static ?int $navigationSort = 13;
+
+    /**
+     * Sidebar'da yer kaplamasın: Site Ayarları ekranının üst butonlarından açılıyor.
+     */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     protected static ?string $modelLabel = 'dil';
 
     protected static ?string $pluralModelLabel = 'diller';
-
-
-    protected static ?int $navigationSort = 12;
 
     public static function form(Schema $schema): Schema
     {

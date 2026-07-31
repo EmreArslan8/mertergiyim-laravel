@@ -60,11 +60,14 @@ class ProductVariantCombinationTest extends TestCase
 
         $this->mock(TranslateService::class, fn ($mock) => $mock
             ->shouldReceive('translateFields')
-            ->once()
-            ->andReturn([
-                'name' => [],
-                'description' => [],
-            ]));
+            ->twice()
+            ->andReturn(
+                [
+                    'name' => [],
+                    'description' => [],
+                ],
+                ['alt' => []],
+            ));
 
         try {
             Livewire::test(CreateProduct::class)
@@ -307,8 +310,11 @@ class ProductVariantCombinationTest extends TestCase
 
         $this->mock(TranslateService::class, fn ($mock) => $mock
             ->shouldReceive('translateFields')
-            ->once()
-            ->andReturn(['name' => [], 'description' => []]));
+            ->twice()
+            ->andReturn(
+                ['name' => [], 'description' => []],
+                ['alt' => []],
+            ));
 
         try {
             $component = Livewire::test(CreateProduct::class)

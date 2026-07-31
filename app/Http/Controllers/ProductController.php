@@ -32,12 +32,21 @@ class ProductController extends Controller
         );
         $currency = Storefront::resolveCurrency($currencies, $product->currencyForLocale($locale));
         $numericPrice = $product->priceForLocale($locale, $rates);
+        $productName = Storefront::text($product->name, $locale);
 
         // Galeri görseli detay sayfasında büyük gösteriliyor; 1000px retina dahil yeter.
-        $gallery = array_values(array_filter(array_map(
-            fn ($image) => Storefront::imageUrl('products', $image->storage_path, 1000),
-            Storefront::sortedImages($product->images),
-        )));
+        $galleryItems = collect(Storefront::sortedImages($product->images))
+            ->map(function ($image) use ($locale, $productName): array {
+                return [
+                    'url' => Storefront::imageUrl('products', $image->storage_path, 1000),
+                    'alt' => Storefront::text($image->alt, $locale) ?: $productName,
+                ];
+            })
+            ->filter(fn (array $image): bool => filled($image['url']))
+            ->values()
+            ->all();
+        $gallery = array_column($galleryItems, 'url');
+        $galleryAlts = array_column($galleryItems, 'alt');
 
         // Öneriler ana sayfadaki kartlarla aynı bileşeni kullandığı için
         // veri de aynı üreticiden gelir.
@@ -66,7 +75,7 @@ class ProductController extends Controller
 
         return view('storefront.product', [
             'product' => $product,
-            'productName' => Storefront::text($product->name, $locale),
+            'productName' => $productName,
             'productDescription' => Storefront::richText($product->description, $locale),
             'categoryName' => $product->category
                 ? (Storefront::text($product->category->name_i18n, $locale) ?: $product->category->name)
@@ -80,6 +89,7 @@ class ProductController extends Controller
             'sizes' => $options['sizes'],
             'colors' => $options['colors'],
             'gallery' => $gallery,
+            'galleryAlts' => $galleryAlts,
             'primaryImage' => $gallery[0] ?? '',
             'recommendations' => $recommendations,
             'videoEmbedUrl' => Storefront::youtubeEmbedUrl($product->video_url),

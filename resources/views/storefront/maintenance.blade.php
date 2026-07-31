@@ -1,9 +1,10 @@
 @php
     use App\Support\Storefront;
 
-    $title = trim((string) ($footerSettings['maintenanceTitle'] ?? '')) ?: 'Kısa bir bakımdayız';
+    $title = trim((string) ($footerSettings['maintenanceTitle'] ?? ''))
+        ?: data_get($messages, 'maintenance.title');
     $description = trim((string) ($footerSettings['maintenanceMessage'] ?? ''))
-        ?: 'Mağazamızı iyileştiriyoruz. Lütfen kısa süre sonra tekrar ziyaret edin.';
+        ?: data_get($messages, 'maintenance.message');
     $logo = ! empty($siteSettings['siteLogo'])
         ? Storefront::storageUrl('site', $siteSettings['siteLogo'])
         : null;
@@ -28,7 +29,7 @@
             @else
                 <strong class="maintenance-brand">{{ $siteName }}</strong>
             @endif
-            <span>BAKIM MODU</span>
+            <span>{{ data_get($messages, 'maintenance.kicker') }}</span>
             <h1>{{ $title }}</h1>
             <p>{{ $description }}</p>
             @if (! empty($siteSettings['contactEmail']))

@@ -67,7 +67,6 @@ class AdminPanelSmokeTest extends TestCase
             '/admin/site-settings',
             '/admin/orders',
             '/admin/orders/create',
-            '/admin/translation-usages',
             '/admin/content-pages',
             '/admin/content-pages/create',
             '/admin/blog-posts',

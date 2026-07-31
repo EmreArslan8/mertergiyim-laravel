@@ -29,6 +29,13 @@ class Product extends Model
 
     protected static function booted(): void
     {
+        // Veritabanı cascade silmesi model olaylarını çalıştırmaz. Görselleri
+        // önce model üzerinden silerek ProductImageObserver'ın depodaki gerçek
+        // dosyaları da temizlemesini sağla.
+        static::deleting(function (Product $product): void {
+            $product->images()->get()->each->delete();
+        });
+
         static::saving(function (Product $product): void {
             $product->price = $product->price_try;
             $product->currency = 'TRY';

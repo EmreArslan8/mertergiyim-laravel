@@ -21,12 +21,11 @@ class SiteSettingResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Site Ayarları';
 
+    protected static ?int $navigationSort = 12;
+
     protected static ?string $modelLabel = 'ayar';
 
     protected static ?string $pluralModelLabel = 'ayarlar';
-
-
-    protected static ?int $navigationSort = 11;
 
     public static function form(Schema $schema): Schema
     {

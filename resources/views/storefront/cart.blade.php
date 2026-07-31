@@ -1,5 +1,5 @@
 @php
-    $metaTitle = ($messages['cart']['title'] ?? 'Sepet').' | '.$siteName;
+    $metaTitle = data_get($messages, 'cart.title').' | '.$siteName;
     $bodyClass = 'cart-detail-body';
 @endphp
 
@@ -22,19 +22,19 @@
         <div class="cart-layout">
             <div class="cart-content">
                 <header class="cart-heading">
-                    <span>SİPARİŞ</span>
-                    <h1>{{ $messages['cart']['title'] ?? 'Sepet' }}</h1>
+                    <span>{{ data_get($messages, 'cart.kicker') }}</span>
+                    <h1>{{ data_get($messages, 'cart.title') }}</h1>
                 </header>
 
-                <section class="cart-lines" aria-label="{{ $messages['cart']['title'] ?? 'Sepet' }}">
+                <section class="cart-lines" aria-label="{{ data_get($messages, 'cart.title') }}">
                     <div class="cart-items" data-cart-items></div>
                     <div class="cart-empty" data-cart-empty>
-                        <strong>{{ $messages['cart']['emptyTitle'] ?? 'Sepetiniz boş' }}</strong>
-                        <p>{{ $messages['cart']['emptyText'] ?? 'Ürünleri inceleyip renk seçerek sepetinize ekleyebilirsiniz.' }}</p>
-                        <a href="/{{ $locale }}#urunler">{{ $messages['cart']['continueShopping'] ?? 'Ürünlere dön' }}</a>
+                        <strong>{{ data_get($messages, 'cart.emptyTitle') }}</strong>
+                        <p>{{ data_get($messages, 'cart.emptyText') }}</p>
+                        <a href="/{{ $locale }}#urunler">{{ data_get($messages, 'cart.continueShopping') }}</a>
                     </div>
                     <div class="cart-total-row">
-                        <span>{{ $messages['cart']['total'] ?? 'Toplam' }}</span>
+                        <span>{{ data_get($messages, 'cart.total') }}</span>
                         <strong data-cart-total>—</strong>
                     </div>
                 </section>
@@ -45,26 +45,28 @@
                 <input type="hidden" name="cart" data-cart-payload>
                 <input type="hidden" name="order_key" value="{{ old('order_key') ?: (string) \Illuminate\Support\Str::uuid() }}">
 
-                <h2>{{ $messages['cart']['orderInformation'] ?? 'Sipariş Bilgileri' }}</h2>
+                <h2>{{ data_get($messages, 'cart.orderInformation') }}</h2>
                 <input name="customer_name" required autocomplete="name" value="{{ old('customer_name') }}"
-                       aria-label="{{ $messages['order']['name'] ?? 'İsim Soyisim' }}"
-                       placeholder="{{ $messages['order']['name'] ?? 'İsim Soyisim' }}">
+                       aria-label="{{ data_get($messages, 'order.name') }}"
+                       placeholder="{{ data_get($messages, 'order.name') }}">
                 <input name="phone" required type="tel" autocomplete="tel" value="{{ old('phone') }}"
-                       aria-label="{{ $messages['order']['phone'] ?? 'Telefon' }}"
-                       placeholder="{{ $messages['order']['phone'] ?? 'Telefon' }}">
+                       aria-label="{{ data_get($messages, 'order.phone') }}"
+                       placeholder="{{ data_get($messages, 'order.phone') }}">
                 <textarea name="address" required rows="4"
-                          aria-label="{{ $messages['order']['address'] ?? 'Adres' }}"
-                          placeholder="{{ $messages['order']['address'] ?? 'Adres' }}">{{ old('address') }}</textarea>
+                          aria-label="{{ data_get($messages, 'order.address') }}"
+                          placeholder="{{ data_get($messages, 'order.address') }}">{{ old('address') }}</textarea>
                 <textarea name="note" rows="2"
-                          aria-label="{{ $messages['order']['note'] ?? 'Not' }}"
-                          placeholder="{{ $messages['order']['note'] ?? 'Not' }}">{{ old('note') }}</textarea>
+                          aria-label="{{ data_get($messages, 'order.note') }}"
+                          placeholder="{{ data_get($messages, 'order.note') }}">{{ old('note') }}</textarea>
 
                 <button type="submit" data-checkout-submit disabled>
-                    {{ $messages['cart']['placeOrder'] ?? 'Sipariş Ver' }}
+                    {{ data_get($messages, 'cart.placeOrder') }}
                 </button>
-                <a class="bank-accounts-link" href="/{{ $locale }}/banka-hesaplarimiz">
-                    {{ $messages['cart']['bankAccounts'] ?? 'Banka Hesaplarımız' }}
-                </a>
+                @if ($bankAccountsPage)
+                    <a class="bank-accounts-link" href="/{{ $locale }}/banka-hesaplarimiz">
+                        {{ data_get($messages, 'cart.bankAccounts') }}
+                    </a>
+                @endif
             </form>
         </div>
 
@@ -75,19 +77,19 @@
                     <span data-line-code></span>
                     <a class="cart-line-name" data-line-product-link data-line-name></a>
                     <p class="cart-line-package-price">
-                        Paket fiyatı: <span data-line-package-price></span>
-                        <span data-line-pack-size-wrap> / <span data-line-pack-size></span> adet</span>
+                        {{ data_get($messages, 'cart.packagePrice') }}: <span data-line-package-price></span>
+                        <span data-line-pack-size-wrap> / <span data-line-pack-size></span> {{ data_get($messages, 'common.piece') }}</span>
                     </p>
                     <div class="cart-line-options">
-                        <span>Renk: <b data-line-color></b><i data-line-color-dot></i></span>
-                        <span data-line-package-wrap>Paket içeriği: <b data-line-package></b></span>
+                        <span>{{ data_get($messages, 'cart.color') }}: <b data-line-color></b><i data-line-color-dot></i></span>
+                        <span data-line-package-wrap>{{ data_get($messages, 'cart.packageContent') }}: <b data-line-package></b></span>
                     </div>
                 </div>
                 <div class="cart-line-tools">
-                    <button type="button" aria-label="Azalt" data-cart-decrease>−</button>
+                    <button type="button" aria-label="{{ data_get($messages, 'common.decrease') }}" data-cart-decrease>−</button>
                     <output data-cart-quantity>1</output>
-                    <button type="button" aria-label="Arttır" data-cart-increase>+</button>
-                    <button class="cart-remove" type="button" aria-label="{{ $messages['cart']['remove'] ?? 'Ürünü sil' }}"
+                    <button type="button" aria-label="{{ data_get($messages, 'common.increase') }}" data-cart-increase>+</button>
+                    <button class="cart-remove" type="button" aria-label="{{ data_get($messages, 'cart.remove') }}"
                             data-cart-remove>
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14M10 10v6m4-6v6"

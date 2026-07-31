@@ -42,7 +42,13 @@ class SetStorefrontLocale
 
         app()->setLocale($locale);
 
-        $localeSettings = $chrome['settingValue'][$locale] ?? [];
+        // Panelden gelen dinamik ayarlarda aktif dil eksikse kaynak Türkçe
+        // değerini kullan. Böylece fallback de kod içindeki sabitlerden değil
+        // veritabanından gelir.
+        $localeSettings = array_replace(
+            (array) ($chrome['settingValue']['tr'] ?? []),
+            (array) ($chrome['settingValue'][$locale] ?? []),
+        );
         $siteSettings = $chrome['settingValue']['general'] ?? [];
         $timezone = (string) ($siteSettings['timezone'] ?? config('app.timezone'));
         if (in_array($timezone, timezone_identifiers_list(), true)) {

@@ -4,7 +4,15 @@
         "home": "Home",
         "categories": "Categorie",
         "contact": "Contatti",
-        "language": "Lingua"
+        "language": "Lingua",
+        "menu": "Menu",
+        "showMoreCategories": "Mostra altre categorie",
+        "openProductDetail": "Apri i dettagli di {product}",
+        "imageNumber": "{product} · immagine {number}",
+        "decrease": "Diminuisci",
+        "increase": "Aumenta",
+        "piece": "pz.",
+        "information": "Informazioni"
     },
     "home": {
         "home": "HOME",
@@ -42,7 +50,13 @@
         "wholesale": "Ingrosso",
         "size": "Taglia",
         "color": "Colore",
-        "multiple": "Puoi selezionarne più di uno"
+        "multiple": "Puoi selezionarne più di uno",
+        "unitPrice": "PREZZO UNITARIO",
+        "packageSummary": "Totale pacco: {total} / Pacco: {count} pz.",
+        "descriptionTitle": "DESCRIZIONE PRODOTTO",
+        "packageContent": "CONTENUTO DEL PACCO",
+        "packageSizes": "Taglie nel pacco",
+        "recommendedKicker": "SCELTI PER TE"
     },
     "order": {
         "name": "Nome completo",
@@ -126,6 +140,7 @@
     },
     "cart": {
         "title": "Il tuo carrello",
+        "kicker": "ORDINE",
         "subtitle": "Controlla i prodotti e completa i dati dell’ordine.",
         "add": "Aggiungi al carrello",
         "added": "Prodotto aggiunto al carrello.",
@@ -138,6 +153,12 @@
         "emptyText": "Scopri i prodotti e aggiungi la tua selezione.",
         "continueShopping": "Torna ai prodotti",
         "placeOrder": "Crea ordine",
+        "goToCart": "Vai al carrello",
+        "orderInformation": "Informazioni sull’ordine",
+        "bankAccounts": "I nostri conti bancari",
+        "packagePrice": "Prezzo del pacco",
+        "packageContent": "Contenuto del pacco",
+        "color": "Colore",
         "paymentNote": "Nessun pagamento online. Il negozio confermerà l’ordine per telefono.",
         "errors": {
             "empty": "Il carrello è vuoto.",
@@ -145,7 +166,8 @@
             "outOfStock": "Un prodotto è esaurito.",
             "variant": "Combinazione selezionata non trovata.",
             "stock": "Disponibilità insufficiente.",
-            "phone": "Inserisci un numero di telefono valido con il prefisso internazionale."
+            "phone": "Inserisci un numero di telefono valido con il prefisso internazionale.",
+            "minimumOrder": "L’importo minimo dell’ordine è {amount} {currency}."
         }
     },
     "orderSuccess": {
@@ -160,6 +182,14 @@
         "title": "Media",
         "subtitle": "Immagini, video e documenti delle nostre ultime collezioni.",
         "openDocument": "Apri documento",
+        "close": "Chiudi",
+        "previous": "Precedente",
+        "next": "Successivo",
+        "open": "Apri galleria",
+        "collection": "Collezione",
+        "untitled": "Un momento della collezione",
+        "fileCount": "{count} file",
+        "emptyTitle": "La galleria è in preparazione",
         "empty": "Nessun contenuto multimediale disponibile."
     },
     "contact": {
@@ -185,8 +215,16 @@
         "send": "Invia messaggio",
         "success": "Messaggio ricevuto. Ti contatteremo al più presto."
     },
+    "maintenance": {
+        "kicker": "MODALITÀ MANUTENZIONE",
+        "title": "Torneremo a breve",
+        "message": "Stiamo migliorando il nostro negozio. Torna a trovarci presto."
+    },
     "blog": {
         "kicker": "MERTER ABBIGLIAMENTO",
-        "title": "Blog"
+        "title": "Blog",
+        "empty": "Nessun articolo del blog per ora.",
+        "emptyDescription": "I nuovi contenuti arriveranno molto presto. Torna a trovarci più tardi.",
+        "backHome": "Torna alla home"
     }
 }

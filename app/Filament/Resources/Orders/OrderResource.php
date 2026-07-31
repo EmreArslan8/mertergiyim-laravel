@@ -22,12 +22,27 @@ class OrderResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Siparişler';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $modelLabel = 'sipariş';
 
     protected static ?string $pluralModelLabel = 'siparişler';
 
+    /**
+     * Panele girer girmez "bekleyen iş var mı" sorusunu cevaplar: henüz
+     * ilgilenilmemiş (Yeni) sipariş sayısı.
+     */
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::query()->where('status', 'new')->count();
 
-    protected static ?int $navigationSort = 5;
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'info';
+    }
 
     public static function form(Schema $schema): Schema
     {

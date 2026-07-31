@@ -22,12 +22,11 @@ class HeroSlideResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Slider';
 
+    protected static ?int $navigationSort = 7;
+
     protected static ?string $modelLabel = 'slider';
 
     protected static ?string $pluralModelLabel = 'slider';
-
-
-    protected static ?int $navigationSort = 6;
 
     public static function form(Schema $schema): Schema
     {
