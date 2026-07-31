@@ -910,10 +910,37 @@
   }
 
   .detail-mobile-wheel button {
+    position: relative;
+    z-index: 3;
     color: #d4d4d8;
     font-size: 14px;
     font-weight: 900;
     cursor: pointer;
+    /* Çift dokunuşla yakınlaştırma gecikmesini kaldırır. */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Görünen buton 20px yüksekliğinde: parmakla isabet ettirmek çok zordu.
+     Görünümü değiştirmeden dokunma alanını büyütüyoruz. */
+  .detail-mobile-wheel button::after {
+    position: absolute;
+    right: 0;
+    left: 0;
+    height: 32px;
+    content: "";
+  }
+
+  .detail-mobile-wheel button:first-of-type::after {
+    top: 0;
+  }
+
+  .detail-mobile-wheel button:last-of-type::after {
+    bottom: 0;
+  }
+
+  .detail-mobile-wheel button:active {
+    color: #18181b;
   }
 
   .detail-mobile-wheel output {

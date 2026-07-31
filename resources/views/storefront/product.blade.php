@@ -17,7 +17,7 @@
 
 @push('styles')
     <link rel="stylesheet" href="/css/product.css?v=20260730-1">
-    <link rel="stylesheet" href="/css/commerce.css">
+    <link rel="stylesheet" href="/css/commerce.css?v=20260731-7">
 @endpush
 
 @section('content')
