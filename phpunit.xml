@@ -36,5 +36,9 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <!-- Testler gerçek sipariş oluşturuyor ve kuyruk sync; kimlik bilgileri
+             boş olmazsa her test koşusunda mağazaya gerçek Telegram mesajı gider. -->
+        <env name="TELEGRAM_BOT_TOKEN" value="" force="true"/>
+        <env name="TELEGRAM_CHAT_ID" value="" force="true"/>
     </php>
 </phpunit>

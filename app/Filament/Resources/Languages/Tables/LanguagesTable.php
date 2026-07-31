@@ -2,9 +2,7 @@
 
 namespace App\Filament\Resources\Languages\Tables;
 
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
@@ -24,7 +22,6 @@ class LanguagesTable
                 TextColumn::make('sort_order')->label('Sıra'),
                 ToggleColumn::make('active')->label('Aktif / Pasif'),
             ])
-            ->recordActions([EditAction::make(), DeleteAction::make()])
-            ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
+            ->recordActions([EditAction::make(), DeleteAction::make()]);
     }
 }

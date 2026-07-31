@@ -3,10 +3,8 @@
 namespace App\Filament\Resources\Products\RelationManagers;
 
 use App\Services\AdminOptionService;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -50,7 +48,6 @@ class VariantsRelationManager extends RelationManager
                 TextColumn::make('stock_quantity')->label('Stok'),
             ])
             ->headerActions([CreateAction::make()->label('Varyant ekle')])
-            ->recordActions([EditAction::make(), DeleteAction::make()])
-            ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
+            ->recordActions([EditAction::make(), DeleteAction::make()]);
     }
 }

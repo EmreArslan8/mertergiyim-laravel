@@ -1,148 +1,144 @@
 @php
+    /**
+     * Paket dağılımı: pakete her bedenden kaç adet gireceği.
+     *
+     * Stok tutulmuyor (canlıdaki davranışın aynısı): tabloda renk × beden
+     * parça stoğu yok. Girilen tek sayı beden başına paket adedi; paket
+     * toplamı bu satırın toplamından türer.
+     */
     $sizes = app(\App\Services\AdminOptionService::class)->sizes();
     $colors = app(\App\Services\AdminOptionService::class)->colorDetails();
     $selectedSizeIds = array_values(array_filter((array) $get('variant_size_ids')));
     $selectedColorIds = array_values(array_filter((array) $get('variant_color_ids')));
-    $variants = collect((array) $get('variants'));
-    $ratios = collect((array) $get('pack_contents'))
-        ->filter(fn (array $item): bool => filled($item['size_id'] ?? null) && (int) ($item['quantity'] ?? 0) > 0)
-        ->pluck('quantity', 'size_id')
-        ->map(fn ($quantity): int => (int) $quantity)
+
+    $packContents = collect((array) $get('pack_contents'));
+
+    // Oran hücreleri doğrudan pack_contents satırına yazsın diye repeater
+    // anahtarları beden id'siyle eşleştiriliyor (beden -> uuid).
+    $ratioKeys = $packContents
+        ->filter(fn (array $item): bool => filled($item['size_id'] ?? null))
+        ->mapWithKeys(fn (array $item, string $key): array => [(string) $item['size_id'] => $key])
         ->all();
-    $isPack = (int) $get('pack_size') > 1 && $ratios !== [];
 
-    $rows = collect($selectedColorIds)->map(function ($colorId) use ($colors, $selectedSizeIds, $variants): array {
-        $cells = collect($selectedSizeIds)->mapWithKeys(function ($sizeId) use ($colorId, $variants): array {
-            $variantKey = $variants->search(fn (array $variant): bool =>
-                (string) ($variant['color_id'] ?? '') === (string) $colorId
-                && (string) ($variant['size_id'] ?? '') === (string) $sizeId
-            );
+    $ratios = $packContents
+        ->filter(fn (array $item): bool => filled($item['size_id'] ?? null))
+        ->mapWithKeys(fn (array $item): array => [
+            (string) $item['size_id'] => max(0, (int) ($item['quantity'] ?? 0)),
+        ])
+        ->all();
 
-            if ($variantKey === false) {
-                return [$sizeId => null];
-            }
-
-            return [$sizeId => [
-                'key' => $variantKey,
-                'stock' => max(0, (int) ($variants->get($variantKey)['stock_quantity'] ?? 0)),
-            ]];
-        })->all();
-
-        return [
-            'id' => $colorId,
-            'name' => $colors[$colorId]['name'] ?? 'Renk',
-            'hex' => $colors[$colorId]['hex'] ?? '#ffffff',
-            'cells' => $cells,
-        ];
-    });
+    $packTotal = array_sum($ratios);
+    $selectedColors = array_map(fn ($colorId): array => [
+        'name' => $colors[$colorId]['name'] ?? 'Renk',
+        'hex' => $colors[$colorId]['hex'] ?? '#ffffff',
+    ], $selectedColorIds);
 @endphp
 
-<div class="merter-stock-matrix">
+<div class="merter-stock-matrix" wire:key="product-pack-distribution-{{ md5(json_encode($selectedSizeIds)) }}">
     <div class="merter-stock-matrix__heading">
         <div>
-            <strong>Renk × beden stokları</strong>
-            <span>Her hücreye depodaki gerçek ürün adedini girin.</span>
+            <strong>Paket dağılımı</strong>
+            <span>Pakete her bedenden kaç adet gireceğini yazın. Paket adedi bu toplamdan hesaplanır.</span>
         </div>
-        <span class="merter-stock-matrix__unit">Stok birimi: adet</span>
+        <div class="merter-stock-matrix__status">
+            <span class="merter-stock-matrix__unit">Paket: {{ $packTotal ?: '—' }} adet</span>
+        </div>
     </div>
 
-    @if ($selectedSizeIds === [] || $selectedColorIds === [])
+    @if ($selectedSizeIds === [])
         <div class="merter-stock-matrix__empty">
-            Stok tablosunu oluşturmak için önce en az bir beden ve renk seçin.
+            Paket dağılımını girmek için önce en az bir beden seçin.
         </div>
     @else
         <div class="merter-stock-matrix__scroll">
             <table>
                 <thead>
                     <tr>
-                        <th scope="col">Renk</th>
+                        <th scope="col">Beden</th>
                         @foreach ($selectedSizeIds as $sizeId)
                             <th scope="col">{{ $sizes[$sizeId] ?? 'Beden' }}</th>
                         @endforeach
-                        <th scope="col">Satılabilir</th>
+                        <th scope="col">Toplam</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr class="merter-stock-matrix__ratio">
-                        <th scope="row">Paket oranı</th>
+                        <th scope="row">Paket içindeki adet</th>
                         @foreach ($selectedSizeIds as $sizeId)
-                            <td>{{ $ratios[$sizeId] ?? '—' }}</td>
-                        @endforeach
-                        <td>{{ $isPack ? ((int) $get('pack_size')).' adet' : 'Tekli' }}</td>
-                    </tr>
-
-                    @foreach ($rows as $row)
-                        @php
-                            $initialStocks = collect($row['cells'])->mapWithKeys(
-                                fn ($cell, $sizeId): array => [$sizeId => (int) ($cell['stock'] ?? 0)]
-                            )->all();
-                        @endphp
-                        <tr
-                            x-data="{
-                                stocks: @js($initialStocks),
-                                ratios: @js($ratios),
-                                isPack: @js($isPack),
-                                available() {
-                                    if (! this.isPack) return null
-
-                                    const values = Object.keys(this.ratios).map((sizeId) => {
-                                        const ratio = Number(this.ratios[sizeId]) || 1
-
-                                        return Math.floor((Number(this.stocks[sizeId]) || 0) / ratio)
-                                    })
-
-                                    return values.length ? Math.min(...values) : 0
-                                },
-                            }"
-                        >
-                            <th scope="row">
-                                <span class="merter-color-option">
-                                    <span
-                                        class="merter-color-option__swatch"
-                                        style="--merter-option-color: {{ $row['hex'] }}"
-                                    ></span>
-                                    <span>{{ $row['name'] }}</span>
-                                </span>
-                            </th>
-
-                            @foreach ($selectedSizeIds as $sizeId)
-                                @php($cell = $row['cells'][$sizeId] ?? null)
-                                <td>
-                                    @if ($cell)
-                                        <label class="sr-only" for="stock-{{ $row['id'] }}-{{ $sizeId }}">
-                                            {{ $row['name'] }} {{ $sizes[$sizeId] ?? 'beden' }} stoğu
-                                        </label>
-                                        <input
-                                            id="stock-{{ $row['id'] }}-{{ $sizeId }}"
-                                            type="number"
-                                            min="0"
-                                            step="1"
-                                            inputmode="numeric"
-                                            x-model.number="stocks['{{ $sizeId }}']"
-                                            wire:model.blur="data.variants.{{ $cell['key'] }}.stock_quantity"
-                                        >
-                                    @else
-                                        <span class="merter-stock-matrix__missing">—</span>
-                                    @endif
-                                </td>
-                            @endforeach
-
-                            <td class="merter-stock-matrix__available">
-                                <template x-if="isPack">
-                                    <span><b x-text="available()"></b> paket</span>
-                                </template>
-                                <template x-if="! isPack">
-                                    <span>—</span>
-                                </template>
+                            <td>
+                                {{-- Sabit bilgi gibi görünür, tıklayınca düzenlenir. --}}
+                                @if (isset($ratioKeys[$sizeId]))
+                                    <label class="sr-only" for="ratio-{{ $sizeId }}">
+                                        {{ $sizes[$sizeId] ?? 'Beden' }} paket içindeki adet
+                                    </label>
+                                    <input
+                                        id="ratio-{{ $sizeId }}"
+                                        class="merter-stock-matrix__ratio-input"
+                                        type="number"
+                                        min="1"
+                                        step="1"
+                                        inputmode="numeric"
+                                        title="Pakete bu bedenden kaç adet giriyor — değiştirebilirsin"
+                                        wire:model.live.debounce.400ms="data.pack_contents.{{ $ratioKeys[$sizeId] }}.quantity"
+                                    >
+                                @else
+                                    —
+                                @endif
                             </td>
-                        </tr>
-                    @endforeach
+                        @endforeach
+                        <td>{{ $packTotal ?: '—' }} adet</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
 
+        {{-- Mobilde tablo yerine ızgara: tek satırlık bir tablo için yatay
+             kaydırma (min genişlik 42rem) gereksiz bir engel. Aynı alanlar,
+             aynı `wire:model`, beden başına bir kutu. --}}
+        <div class="merter-stock-matrix__grid">
+            @foreach ($selectedSizeIds as $sizeId)
+                <label class="merter-stock-cell" for="ratio-compact-{{ $sizeId }}">
+                    <span class="merter-stock-cell__label">{{ $sizes[$sizeId] ?? 'Beden' }}</span>
+
+                    @if (isset($ratioKeys[$sizeId]))
+                        <input
+                            id="ratio-compact-{{ $sizeId }}"
+                            class="merter-stock-cell__input"
+                            type="number"
+                            min="1"
+                            step="1"
+                            inputmode="numeric"
+                            wire:model.live.debounce.400ms="data.pack_contents.{{ $ratioKeys[$sizeId] }}.quantity"
+                        >
+                    @else
+                        <span class="merter-stock-cell__input">—</span>
+                    @endif
+                </label>
+            @endforeach
+
+            <div class="merter-stock-cell merter-stock-cell--total">
+                <span class="merter-stock-cell__label">Paket toplamı</span>
+                <span class="merter-stock-cell__value">{{ $packTotal ?: '—' }} adet</span>
+            </div>
+        </div>
+
         <p class="merter-stock-matrix__note">
-            Satılabilir paket sayısı, paketteki beden oranına göre en düşük stoktan otomatik hesaplanır.
+            Bu dağılım ürün sayfasında müşteriye <b>PAKET İÇERİĞİ</b> olarak gösterilir.
+            @if ($selectedColors !== [])
+                Aynı dağılım seçili
+                <span class="merter-pack-colors">
+                    @foreach ($selectedColors as $color)
+                        <span class="merter-color-option">
+                            <span
+                                class="merter-color-option__swatch"
+                                style="--merter-option-color: {{ $color['hex'] }}"
+                            ></span>
+                            <span>{{ $color['name'] }}</span>
+                        </span>
+                    @endforeach
+                </span>
+                renklerinin hepsi için geçerlidir.
+            @endif
         </p>
     @endif
 </div>

@@ -2,7 +2,7 @@
     use App\Support\Storefront;
 
     $metaTitle = $productName.' | '.$siteName;
-    $metaDescription = Storefront::text($product->description, $locale) ?: ($messages['meta']['description'] ?? '');
+    $metaDescription = Storefront::plainText($product->description, $locale) ?: ($messages['meta']['description'] ?? '');
     $metaKeywords = '';
     $ogImage = $gallery[0] ?? null;
     $packageTotal = Storefront::formatPrice($numericPrice * $packSize, $currencyDisplay);
@@ -16,7 +16,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/product.css">
+    <link rel="stylesheet" href="/css/product.css?v=20260730-1">
     <link rel="stylesheet" href="/css/commerce.css">
 @endpush
 
@@ -90,7 +90,8 @@
                 @if ($productDescription)
                     <div class="detail-description">
                         <span>ÜRÜN AÇIKLAMASI</span>
-                        <p>{!! nl2br(e($productDescription)) !!}</p>
+                        {{-- İçerik App\Support\Storefront::richText() ile temizlendi. --}}
+                        <div class="rich-text">{!! $productDescription !!}</div>
                     </div>
                 @endif
 
@@ -209,28 +210,10 @@
                     <span>SİZİN İÇİN SEÇTİK</span>
                     <h2>{{ $messages['product']['recommended'] ?? 'Beğenebileceğiniz Ürünler' }}</h2>
                 </div>
-                <div class="recommended-grid">
-                    @foreach ($recommendations as $item)
-                        @php
-                            $name = Storefront::text($item['product']->name, $locale);
-                            $recommendationCategory = Storefront::text($item['product']->category?->name_i18n, $locale)
-                                ?: $item['product']->category?->name;
-                        @endphp
-                        <a class="recommended-card" href="{{ Storefront::productHref($locale, $item['product']->slug) }}">
-                            <div class="recommended-image">
-                                @if ($item['image'])
-                                    <img src="{{ $item['image'] }}" alt="{{ $name }}" loading="lazy">
-                                @endif
-                            </div>
-                            <div class="recommended-body">
-                                <div class="recommended-meta">
-                                    <small>{{ $recommendationCategory }}</small>
-                                    <b>{{ $item['product']->code }}</b>
-                                </div>
-                                <strong>{{ $name }}</strong>
-                                <span>{{ $item['price'] }}</span>
-                            </div>
-                        </a>
+                {{-- Kartlar ana sayfadakiyle aynı bileşen --}}
+                <div class="product-grid">
+                    @foreach ($recommendations as $card)
+                        <x-storefront.product-card :card="$card" />
                     @endforeach
                 </div>
             </section>

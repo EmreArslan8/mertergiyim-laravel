@@ -12,6 +12,41 @@
 }
 
 /* ---------------------------------------------------------------
+   Sidebar genişliği — ekran boyuna göre
+   Filament `--sidebar-width`'i base layout'un <style> bloğunda tanımlar;
+   bu dosya STYLES_AFTER ile sonra yüklendiği için buradaki değer kazanır.
+
+   ≥1536px  17rem   (272px) — geniş ekranda rahat etiket alanı
+   ≥1280px  16rem   (256px) — varsayılan hedef (Material/Linear aralığı)
+   ≥1024px  14rem   (224px) — laptop; tabloya yer bırakmak için daralır
+   <1024px  17.5rem (280px) — off-canvas drawer, dokunmatik için geniş
+   --------------------------------------------------------------- */
+@media (min-width: 64rem) {
+    :root {
+        --sidebar-width: 14rem;
+    }
+}
+
+@media (min-width: 80rem) {
+    :root {
+        --sidebar-width: 16rem;
+    }
+}
+
+@media (min-width: 96rem) {
+    :root {
+        --sidebar-width: 17rem;
+    }
+}
+
+@media (max-width: 63.999rem) {
+    :root {
+        /* Küçük telefonlarda ekranı tamamen kaplamasın: en fazla %82 */
+        --sidebar-width: min(17.5rem, 82vw);
+    }
+}
+
+/* ---------------------------------------------------------------
    Genel zemin
    --------------------------------------------------------------- */
 .fi-body {
@@ -89,7 +124,7 @@
 /* Menü öğesi — düz liste, ikon + label */
 .fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn {
     justify-content: flex-start;
-    column-gap: 0.625rem;
+    column-gap: 0.75rem;
     border-radius: 0.5rem;
     padding: 0.625rem 0.75rem;
     background-color: transparent;
@@ -103,13 +138,24 @@
 
 .fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn > .fi-icon {
     color: #55616d;
-    width: 1.125rem;
-    height: 1.125rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: none;
 }
 
-/* Hover — açık gri zemin */
-.fi-sidebar .fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover {
+/* Hover — açık gri zemin. Dokunmatikte hover "yapışık" kalır, o yüzden
+   yalnızca gerçek işaretçi cihazlarda uygula. */
+@media (hover: hover) {
+    .fi-sidebar .fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover {
+        background-color: #f1f3f6;
+    }
+}
+
+/* Klavye ile gezinme her cihazda görünür olsun */
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn:focus-visible {
     background-color: #f1f3f6;
+    outline: 2px solid var(--merter-blue);
+    outline-offset: -2px;
 }
 
 /* Aktif — dolgulu mavi buton, beyaz metin */
@@ -514,7 +560,7 @@ nav.fi-topbar {
 .fi-ta-header-cell {
     padding: 0.8125rem 0.875rem;
     color: #687481;
-    font-size: 0.6875rem;
+    font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -655,6 +701,12 @@ textarea.fi-input,
     font-size: 0.8125rem;
 }
 
+/* Select'lerin sağındaki ok bir arka plan görseli; 10px iç boşlukla
+   değerin üzerine biniyordu (ör. sayfalama "10"). */
+.fi-select-input {
+    padding-inline-end: 2.25rem;
+}
+
 textarea.fi-input {
     min-height: 5.5rem;
 }
@@ -783,26 +835,46 @@ textarea.fi-input {
         padding-block: 1rem 0.875rem;
     }
 
+    /* Başlık solda, eylem sağda — aynı satırda. Alt alta dizilince eylem
+       tüm satırı kaplayıp yer israf ediyordu. Sipariş detayı gibi çok
+       eylemli sayfalarda sağda üç nokta menüsü duruyor. */
     .fi-header {
         min-width: 0;
-        align-items: stretch;
-        gap: 0.75rem;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.625rem;
+    }
+
+    /* Çok eylemli sayfalarda (sipariş detayı) butonlar mobilde başlığın
+       altını dolduruyordu; onların yerine başlığın sağında üç nokta menüsü
+       görünür. Butonlar gizlenir, başlık tek satırda kalır. */
+    .merter-desktop-actions {
+        display: none !important;
     }
 
     .fi-header-heading {
         overflow-wrap: anywhere;
-        font-size: 1.125rem;
+        font-size: 1.0625rem;
+    }
+
+    .fi-header-actions-ctn {
+        flex: none;
+        margin-top: 0;
     }
 
     .fi-header-actions {
-        width: 100%;
-        flex-wrap: wrap;
+        width: auto;
+        flex-wrap: nowrap;
     }
 
     .fi-header-actions > .fi-btn {
-        min-height: 2.75rem;
-        flex: 1 1 auto;
+        min-height: 2.5rem;
+        flex: none;
         justify-content: center;
+        padding-inline: 0.75rem;
+        font-size: 0.8125rem;
+        white-space: nowrap;
     }
 
     .fi-page-content {
@@ -944,59 +1016,10 @@ textarea.fi-input {
         display: none !important;
     }
 
+    /* Sıralama ve "tümünü seç" artık üst şeritte (arama + filtreler) yer
+       aldığı için bu başlık satırı gereksiz. */
     .fi-ta-table-stacked-on-mobile > thead > .fi-ta-table-stacked-header-row {
-        display: block !important;
-    }
-
-    .fi-ta-table-stacked-on-mobile .fi-ta-table-stacked-header-cell {
-        display: flex !important;
-        width: 100%;
-        min-height: 2.75rem;
-        padding: 0.625rem 0.75rem;
-        border: 0;
-        background: #f7f9fb;
-    }
-
-    .fi-ta-table-stacked-on-mobile .fi-ta-table-stacked-header-cell:has(.fi-ta-page-checkbox)::before {
-        content: "Tümünü seç";
-        grid-column: 1;
-        grid-row: 1;
-        align-self: center;
-        color: #687481;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-
-    .fi-ta-table-stacked-on-mobile .fi-ta-table-stacked-header-cell:has(.fi-ta-page-checkbox) {
-        display: grid !important;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 0.625rem 0.75rem;
-    }
-
-    .fi-ta-table-stacked-on-mobile .fi-ta-table-stacked-header-cell .fi-ta-page-checkbox {
-        grid-column: 2;
-        grid-row: 1;
-        align-self: center;
-        margin-inline-start: 0;
-    }
-
-    .fi-ta-table-stacked-on-mobile .fi-ta-table-stacked-header-cell:has(.fi-ta-page-checkbox) .fi-ta-table-stacked-sorting {
-        display: grid;
-        grid-column: 1 / -1;
-        grid-row: 2;
-        grid-template-columns: minmax(0, 1fr) minmax(6.75rem, auto);
-        width: 100%;
-        gap: 0.625rem;
-    }
-
-    .fi-ta-table-stacked-on-mobile .fi-ta-table-stacked-sorting label,
-    .fi-ta-table-stacked-on-mobile .fi-ta-table-stacked-sorting .fi-input-wrp {
-        min-width: 0;
-        max-width: 100%;
-    }
-
-    .fi-ta-table-stacked-on-mobile .fi-ta-table-stacked-sorting select.fi-select-input {
-        padding-inline-end: 2.5rem !important;
+        display: none !important;
     }
 
     .fi-ta-table-stacked-on-mobile > tbody {
@@ -1045,6 +1068,18 @@ textarea.fi-input {
         line-height: 1.35;
         letter-spacing: 0.035em;
         text-transform: uppercase;
+    }
+
+    /* Yığılmış kartta hücreler "etiket | değer" ızgarası; masaüstünde sağa
+       hizalı olan sütun (Toplam) burada tek başına sağa kayıp diğer
+       değerlerle hizasız kalıyordu. Kart içinde tüm değerler aynı yerden
+       başlar. */
+    .fi-ta-table-stacked-on-mobile .fi-ta-cell.fi-align-end,
+    .fi-ta-table-stacked-on-mobile .fi-ta-cell.fi-align-end > .fi-ta-cell-content,
+    .fi-ta-table-stacked-on-mobile .fi-ta-cell.fi-align-end .fi-ta-text {
+        justify-content: flex-start;
+        justify-items: start;
+        text-align: start;
     }
 
     .fi-ta-table-stacked-on-mobile .fi-ta-cell > .fi-ta-cell-content {
@@ -1863,8 +1898,9 @@ nav.fi-topbar {
 .fi-ta-header-cell {
     padding-block: 0.9rem;
     color: #79766f;
-    font-size: 0.625rem;
-    letter-spacing: 0.11em;
+    /* 10px başlıklar okunmuyordu; 12.5px + daha dar harf aralığı. */
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
 }
 
 .fi-ta-table > tbody > tr {
@@ -1880,9 +1916,11 @@ nav.fi-topbar {
     color: var(--merter-ink);
 }
 
+/* Tablo görsellerinde çerçeve/halka yok: küçük önizlemede görselin
+   etrafında boş bir kutu gibi duruyordu. */
 .fi-ta-image {
-    border-radius: 0.55rem;
-    box-shadow: 0 0 0 1px rgba(24, 24, 22, 0.08);
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .fi-ta-text-item-description {
@@ -1907,8 +1945,11 @@ nav.fi-topbar {
 
 .fi-badge {
     border-radius: 999px;
-    font-size: 0.68rem;
+    /* 0.68rem (~11px) tabloda okunmuyordu. */
+    font-size: 0.75rem;
     font-weight: 600;
+    padding-inline: 0.625rem;
+    padding-block: 0.1875rem;
 }
 
 /* Buttons and fields */
@@ -3208,6 +3249,48 @@ nav.fi-topbar {
     font-weight: 600;
 }
 
+.merter-stock-matrix__status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.merter-stock-matrix__dirty {
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    background: #fff7ed;
+    color: #c2410c;
+    font-size: 0.6875rem;
+    font-weight: 700;
+}
+
+.merter-stock-matrix__performance {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.75rem 1.1rem 1rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid #e4e4e7;
+    border-radius: 0.625rem;
+    background: #f4f4f5;
+    color: #52525b;
+    font-size: 0.75rem;
+}
+
+.merter-stock-matrix__performance-label {
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    background: #18181b;
+    color: #fff;
+    font-weight: 700;
+}
+
+.merter-stock-matrix__performance b {
+    color: #18181b;
+    font-variant-numeric: tabular-nums;
+}
+
 .merter-stock-matrix__scroll {
     overflow-x: auto;
 }
@@ -3269,6 +3352,69 @@ nav.fi-topbar {
 
 .merter-stock-matrix__ratio th {
     background: #faf7f3 !important;
+}
+
+/* Dağılımın geçerli olduğu renkler — nota gömülü küçük çipler */
+.merter-pack-colors {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0 0.15rem;
+    vertical-align: middle;
+}
+
+.merter-pack-colors .merter-color-option {
+    gap: 0.3rem;
+    padding: 0.1rem 0.4rem;
+    border: 1px solid #ededed;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 0.72rem;
+}
+
+/* Paket oranı hücreleri düzenlenebilir ama sabit bilgi gibi durur:
+   çerçevesiz ve zeminsiz; üzerine gelince/odakta gerçek input olur. */
+.merter-stock-matrix input[type="number"].merter-stock-matrix__ratio-input {
+    width: 3rem;
+    min-height: 1.75rem;
+    padding: 0.1rem 0.2rem;
+    border: 1px solid transparent;
+    border-radius: 0.35rem;
+    background: transparent;
+    box-shadow: none;
+    color: #8a4d1b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    cursor: text;
+}
+
+/* Sayı okları sürekli görünüp "form alanı" hissi vermesin */
+.merter-stock-matrix__ratio-input::-webkit-outer-spin-button,
+.merter-stock-matrix__ratio-input::-webkit-inner-spin-button {
+    opacity: 0;
+    transition: opacity 120ms ease;
+}
+
+.merter-stock-matrix__ratio-input:hover::-webkit-outer-spin-button,
+.merter-stock-matrix__ratio-input:hover::-webkit-inner-spin-button,
+.merter-stock-matrix__ratio-input:focus::-webkit-outer-spin-button,
+.merter-stock-matrix__ratio-input:focus::-webkit-inner-spin-button {
+    opacity: 1;
+}
+
+@media (hover: hover) {
+    .merter-stock-matrix input[type="number"].merter-stock-matrix__ratio-input:hover {
+        border-color: #e0cdb8;
+        background: #fff;
+    }
+}
+
+.merter-stock-matrix input[type="number"].merter-stock-matrix__ratio-input:focus {
+    border-color: #8a4d1b;
+    background: #fff;
+    box-shadow: 0 0 0 2px rgb(138 77 27 / 12%);
+    outline: none;
 }
 
 .merter-stock-matrix input[type="number"] {
@@ -3358,5 +3504,1529 @@ nav.fi-topbar {
     .fi-modal-window:has(.fi-fo-field-wrp) > .fi-modal-footer {
         border-top: 1px solid #e5e5e5;
         box-shadow: 0 -0.5rem 1.5rem rgb(0 0 0 / 5%);
+    }
+}
+
+/* ---------------------------------------------------------------
+   Sidebar ölçüleri — cihaz/ekran davranışı
+   Genişlik dosyanın başındaki `--sidebar-width` breakpoint'lerinden gelir;
+   burada tek satırın (item) iç ölçüleri ve giriş cihazına göre davranış var.
+   Bu blok dosyanın sonunda olduğu için önceki tema katmanlarını ezer.
+   --------------------------------------------------------------- */
+
+/* Masaüstü temel: 40px satır — yoğun panel için verimli, tıklaması güvenli */
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn {
+    min-height: 2.5rem;
+    column-gap: 0.7rem;
+    padding: 0.625rem 0.75rem;
+}
+
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn > .fi-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    flex: none;
+}
+
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn > .fi-sidebar-item-label {
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    /* Uzun etiket iki satıra düşmek yerine tek satırda kırpılsın */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label {
+    font-weight: 600;
+}
+
+/* 1024–1279px (laptop): sidebar 224px'e daralıyor, satır da bir tık sıkışır
+   ki uzun etiketler kırpılmadan sığsın. */
+@media (min-width: 64rem) and (max-width: 79.999rem) {
+    .fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn {
+        column-gap: 0.6rem;
+        padding-inline: 0.625rem;
+    }
+
+    .fi-sidebar .fi-sidebar-nav {
+        padding-inline: 0.625rem;
+    }
+}
+
+/* <1024px: drawer modu — satırlar dokunmatik hedefi olarak 44px */
+@media (max-width: 63.999rem) {
+    .fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn {
+        min-height: 2.75rem;
+        column-gap: 0.8rem;
+        padding: 0.6875rem 0.875rem;
+    }
+
+    .fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn > .fi-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn > .fi-sidebar-item-label {
+        font-size: 0.875rem;
+    }
+
+    .fi-sidebar .fi-sidebar-nav {
+        padding-inline: 0.75rem;
+    }
+}
+
+/* Parmakla kullanılan her cihaz (dokunmatik laptop/tablet dahil): masaüstü
+   genişliğinde bile 44px hedef. Fare varsa 40px'e döner. */
+@media (pointer: coarse) {
+    .fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn {
+        min-height: 2.75rem;
+    }
+
+    .merter-sidebar-storefront,
+    .merter-logout {
+        min-height: 2.75rem;
+    }
+}
+
+/* Hover'a bağlı hareket yalnızca gerçek işaretçide; dokunmatikte yapışır */
+@media (hover: none) {
+    .fi-sidebar .fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover {
+        background: transparent;
+        transform: none;
+    }
+}
+
+/* Aktif satır dokunuşta anında geri bildirim verir */
+.fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn:active {
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fi-sidebar .fi-sidebar-item > .fi-sidebar-item-btn {
+        transition: none;
+    }
+
+    .fi-sidebar .fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover {
+        transform: none;
+    }
+}
+
+/* ---------------------------------------------------------------
+   Toggle — açık yeşil, kapalı gri
+   Filament v4 durum sınıfı .fi-toggle-on / .fi-toggle-off. Dosyanın
+   üst katmanlarındaki .fi-checked kuralları v3 kalıntısı, artık
+   hiçbir öğeye denk gelmiyor; renk oradan gelmiyordu.
+   --------------------------------------------------------------- */
+/* Yalnızca varsayılan renkli toggle'lar (on=primary, off=gray) hedeflenir;
+   Renkler kaynağındaki success/danger toggle'ı kendi rengini korur. */
+.fi-toggle.fi-color-primary.fi-toggle-on {
+    background-color: #16a34a;
+}
+
+.fi-toggle.fi-color-gray.fi-toggle-off {
+    background-color: #d4d4d4;
+}
+
+@media (hover: hover) {
+    .fi-toggle.fi-color-primary.fi-toggle-on:hover {
+        background-color: #15803d;
+    }
+
+    .fi-toggle.fi-color-gray.fi-toggle-off:hover {
+        background-color: #c4c4c4;
+    }
+}
+
+/* Odak halkası da yeşile döner (varsayılan primary siyahtı) */
+.fi-toggle:focus-visible {
+    --tw-ring-color: #16a34a;
+    outline-color: #16a34a;
+}
+
+/* Açıkken içindeki tik ikonu beyaz okunur olsun */
+.fi-toggle.fi-color-primary.fi-toggle-on .fi-icon {
+    color: #fff;
+}
+
+/* ---------------------------------------------------------------
+   Zengin metin editörü (ürün açıklaması)
+   Filament'in varsayılan aktif durumu çok soluk (açık gri zemin);
+   panel kullanıcısı hangi biçimin açık olduğunu göremiyordu.
+   --------------------------------------------------------------- */
+.fi-fo-rich-editor-toolbar {
+    background: var(--merter-canvas);
+    border-bottom: 1px solid var(--merter-border);
+}
+
+.fi-fo-rich-editor-toolbar-group {
+    gap: 4px;
+    padding: 2px;
+    background: #fff;
+    border: 1px solid var(--merter-border);
+    border-radius: 10px;
+}
+
+.fi-fo-rich-editor-tool {
+    color: var(--merter-ink);
+    border: 1px solid transparent;
+    border-radius: 8px;
+}
+
+@media (hover: hover) {
+    .fi-fo-rich-editor-tool:hover {
+        background-color: #eef2f7;
+    }
+}
+
+/* Aktif (seçili) biçim: dolu mavi zemin + beyaz ikon */
+.fi-fo-rich-editor-tool.fi-active {
+    background-color: var(--merter-blue);
+    border-color: var(--merter-blue-dark);
+    color: #fff;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+}
+
+.fi-fo-rich-editor-tool.fi-active .fi-icon,
+.fi-fo-rich-editor-tool.fi-active svg {
+    color: #fff;
+}
+
+@media (hover: hover) {
+    .fi-fo-rich-editor-tool.fi-active:hover {
+        background-color: var(--merter-blue-dark);
+    }
+}
+
+.fi-fo-rich-editor-tool:focus-visible {
+    outline: 2px solid var(--merter-blue);
+    outline-offset: 1px;
+}
+
+/* Editör gövdesi: vitrindeki açıklama biçimiyle aynı görünsün */
+.fi-fo-rich-editor .tiptap {
+    min-height: 180px;
+}
+
+.fi-fo-rich-editor .tiptap ul,
+.fi-fo-rich-editor .tiptap ol {
+    padding-inline-start: 20px;
+}
+
+.fi-fo-rich-editor .tiptap ul {
+    list-style: disc;
+}
+
+.fi-fo-rich-editor .tiptap ol {
+    list-style: decimal;
+}
+
+/* Kayıt sayfalarında başlığın üstündeki "listeye dön" bağlantısı (solda, çerçevesiz) */
+.merter-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3125rem;
+    margin-bottom: 0.375rem;
+    color: var(--merter-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.merter-back-link-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+@media (hover: hover) {
+    .merter-back-link:hover {
+        color: var(--merter-blue);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+}
+
+.merter-back-link:focus-visible {
+    outline: 2px solid var(--merter-blue);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* ---------------------------------------------------------------
+   Form sekmeleri (Bilgiler / Görseller / Varyantlar)
+   Filament'te aktif sekme ile hover aynı gri zemini kullanıyor;
+   hangi sekmede olduğun anlaşılmıyordu.
+   --------------------------------------------------------------- */
+.fi-tabs {
+    gap: 0.25rem;
+    padding: 0.25rem;
+    background: var(--merter-canvas);
+    border: 1px solid var(--merter-border);
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+.fi-tabs-item {
+    border-radius: 8px;
+    color: var(--merter-muted);
+    font-weight: 600;
+}
+
+@media (hover: hover) {
+    .fi-tabs-item:hover {
+        background-color: #fff;
+        color: var(--merter-ink);
+    }
+}
+
+/* Aktif sekme: dolu mavi zemin + beyaz yazı */
+.fi-tabs-item.fi-active,
+.fi-tabs-item[aria-selected="true"] {
+    background-color: var(--merter-blue);
+    color: #fff;
+    box-shadow: 0 1px 2px rgba(18, 109, 245, 0.35);
+}
+
+.fi-tabs-item.fi-active .fi-tabs-item-label,
+.fi-tabs-item[aria-selected="true"] .fi-tabs-item-label,
+.fi-tabs-item.fi-active .fi-icon,
+.fi-tabs-item[aria-selected="true"] .fi-icon {
+    color: #fff;
+}
+
+@media (hover: hover) {
+    .fi-tabs-item.fi-active:hover,
+    .fi-tabs-item[aria-selected="true"]:hover {
+        background-color: var(--merter-blue-dark);
+        color: #fff;
+    }
+}
+
+/* ---------------------------------------------------------------
+   Görsel repeater satır başlığı: sıra rozeti + dosya adı + KAPAK
+   --------------------------------------------------------------- */
+.merter-product-media .fi-fo-repeater-item-header-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.merter-repeater-index {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    background: var(--merter-blue);
+    border-radius: 999px;
+    color: #fff;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.merter-repeater-name {
+    overflow: hidden;
+    color: var(--merter-ink);
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.merter-repeater-badge {
+    flex: none;
+    padding: 0.125rem 0.4375rem;
+    background: #ecfdf3;
+    border: 1px solid #abefc6;
+    border-radius: 999px;
+    color: #067647;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+}
+
+/* ---------------------------------------------------------------
+   Tablo üst çubuğu: TEK satır
+   [ Arama (geniş) ] [ Kategori ] [ Yayın durumu ] [ Sıralama ]
+   Filament varsayılanı filtreleri üst satıra, aramayı alt satıra
+   koyuyor; şerit boş kalıp ekran genişliği kullanılmıyordu.
+   Grid'de satır/sütun açıkça verildi ki kaynak sırası fark etmesin.
+   --------------------------------------------------------------- */
+.fi-ta-header-ctn {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) auto;
+    align-items: end;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+}
+
+.fi-ta-header-ctn > .fi-ta-header-toolbar {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+}
+
+.fi-ta-header-ctn > .fi-ta-filters-above-content-ctn {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+}
+
+/* Arama kutusu satırın en solunda ve mümkün olan en geniş alanda.
+   Filament iki engel koyuyor:
+   1) `.fi-ta-ctn .fi-ta-header-toolbar > :nth-child(2) { margin-inline-start: auto }`
+      arama grubunu sağa itiyor,
+   2) `.fi-ta-actions > * { flex-shrink: 0 }` ve grow olmadığı için kutu
+      içeriği kadar dar kalıyor. İkisi de burada eziliyor. */
+.fi-ta-ctn .fi-ta-header-toolbar > :nth-child(2),
+.fi-ta-header-ctn .fi-ta-header-toolbar > * {
+    margin-inline-start: 0;
+}
+
+.fi-ta-header-ctn > .fi-ta-header-toolbar {
+    justify-content: flex-start;
+    gap: 0.75rem;
+}
+
+.fi-ta-header-ctn .fi-ta-header-toolbar > *:has(.fi-ta-search-field) {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    justify-content: flex-start;
+}
+
+/* Arama kutusu satırın tamamını kaplayınca gereksiz genişti; solda kalıp
+   makul bir üst sınırla duruyor, kalan yer filtrelere gidiyor. */
+.fi-ta-header-ctn .fi-ta-actions > .fi-ta-search-field,
+.fi-ta-header-ctn .fi-ta-search-field {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 26rem;
+}
+
+.fi-ta-header-ctn .fi-ta-search-field .fi-input-wrp,
+.fi-ta-header-ctn .fi-ta-search-field .fi-input-wrp-content-ctn,
+.fi-ta-header-ctn .fi-ta-search-field input {
+    width: 100%;
+    max-width: 26rem;
+}
+
+/* Toolbar'ın ilk kutusu (toplu işlem / sıralama / gruplama tetikleyicileri)
+   bunlar yokken de render ediliyor: genişliği 0 ama min-height: 36px.
+   Arama grubu width: 100% aldığı için alt satıra kayıyor ve üstte 36px'lik
+   boş bir şerit kalıyordu. Element çocuğu yoksa tamamen kaldırılıyor. */
+.fi-ta-header-toolbar > .fi-ta-actions:not(:has(*)) {
+    display: none;
+}
+
+/* Geniş ekranda üst şerit tek sıra: Ara | filtreler | ... | Sütunlar.
+   Arama ve sütun yöneticisi normalde toolbar'ın içinde yan yana duruyor;
+   `display: contents` ile ikisi de header grid'inin doğrudan öğesi olup
+   filtrelerin iki yanına yerleşebiliyor. Dar ekranda (<= 80rem) düzen tek
+   sütuna indiği için bu blok devrede değil. */
+@media (min-width: 80.0625rem) {
+    /* Sıralama ile Sütunlar arasında boş alan kalmasın: artan yeri arama
+       kutusu yutuyor, filtreler ve sütun butonu sağ uçta bitişik duruyor. */
+    .fi-ta-header-ctn {
+        grid-template-columns: minmax(12rem, 1fr) auto auto;
+    }
+
+    .fi-ta-header-ctn > .fi-ta-header-toolbar,
+    .fi-ta-header-ctn .fi-ta-header-toolbar > div:has(.fi-ta-search-field) {
+        display: contents;
+    }
+
+    .fi-ta-header-ctn .fi-ta-search-field,
+    .fi-ta-header-ctn .fi-ta-search-field .fi-input-wrp,
+    .fi-ta-header-ctn .fi-ta-search-field input {
+        max-width: none;
+    }
+
+    .fi-ta-header-ctn .fi-ta-search-field {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .fi-ta-header-ctn > .fi-ta-filters-above-content-ctn {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: start;
+    }
+
+    /* Filtreler etiketleriyle birlikte daha uzun olduğu için grid satırı
+       yüksek; buton `align-items: end`e uyup alta yapışmasın, satırın
+       dikey ortasında dursun. */
+    .fi-ta-header-ctn .fi-ta-col-manager-dropdown,
+    .fi-ta-header-ctn > .fi-ta-header-toolbar .fi-ta-col-manager-dropdown {
+        grid-column: 3;
+        grid-row: 1;
+        justify-self: end;
+        align-self: center;
+        display: flex;
+        align-items: center;
+    }
+}
+
+/* Sütun listesi uzayınca panel ekranı taşırıyordu; liste kendi içinde kayar. */
+.fi-ta-col-manager-items {
+    max-height: min(24rem, 60vh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* "Filtreler" başlığı tek satır düzeninde gereksiz yer kaplıyor */
+.fi-ta-filters-above-content-ctn .fi-ta-filters-header {
+    display: none;
+}
+
+.fi-ta-filters-above-content-ctn .fi-fo-field-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Filtre alanları yan yana; dar ekranda esneyip küçülürler */
+.fi-ta-filters-above-content-ctn .fi-ta-filters > .fi-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.75rem;
+}
+
+.fi-ta-filters-above-content-ctn .fi-ta-filters > .fi-grid > .fi-grid-col {
+    flex: 1 1 8rem;
+    width: auto;
+    min-width: 0;
+    max-width: 12.5rem;
+}
+
+/* Tablet ve altı: arama üstte tam genişlik, altında 3 filtre yan yana.
+   Tek satıra sığdırmaya çalışınca arama kutusu eziliyordu. */
+@media (max-width: 80rem) {
+    .fi-ta-header-ctn {
+        grid-template-columns: 1fr;
+    }
+
+    .fi-ta-header-ctn > .fi-ta-header-toolbar {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .fi-ta-header-ctn > .fi-ta-filters-above-content-ctn {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .fi-ta-filters-above-content-ctn .fi-ta-filters > .fi-grid > .fi-grid-col {
+        flex: 1 1 0;
+        max-width: none;
+    }
+}
+
+/* Alanlar daralırken yazı boyu sabit kalınca metin kutuya sığmıyordu;
+   etiket ve seçim yazıları da ekranla birlikte küçülür. */
+@media (max-width: 80rem) {
+    .fi-ta-header-ctn .fi-fo-field-label {
+        font-size: 0.6875rem;
+    }
+
+    .fi-ta-header-ctn .fi-select-input,
+    .fi-ta-header-ctn .fi-ta-search-field input {
+        font-size: 0.8125rem;
+    }
+
+    .fi-ta-header-ctn .fi-select-input {
+        padding-inline-end: 2rem;
+        text-overflow: ellipsis;
+    }
+}
+
+@media (max-width: 48rem) {
+    .fi-ta-header-ctn .fi-fo-field-label {
+        font-size: 0.625rem;
+        letter-spacing: 0;
+    }
+
+    .fi-ta-header-ctn .fi-select-input,
+    .fi-ta-header-ctn .fi-ta-search-field input {
+        font-size: 0.75rem;
+    }
+
+    .fi-ta-header-ctn .fi-select-input {
+        padding-inline: 0.5rem 1.75rem;
+    }
+
+    .fi-ta-header-ctn .fi-ta-search-field input {
+        padding-inline-start: 2rem;
+    }
+
+    .fi-ta-header-ctn {
+        gap: 0.5rem;
+        padding: 0.625rem 0.75rem;
+    }
+}
+
+/* ---------------------------------------------------------------
+   Ürün listesi küçük görselleri
+   Filament varsayılanı 40x40 kare + object-fit: cover; giyim
+   fotoğrafı dikey olduğu için hem küçük kalıyor hem kırpılıp
+   ürünün bir kısmı görünmüyordu. Kutu 4:5 dikey ve `contain`:
+   görselin tamamı görünür, kırpma yok.
+   Masaüstü 56x70 · tablet 48x60 · mobil kartlarda 88x110
+   --------------------------------------------------------------- */
+.fi-ta-image:has(.merter-thumb),
+.fi-ta-image:has(.merter-thumb-wide) {
+    width: auto;
+    gap: 0;
+    /* Tema tüm tablo görsellerine 1px'lik halka + köşe yuvarlaması veriyordu
+       (satır 1892); ürün küçük görselinde beyaz bir kutu gibi duruyordu. */
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+}
+
+.fi-ta img.merter-thumb {
+    width: 3.5rem;
+    height: 4.375rem;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    object-fit: contain;
+    object-position: center;
+    background: transparent;
+}
+
+/* Slider görselleri yatay (16:9); aynı mantık, sadece oran farklı. */
+.fi-ta img.merter-thumb-wide {
+    width: 7rem;
+    height: 3.9375rem;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    object-fit: contain;
+    object-position: center;
+    background: transparent;
+}
+
+@media (max-width: 79.999rem) {
+    .fi-ta img.merter-thumb {
+        width: 3rem !important;
+        height: 3.75rem !important;
+    }
+
+    .fi-ta img.merter-thumb-wide {
+        width: 6rem !important;
+        height: 3.375rem !important;
+    }
+}
+
+@media (max-width: 47.999rem) {
+    .fi-ta img.merter-thumb {
+        width: 5.5rem !important;
+        height: 6.875rem !important;
+    }
+
+    .fi-ta img.merter-thumb-wide {
+        width: 8.5rem !important;
+        height: 4.78rem !important;
+    }
+}
+
+/* Görsel hücresinde iç boşluk yok: tema `.fi-ta-cell-content`'e her hücre
+   için 14–16px padding veriyor, küçük görselin etrafında kutu etkisi
+   yaratıyordu. Sadece görsel sütununda sıfırlanır. */
+.fi-ta-cell:has(.merter-thumb) > .fi-ta-cell-content,
+.fi-ta-cell:has(.merter-thumb-wide) > .fi-ta-cell-content {
+    min-height: 0;
+    padding: 0.25rem 0.75rem 0.25rem 0;
+}
+
+/* ---------------------------------------------------------------
+   Tablo yoğunluğu
+   Siparişler 8 sütuna çıkınca (#, Sipariş, Takip, Durum, Müşteri,
+   Kargo, Tarih, İşlem) satır yatayda taşıyordu. Hücre iç boşlukları,
+   rozetler ve satır aksiyon butonları biraz sıkılaştırıldı; mobil
+   yığılmış (stacked) düzen kendi kurallarıyla değişmeden kalır.
+   --------------------------------------------------------------- */
+@media (min-width: 48rem) {
+    .fi-ta-header-cell {
+        padding-inline: 0.6rem;
+    }
+
+    .fi-ta-cell .fi-ta-cell-content {
+        min-height: 3.1rem;
+        padding: 0.55rem 0.6rem;
+        font-size: 0.78rem;
+    }
+
+    .fi-ta-text-item-label {
+        font-size: 0.78rem;
+    }
+
+    .fi-ta-text-item-description {
+        margin-top: 0.15rem;
+        font-size: 0.66rem;
+    }
+
+    /* Rozetler (Durum, Kargo) sütun genişliğinin büyük kısmını yiyordu. */
+    .fi-ta-cell .fi-badge {
+        padding: 0.2rem 0.45rem;
+        font-size: 0.68rem;
+    }
+
+    /* "Düzenle / Sil" butonları: yazı korunur, kutu daralır. */
+    .fi-ta-cell .fi-ta-actions {
+        gap: 0.3rem;
+    }
+
+    .fi-ta-cell .fi-ta-actions > .fi-btn,
+    .fi-ta-cell .fi-ta-actions > .fi-link {
+        min-height: 1.8rem;
+        padding-inline: 0.5rem;
+        font-size: 0.72rem;
+    }
+
+    /* Kısa sütunlar tek satırda kalsın, uzun metin alt satıra düşsün. */
+    .fi-ta-cell .fi-ta-text {
+        overflow-wrap: anywhere;
+    }
+}
+
+/* ---------------------------------------------------------------
+   Başlık / hücre hizası
+   Filament yatay boşluğu iki farklı yere koyuyor: başlıkta `th`ın
+   kendisine, gövdede `td` + içindeki `.fi-ta-cell-content`'e. Üstüne
+   `:first-of-type` / `:last-of-type` kuralları kenarlara farklı değer
+   veriyor (24px'e karşı 12px). Sonuç: sütun başlığı ile altındaki
+   içerik aynı hizada başlamıyordu. Burada iki taraf da tek değere
+   sabitlenir: kenar sütunlarda 1.25rem, aradakilerde 0.6rem.
+   --------------------------------------------------------------- */
+@media (min-width: 48rem) {
+    .fi-ta-header-cell,
+    .fi-ta-header-cell:first-of-type,
+    .fi-ta-header-cell:last-of-type {
+        padding-inline: 0.6rem;
+    }
+
+    .fi-ta-header-cell:first-of-type {
+        padding-inline-start: 1.25rem;
+    }
+
+    .fi-ta-header-cell:last-of-type {
+        padding-inline-end: 1.25rem;
+    }
+
+    /* Yatay boşluk yalnızca `.fi-ta-cell-content`ten gelsin. */
+    .fi-ta-table > tbody > tr > .fi-ta-cell,
+    .fi-ta-table > tbody > tr > .fi-ta-cell:first-child,
+    .fi-ta-table > tbody > tr > .fi-ta-cell:last-child,
+    .fi-ta-table > tbody > tr > .fi-ta-cell:has(.fi-ta-actions),
+    .fi-ta-table > tbody > tr > .fi-ta-cell:has(.fi-ta-actions):last-of-type {
+        padding-inline: 0;
+    }
+
+    .fi-ta-table > tbody > tr > .fi-ta-cell > .fi-ta-cell-content {
+        padding-inline: 0.6rem;
+    }
+
+    .fi-ta-table > tbody > tr > .fi-ta-cell:first-child > .fi-ta-cell-content {
+        padding-inline-start: 1.25rem;
+    }
+
+    .fi-ta-table > tbody > tr > .fi-ta-cell:last-child > .fi-ta-cell-content,
+    .fi-ta-table > tbody > tr > .fi-ta-cell:has(.fi-ta-actions) > .fi-ta-actions {
+        padding-inline-end: 1.25rem;
+    }
+}
+
+/* Hizasızlığın asıl kaynağı: Filament hücre metnini saran `.fi-ta-text`e
+   ayrıca `padding-inline: 12px; padding-block: 16px` veriyor. Bu, hücrenin
+   kendi dolgusunun üstüne biniyordu (9.6px + 12px = 21.6px), başlıkta ise
+   böyle bir iç sarmalayıcı yok — içerik başlıktan ~12px sağda başlıyordu.
+   Yatay/dikey boşluğun tek sahibi `.fi-ta-cell-content` olsun. */
+@media (min-width: 48rem) {
+    .fi-ta-table > tbody > tr > .fi-ta-cell .fi-ta-text:not(.fi-inline) {
+        padding: 0;
+    }
+}
+
+/* ===============================================================
+   SİPARİŞ DETAY SAYFASI
+   Kartların çerçevesi/başlığı Filament section'larından geliyor;
+   buradaki kurallar yalnızca kart içeriklerini biçimlendirir.
+   =============================================================== */
+
+/* --- Müşteri bloğu ---
+   Ad ve telefon yan yana iki alan; dar kolonda alt alta iner. */
+.merter-order-customer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+@media (max-width: 30rem) {
+    .merter-order-customer {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.merter-order-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.merter-order-field-label {
+    color: var(--merter-muted);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.merter-order-field-value {
+    color: var(--merter-ink);
+    font-size: 0.82rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+a.merter-order-field-link {
+    text-decoration: none;
+}
+
+a.merter-order-field-link:hover {
+    color: var(--merter-blue);
+}
+
+.merter-order-customer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 0.4rem;
+    gap: 0.375rem;
+}
+
+/* Küçük ikincil eylem: Ara / WhatsApp / Adresi kopyala */
+.merter-order-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--merter-border);
+    border-radius: 0.5rem;
+    background: #fff;
+    color: var(--merter-ink);
+    font-size: 0.72rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.merter-order-chip:hover {
+    border-color: #c3cad2;
+    background: var(--merter-canvas);
+}
+
+/* --- Adres bloğu --- */
+.merter-order-address-body {
+    margin-top: 0.15rem;
+    margin-bottom: 0.5rem;
+    color: var(--merter-ink);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+.merter-order-address .merter-order-chip {
+    align-self: flex-start;
+}
+
+.merter-order-empty {
+    color: var(--merter-muted);
+    font-size: 0.8rem;
+}
+
+/* Müşteri notu alıntı gibi dursun, dahili nottan ayrılsın. */
+.merter-order-customer-note {
+    font-style: italic;
+}
+
+/* --- Ürünler tablosu ---
+   Ölçekler paneldeki tablo diliyle aynı: başlık 0.78rem (10px başlıklar
+   okunmuyordu, orada da büyütmüştük), gövde 0.82rem, ikincil satırlar
+   0.75rem. Sayılar tabular-nums ile alt alta hizalanır. */
+.merter-order-items-scroll {
+    overflow-x: auto;
+}
+
+.merter-order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.merter-order-items-table th {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--merter-border);
+    color: var(--merter-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-align: start;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.merter-order-items-table td {
+    padding: 0.7rem 0.6rem;
+    border-bottom: 1px solid #eef1f4;
+    color: var(--merter-ink);
+    font-size: 0.82rem;
+    vertical-align: middle;
+}
+
+.merter-order-items-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+/* Fiyat ve adet sütunları: eşit genişlikte rakam, sağa hizalı. */
+.merter-order-items-num {
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    white-space: nowrap;
+}
+
+.merter-order-items-thumb-col {
+    width: 3.75rem;
+}
+
+/* Ürün fotoğrafları dikey (4:5); kare önizlemede yanlarda boşluk kalıyordu. */
+.merter-order-item-thumb {
+    display: block;
+    width: 3rem;
+    height: 3.75rem;
+    border-radius: 0.375rem;
+    object-fit: cover;
+}
+
+.merter-order-item-thumb-empty {
+    background: var(--merter-canvas);
+}
+
+.merter-order-item-name {
+    display: block;
+    color: var(--merter-ink);
+    font-size: 0.86rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.merter-order-item-meta,
+.merter-order-item-code {
+    color: var(--merter-muted);
+    font-size: 0.75rem;
+}
+
+.merter-order-item-meta {
+    display: block;
+    margin-top: 0.15rem;
+}
+
+.merter-order-item-code {
+    font-variant-numeric: tabular-nums;
+}
+
+.merter-order-item-total {
+    font-weight: 600;
+}
+
+/* Toplamlar sağ blokta: tablo satırlarıyla aynı hizada bitsin. */
+.merter-order-totals {
+    display: flex;
+    flex-direction: column;
+    max-width: 20rem;
+    margin-top: 0.9rem;
+    margin-inline-start: auto;
+    gap: 0.35rem;
+}
+
+.merter-order-total-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    color: var(--merter-muted);
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.merter-order-total-grand {
+    padding-top: 0.55rem;
+    border-top: 1px solid var(--merter-border);
+    color: var(--merter-ink);
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.merter-order-total-warning {
+    margin-top: 0.45rem;
+    color: #b42318;
+    font-size: 0.75rem;
+    line-height: 1.45;
+}
+
+/* --- Sipariş durumu (kompakt ilerleme çubuğu) ---
+   Dikey adım listesi sağ kolonun yarısını kaplıyor ve kargo kartını
+   ekranın çok altına itiyordu; aynı bilgi altı segmentlik bir çubukla
+   veriliyor. Adım adları segmentlerin title'ında. */
+.merter-order-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+/* Filament alan etiketiyle aynı ölçüler: yandaki sütunla hizalı başlasın. */
+.merter-order-progress-label {
+    margin-bottom: -0.1rem;
+    color: var(--merter-ink);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+}
+
+.merter-order-progress-track {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.merter-order-progress-seg {
+    height: 0.3rem;
+    flex: 1 1 0;
+    border-radius: 999px;
+    background: var(--merter-border);
+}
+
+.merter-order-progress-seg.is-done {
+    background: #12a150;
+}
+
+.merter-order-progress-seg.is-current {
+    background: var(--merter-blue);
+}
+
+.merter-order-progress-meta {
+    color: var(--merter-ink);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.merter-order-progress-next {
+    color: var(--merter-muted);
+    font-weight: 500;
+}
+
+.merter-order-progress-cancelled .merter-order-progress-seg {
+    background: #f0d5d2;
+}
+
+.merter-order-progress-cancelled .merter-order-progress-meta {
+    color: #b42318;
+}
+
+/* Müşteri kartı içindeki blok ayracı (kişi | adres | notlar). */
+.merter-order-hr {
+    height: 1px;
+    margin: 0;
+    border: 0;
+    background: var(--merter-border);
+}
+
+/* Sağ kolon (durum · kargo · müşteri) sayfa kaydıkça sabit kalır: uzun
+   kalem listesinde siparişin durumu ve kargo alanı gözden kaybolmasın.
+   Yalnızca iki kolonun yan yana durduğu genişlikte. */
+@media (min-width: 80rem) {
+    .merter-order-side {
+        position: sticky;
+        top: 1rem;
+        align-self: start;
+    }
+}
+
+/* Sipariş detayındaki kartlar bilgi yoğun ve dar; tema varsayılanı olan
+   1.25rem'lik iç boşluk sağ kolonu gereksiz uzatıyordu. */
+.merter-order-side .fi-section-content,
+.merter-order-side .fi-section-header {
+    padding: 0.9rem 1rem;
+}
+
+.merter-order-side .fi-section-content {
+    gap: 0.75rem;
+}
+
+/* Tutar/adet sütunları: eşit genişlikte rakam, ondalıklar alt alta. */
+.merter-tabular {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ===============================================================
+   SİPARİŞ EKRANLARI — MOBİL / TABLET
+   Kırılmalar: mobil < 48rem, tablet 48–80rem, masaüstü >= 80rem.
+   Masaüstü düzeni (iki kolon + sabit sağ kolon) 80rem'de devreye
+   giriyor; buradaki kurallar onun altındaki genişlikler için.
+   =============================================================== */
+
+/* --- Ürünler tablosu mobilde satır-kart --- */
+@media (max-width: 47.999rem) {
+    /* Altı sütunlu tabloyu 375px'e sığdırmanın okunur yolu yok: her satır
+       kendi kartına dönüşür, sütun başlıkları hücre etiketine iner. */
+    .merter-order-items-table thead {
+        display: none;
+    }
+
+    .merter-order-items-table,
+    .merter-order-items-table tbody {
+        display: block;
+    }
+
+    .merter-order-items-table tbody tr {
+        display: grid;
+        grid-template-columns: 3.25rem repeat(3, minmax(0, 1fr));
+        grid-template-areas:
+            'thumb name name name'
+            'thumb code code code'
+            'qty unit total total';
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #eef1f4;
+        gap: 0.35rem 0.6rem;
+        align-items: start;
+    }
+
+    .merter-order-items-table tbody tr:last-child {
+        border-bottom: 0;
+    }
+
+    .merter-order-items-table td {
+        padding: 0;
+        border: 0;
+    }
+
+    .merter-order-cell-thumb {
+        grid-area: thumb;
+    }
+
+    .merter-order-cell-name {
+        grid-area: name;
+    }
+
+    .merter-order-cell-code {
+        grid-area: code;
+    }
+
+    .merter-order-cell-qty {
+        grid-area: qty;
+    }
+
+    .merter-order-cell-unit {
+        grid-area: unit;
+    }
+
+    .merter-order-cell-total {
+        grid-area: total;
+    }
+
+    /* Sayı hücreleri kart içinde sola yaslanır; başlık satırı olmadığı için
+       değerin ne olduğunu üstündeki etiket söyler. */
+    .merter-order-items-table .merter-order-items-num {
+        text-align: start;
+    }
+
+    .merter-order-cell-qty::before,
+    .merter-order-cell-unit::before,
+    .merter-order-cell-total::before,
+    .merter-order-cell-code::before {
+        display: block;
+        color: var(--merter-muted);
+        content: attr(data-label);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    /* Toplamlar bloğu sağa yaslı dar kutu olarak kalmasın. */
+    .merter-order-totals {
+        max-width: none;
+    }
+
+    /* iOS Safari 16px altındaki alanlarda sayfayı otomatik yakınlaştırıyor. */
+    .fi-input,
+    .fi-select-input,
+    .fi-ta-search-field input {
+        font-size: 1rem;
+    }
+
+    /* Dokunma hedefleri */
+    .fi-ta-actions > .fi-btn,
+    .fi-fo-repeater-item .fi-icon-btn,
+    .merter-order-chip {
+        min-height: 2.75rem;
+    }
+
+    .merter-order-chip {
+        align-items: center;
+        padding-inline: 0.9rem;
+    }
+}
+
+/* Tablet: iki kolonlu düzen henüz açılmadı, sağ kolon sabitlenmez ve
+   kartlar tam genişlik. (Sticky kuralı zaten 80rem'den itibaren.) */
+@media (max-width: 79.999rem) {
+    .merter-order-side {
+        position: static;
+    }
+}
+
+/* Sabitlenen form eylemleri (yeni sipariş): mobilde tam genişlik tek buton
+   satırı; masaüstünde form zaten tek ekrana sığıyor, sabitleme kapanır. */
+@media (max-width: 47.999rem) {
+    .fi-sc-actions.fi-sticky .fi-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+        min-height: 2.75rem;
+    }
+}
+
+@media (min-width: 48rem) {
+    .fi-sc-actions.fi-sticky {
+        position: static;
+        box-shadow: none;
+    }
+}
+
+/* Üç nokta menüsü yalnızca mobilde; masaüstünde eylemler buton olarak var. */
+@media (min-width: 48rem) {
+    .merter-mobile-actions {
+        display: none !important;
+    }
+}
+
+/* Sayfanın tek eylem girişi olduğu için silik bir ikon olarak durmamalı:
+   çerçeveli, beyaz zeminli, 44px'lik gerçek bir buton. */
+@media (max-width: 47.999rem) {
+    .merter-mobile-actions .fi-icon-btn,
+    .merter-mobile-actions .fi-dropdown-trigger > .fi-icon-btn {
+        width: 2.75rem;
+        height: 2.75rem;
+        border: 1px solid #cdd3da;
+        border-radius: 0.65rem;
+        background: #fff;
+        color: var(--merter-ink);
+        box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+    }
+
+    .merter-mobile-actions .fi-icon-btn:hover {
+        border-color: #aab2bb;
+        background: var(--merter-canvas);
+    }
+
+    .merter-mobile-actions .fi-icon-btn .fi-icon,
+    .merter-mobile-actions .fi-icon-btn svg {
+        width: 1.35rem;
+        height: 1.35rem;
+    }
+}
+
+/* ---------------------------------------------------------------
+   Sipariş detayı — mobil tipografi
+   Kart başlıkları, alan etiketleri ve kalem satırları masaüstü
+   ölçekleriyle geliyordu; dar ekranda hem yer yiyor hem hiyerarşi
+   düzleşiyordu. Ölçekler: kart başlığı 0.95rem, alan etiketi
+   0.72rem, değer 0.85rem, ikincil metin 0.75rem.
+   --------------------------------------------------------------- */
+@media (max-width: 47.999rem) {
+    .fi-section-header-heading {
+        font-size: 0.95rem;
+    }
+
+    .fi-section-header-description {
+        font-size: 0.75rem;
+    }
+
+    /* Form etiketleri: 14px'ten 11.5px'e; değerler okunur kalsın diye
+       küçültülmüyor. */
+    .fi-fo-field-wrp-label,
+    .fi-in-entry-wrp-label {
+        font-size: 0.72rem;
+        letter-spacing: 0.01em;
+    }
+
+    /* Müşteri kartı: ad ve telefon dar ekranda alt alta, değerler biraz
+       büyük çünkü kartın asıl bilgisi bunlar. */
+    .merter-order-field-label {
+        font-size: 0.68rem;
+    }
+
+    .merter-order-field-value {
+        font-size: 0.88rem;
+    }
+
+    .merter-order-address-body {
+        font-size: 0.85rem;
+        line-height: 1.55;
+    }
+
+    /* Kalem kartı: ürün adı satırın omurgası, geri kalanı ikincil. */
+    .merter-order-item-name {
+        font-size: 0.88rem;
+    }
+
+    .merter-order-item-meta,
+    .merter-order-item-code {
+        font-size: 0.78rem;
+    }
+
+    .merter-order-items-table td {
+        font-size: 0.85rem;
+    }
+
+    /* Toplamlar: genel toplam kartın en büyük sayısı olmalı. */
+    .merter-order-total-row {
+        font-size: 0.85rem;
+    }
+
+    .merter-order-total-grand {
+        font-size: 1.1rem;
+    }
+
+    /* Durum çubuğu ve özet satırı */
+    .merter-order-progress-label {
+        font-size: 0.8rem;
+    }
+
+    .merter-order-progress-meta {
+        font-size: 0.78rem;
+    }
+
+    /* Sayfa başlığı ve alt satırı */
+    .fi-header-subheading {
+        font-size: 0.8rem;
+        line-height: 1.45;
+    }
+}
+
+/* ---------------------------------------------------------------
+   Mobil: iç içe kutuların ölü dolguları
+   Sekmeli form sayfalarında (ürün) üç kutu iç içe geçiyor:
+   sayfa → sekme içeriği → bölüm kartı. Her biri kendi dolgusunu
+   ekleyince 375px'lik ekranda kenar başına ~50px, toplam ~100px
+   yazı alanından gidiyordu. Kutuların hiçbiri kaldırılmadı, yalnızca
+   mobil dolguları küçültüldü.
+   --------------------------------------------------------------- */
+@media (max-width: 47.999rem) {
+    /* Filament sekme içeriğine 24px veriyor: en büyük kayıp burası. */
+    .fi-sc-tabs.fi-contained .fi-sc-tabs-tab.fi-active {
+        padding: 0.5rem;
+    }
+
+    .fi-section-header {
+        padding: 0.75rem 0.75rem 0.625rem;
+    }
+
+    .fi-section-content {
+        padding: 0.75rem;
+    }
+
+    .fi-main {
+        padding-inline: 0.625rem;
+    }
+
+    /* Bölüm kartı sekme içeriğinin tam içindeyse iki çerçeve üst üste
+       biniyor; iç kartın yatay dolgusu biraz daha dar olabilir. */
+    .fi-sc-tabs-tab .fi-section-content,
+    .fi-sc-tabs-tab .fi-section-header {
+        padding-inline: 0.625rem;
+    }
+
+    /* Repeater ve iç ızgaralar da aynı sorunu üretiyor. */
+    .fi-fo-repeater-item-content {
+        padding: 0.75rem;
+    }
+}
+
+/* ---------------------------------------------------------------
+   Paket dağılımı matrisi — ekran boyutuna göre
+   Tablo tek satırlık (beden sütunları + toplam) ama 42rem'lik asgari
+   genişliği var: mobilde her zaman yatay kaydırma çıkıyordu. Dar
+   ekranda tablo yerine beden başına kutulardan oluşan ızgara gösterilir.
+   --------------------------------------------------------------- */
+.merter-stock-matrix__grid {
+    display: none;
+}
+
+@media (max-width: 47.999rem) {
+    .merter-stock-matrix__scroll {
+        display: none;
+    }
+
+    .merter-stock-matrix__grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.5rem;
+    }
+
+    .merter-stock-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.5rem;
+        border: 1px solid #ededed;
+        border-radius: 0.6rem;
+        background: #fff;
+    }
+
+    .merter-stock-cell__label {
+        color: var(--merter-muted);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .merter-stock-cell__input,
+    .merter-stock-cell__value {
+        width: 100%;
+        min-height: 2.5rem;
+        padding: 0.25rem 0.4rem;
+        border: 1px solid #e3e6ea;
+        border-radius: 0.45rem;
+        background: #fff;
+        color: #8a4d1b;
+        font-size: 1rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+    }
+
+    .merter-stock-cell__input:focus {
+        border-color: var(--merter-blue);
+        outline: none;
+    }
+
+    /* Toplam kutusu satırın tamamını kaplar ve düzenlenebilir görünmez. */
+    .merter-stock-cell--total {
+        grid-column: 1 / -1;
+        background: #faf7f3;
+    }
+
+    .merter-stock-cell--total .merter-stock-cell__value {
+        border-color: transparent;
+        background: transparent;
+        text-align: start;
+    }
+
+    /* Dar ekranda başlık ve durum satırı alt alta. */
+    .merter-stock-matrix__heading {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+    }
+}
+
+/* Çok dar ekranlarda üç kutu sıkışıyor. */
+@media (max-width: 22.5rem) {
+    .merter-stock-matrix__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* ---------------------------------------------------------------
+   Seçim kontrolleri: mavi
+   Panelde iki vurgu rengi dolaşıyordu — siyah (primary) ve mavi.
+   Kural: SİYAH = eylem (Kaydet, Oluştur, birincil buton),
+          MAVİ  = seçim/durum (onay kutusu, radyo, aktif sekme,
+                  odak halkası, durum çubuğundaki güncel adım).
+   Beden/renk seçmek bir durumdur, eylem değil.
+   --------------------------------------------------------------- */
+input[type='checkbox'].fi-checkbox-input:checked,
+input[type='checkbox'].fi-checkbox-input:indeterminate,
+input[type='radio'].fi-radio-input:checked {
+    background-color: var(--merter-blue);
+}
+
+input[type='checkbox'].fi-checkbox-input:checked:focus,
+input[type='radio'].fi-radio-input:checked:focus {
+    --tw-ring-color: rgba(18, 109, 245, 0.5);
+}
+
+/* Toggle (Yayında vb.) açık konumda aynı mantıkla mavi. */
+.fi-toggle.fi-color-primary {
+    --bg: var(--merter-blue);
+}
+
+/* Devre dışı ve hata durumları Filament'in kendi renklerinde kalır. */
+input[type='checkbox'].fi-checkbox-input:disabled:checked,
+input[type='radio'].fi-radio-input:disabled:checked {
+    background-color: #9ca3af;
+}
+
+/* Görsel yükleme alanı: ölçü sabit, hesaplanmıyor.
+   FilePond'a en/boy oranı verildiğinde yüksekliği kapsayıcı genişliğinden
+   JS ile hesaplıyor; ölçüm gelene kadar alan sıfır yükseklikte kalıp sonra
+   aniden açılıyor, düzen zıplıyordu (sekme değişiminde ve ilk açılışta).
+   Oran kaldırıldı, kutunun yüksekliği burada sabit. */
+.fi-fo-file-upload .filepond--root,
+.fi-fo-file-upload .filepond--panel-root,
+.fi-fo-file-upload .filepond--drop-label {
+    height: 9.5rem;
+    min-height: 9.5rem;
+}
+
+/* Önizleme görseli kutuyu taşırmaz. */
+.fi-fo-file-upload .filepond--image-preview-wrapper,
+.fi-fo-file-upload .filepond--image-preview-overlay {
+    max-height: 9.5rem;
+}
+
+@media (max-width: 47.999rem) {
+    .fi-fo-file-upload .filepond--root,
+    .fi-fo-file-upload .filepond--panel-root,
+    .fi-fo-file-upload .filepond--drop-label,
+    .fi-fo-file-upload .filepond--image-preview-wrapper,
+    .fi-fo-file-upload .filepond--image-preview-overlay {
+        height: 8rem;
+        min-height: 8rem;
+        max-height: 8rem;
+    }
+}
+
+/* ---------------------------------------------------------------
+   Sekmeli formlarda ilk boyama
+   Filament pasif sekmeleri `visibility: hidden; height: 0; position:
+   absolute` ile gizliyor ve aktif sekmeyi Alpine çalışınca işaretliyor.
+   Alpine yüklenene kadar hiçbir sekmede `fi-active` yok, dolayısıyla
+   TÜM sekme içerikleri gizli kalıyor: sayfa yüklenirken ekranda yalnızca
+   alttaki butonlar görünüyordu. Aktif sekme henüz yokken ilk sekme
+   gösterilir; Alpine ilk sekmeyi zaten aktif yaptığı için sıçrama olmaz.
+   --------------------------------------------------------------- */
+.fi-sc-tabs:not(:has(.fi-sc-tabs-tab.fi-active)) > .fi-sc-tabs-tab:first-of-type {
+    position: static;
+    visibility: visible;
+    height: auto;
+    overflow: visible;
+}
+
+.fi-sc-tabs.fi-contained:not(:has(.fi-sc-tabs-tab.fi-active)) > .fi-sc-tabs-tab:first-of-type {
+    padding: 1.5rem;
+}
+
+@media (max-width: 47.999rem) {
+    .fi-sc-tabs.fi-contained:not(:has(.fi-sc-tabs-tab.fi-active)) > .fi-sc-tabs-tab:first-of-type {
+        padding: 0.5rem;
     }
 }

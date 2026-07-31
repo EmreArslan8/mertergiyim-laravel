@@ -194,7 +194,106 @@
     fitItems();
   }
 
-  /* ---------- Ürün kartı görsel değiştirme (ToggleImage) ---------- */
+  /* ---------- Mobil ürün kartı galerisi ---------- */
+
+  function initProductCardGalleries() {
+    all('[data-card-gallery]').forEach(function (gallery) {
+      var slides = all('.product-card-slide', gallery);
+      if (slides.length < 2) return;
+      var dotContainer = gallery.parentElement.querySelector('[data-card-dots]');
+      var dots = dotContainer ? all('i', dotContainer) : [];
+      var touchStartX = 0;
+      var touchStartY = 0;
+      var touchStartIndex = 0;
+      var suppressClickUntil = 0;
+
+      function loadSlide(index) {
+        var slide = slides[index];
+        if (!slide) return;
+        var image = slide.querySelector('img[data-src]');
+        if (!image) return;
+        image.src = image.getAttribute('data-src');
+        image.removeAttribute('data-src');
+      }
+
+      function currentIndex() {
+        return Math.round(Math.abs(gallery.scrollLeft) / Math.max(1, gallery.clientWidth));
+      }
+
+      function updateDots(index) {
+        dots.forEach(function (dot, dotIndex) {
+          dot.classList.toggle('selected', dotIndex === index);
+        });
+      }
+
+      function goTo(index) {
+        index = Math.max(0, Math.min(slides.length - 1, index));
+        loadSlide(index);
+        loadSlide(index + 1);
+        gallery.scrollTo({
+          left: index * gallery.clientWidth,
+          behavior: 'smooth'
+        });
+        updateDots(index);
+      }
+
+      // Masaüstü hover yalnızca ikinci görseli hazırlar.
+      gallery.addEventListener('mouseenter', function () {
+        loadSlide(1);
+      }, { once: true });
+
+      // Native link/scroll davranışına güvenmeden yatay swipe'ı açıkça yönet.
+      gallery.addEventListener('touchstart', function (event) {
+        touchStartX = event.changedTouches[0].clientX;
+        touchStartY = event.changedTouches[0].clientY;
+        touchStartIndex = currentIndex();
+        loadSlide(touchStartIndex - 1);
+        loadSlide(touchStartIndex + 1);
+      }, { passive: true });
+
+      gallery.addEventListener('touchend', function (event) {
+        var deltaX = event.changedTouches[0].clientX - touchStartX;
+        var deltaY = event.changedTouches[0].clientY - touchStartY;
+
+        if (Math.abs(deltaX) < 35 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+
+        suppressClickUntil = Date.now() + 500;
+        goTo(touchStartIndex + (deltaX < 0 ? 1 : -1));
+      }, { passive: true });
+
+      gallery.addEventListener('click', function (event) {
+        if (Date.now() >= suppressClickUntil) return;
+        event.preventDefault();
+        event.stopPropagation();
+      }, true);
+
+      if ('IntersectionObserver' in window && window.matchMedia('(max-width: 767px)').matches) {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            var index = slides.indexOf(entry.target);
+            loadSlide(index);
+            loadSlide(index + 1);
+          });
+        }, { root: gallery, threshold: 0.08 });
+
+        slides.slice(1).forEach(function (slide) {
+          observer.observe(slide);
+        });
+      }
+
+      var frame = null;
+      gallery.addEventListener('scroll', function () {
+        if (frame) cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(function () {
+          var index = currentIndex();
+          loadSlide(index);
+          loadSlide(index + 1);
+          updateDots(index);
+        });
+      }, { passive: true });
+    });
+  }
 
   function initToggleImages() {
     all('[data-toggle-image]').forEach(function (element) {
@@ -361,9 +460,16 @@
 
       if (event.pointerType === 'mouse') lensVisible = true;
 
+      // Büyüteç görselin dışına taşmadan köşelere kadar gidebilsin:
+      // merkez, mercek yarı ölçüsü kadar içeride sınırlanır (sabit %28-72
+      // sınırı köşelere ulaşmayı engelliyordu).
+      var lensBounds = lens.getBoundingClientRect();
+      var halfX = bounds.width ? (lensBounds.width / bounds.width) * 50 : 0;
+      var halfY = bounds.height ? (lensBounds.height / bounds.height) * 50 : 0;
+
       lens.style.backgroundPosition = x + '% ' + y + '%';
-      lens.style.left = Math.max(28, Math.min(72, x)) + '%';
-      lens.style.top = Math.max(28, Math.min(72, y)) + '%';
+      lens.style.left = Math.max(halfX, Math.min(100 - halfX, x)) + '%';
+      lens.style.top = Math.max(halfY, Math.min(100 - halfY, y)) + '%';
       lens.classList.toggle('visible', lensVisible);
     }
 
@@ -946,6 +1052,7 @@
   function init() {
     initCategoryFilter();
     initCategoryOverflow();
+    initProductCardGalleries();
     initToggleImages();
     initMobileNav();
     initDesktopCategoryMenu();

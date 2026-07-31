@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\Currencies;
 
 use App\Filament\Resources\ManagedResource;
-use App\Filament\Resources\Currencies\Pages\CreateCurrency;
-use App\Filament\Resources\Currencies\Pages\EditCurrency;
 use App\Filament\Resources\Currencies\Pages\ListCurrencies;
 use App\Filament\Resources\Currencies\Schemas\CurrencyForm;
 use App\Filament\Resources\Currencies\Tables\CurrenciesTable;
@@ -50,8 +48,6 @@ class CurrencyResource extends ManagedResource
     {
         return [
             'index' => ListCurrencies::route('/'),
-            'create' => CreateCurrency::route('/create'),
-            'edit' => EditCurrency::route('/{record}/edit'),
         ];
     }
 }

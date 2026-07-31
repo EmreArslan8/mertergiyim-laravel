@@ -17,7 +17,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', 'mariadb'),
 
     /*
     |--------------------------------------------------------------------------
@@ -96,28 +96,6 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => 'prefer',
-        ],
-
-        // Canlı Supabase Postgres bağlantısı. Şifre alındığında .env'e
-        // SUPABASE_DB_PASSWORD yazıp DB_CONNECTION=pgsql_supabase yapmak yeterli.
-        'pgsql_supabase' => [
-            'driver' => 'pgsql',
-            'url' => env('SUPABASE_DB_URL'),
-            'host' => env('SUPABASE_DB_HOST', 'aws-0-eu-central-1.pooler.supabase.com'),
-            'port' => env('SUPABASE_DB_PORT', '6543'),
-            'database' => env('SUPABASE_DB_DATABASE', 'postgres'),
-            'username' => env('SUPABASE_DB_USERNAME', 'postgres'),
-            'password' => env('SUPABASE_DB_PASSWORD', ''),
-            'charset' => env('SUPABASE_DB_CHARSET', 'utf8'),
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'search_path' => 'public',
-            'sslmode' => env('SUPABASE_DB_SSLMODE', 'require'),
-            // Supabase pooler kalıcı PDO bağlantılarını paralel isteklerde
-            // kapatabildiği için güvenli varsayılan bağlantı başına false'tur.
-            'options' => [
-                PDO::ATTR_PERSISTENT => (bool) env('SUPABASE_DB_PERSISTENT', false),
-            ],
         ],
 
         'sqlsrv' => [

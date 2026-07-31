@@ -26,3 +26,6 @@ yarn-error.log
 # tarayici otomasyonu ciktilari
 .playwright-cli/
 /output
+
+# Veritabanı dump dosyaları (elle alınan yedekler, repoya girmez)
+/database/dumps

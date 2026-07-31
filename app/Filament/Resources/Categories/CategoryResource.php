@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\Categories;
 
 use App\Filament\Resources\ManagedResource;
-use App\Filament\Resources\Categories\Pages\CreateCategory;
-use App\Filament\Resources\Categories\Pages\EditCategory;
 use App\Filament\Resources\Categories\Pages\ListCategories;
 use App\Filament\Resources\Categories\Schemas\CategoryForm;
 use App\Filament\Resources\Categories\Tables\CategoriesTable;
@@ -50,8 +48,6 @@ class CategoryResource extends ManagedResource
     {
         return [
             'index' => ListCategories::route('/'),
-            'create' => CreateCategory::route('/create'),
-            'edit' => EditCategory::route('/{record}/edit'),
         ];
     }
 }

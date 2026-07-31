@@ -203,7 +203,8 @@ class AutoTranslateOnSaveTest extends TestCase
         $this->assertCount(10, $fresh->name);
         $this->assertCount(10, $fresh->description);
         $this->assertSame('Yepyeni Ürün', $fresh->name['tr']);
-        $this->assertSame('Yepyeni açıklama', $fresh->description['tr']);
+        // Açıklama zengin editörle giriliyor: düz metin paragrafa sarılır.
+        $this->assertSame('<p>Yepyeni açıklama</p>', $fresh->description['tr']);
 
         foreach ($languages as $language) {
             $this->assertSame('name-'.$language, $fresh->name[$language]);

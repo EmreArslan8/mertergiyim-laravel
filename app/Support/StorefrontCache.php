@@ -16,6 +16,7 @@ use App\Models\ProductVariant;
 use App\Models\SiteLink;
 use App\Models\SiteSetting;
 use App\Models\Size;
+use App\Services\StorefrontRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
@@ -23,17 +24,19 @@ use Illuminate\Support\Facades\Cache;
  * StorefrontRepository'nin Cache::remember anahtarlarını temizler.
  *
  * Anahtarlar: storefront:currencies, storefront:chrome, storefront:home,
- * storefront:sitemap, storefront:product:<slug>.
+ * storefront:sitemap, storefront:blog(:<slug>), storefront:page:<slug> ve
+ * ürün sayfası için StorefrontRepository::productCacheKey() (sürüm ekli).
  */
 class StorefrontCache
 {
     public static function flushFor(Model $model): void
     {
         if ($model instanceof Product) {
-            self::forgetMany(['home', 'sitemap', 'product:'.$model->slug]);
+            self::forgetMany(['home', 'sitemap']);
+            Cache::forget(StorefrontRepository::productCacheKey($model->slug));
             $originalSlug = $model->getOriginal('slug');
             if ($originalSlug && $originalSlug !== $model->slug) {
-                Cache::forget('storefront:product:'.$originalSlug);
+                Cache::forget(StorefrontRepository::productCacheKey($originalSlug));
             }
 
             return;
@@ -43,7 +46,7 @@ class StorefrontCache
             Cache::forget('storefront:home');
             $slug = Product::query()->whereKey($model->product_id)->value('slug');
             if ($slug) {
-                Cache::forget('storefront:product:'.$slug);
+                Cache::forget(StorefrontRepository::productCacheKey($slug));
             }
 
             return;
@@ -57,7 +60,7 @@ class StorefrontCache
 
         if ($model instanceof Size || $model instanceof Color) {
             Product::query()->pluck('slug')->each(
-                fn ($slug) => Cache::forget('storefront:product:'.$slug)
+                fn ($slug) => Cache::forget(StorefrontRepository::productCacheKey($slug))
             );
 
             return;
@@ -114,7 +117,7 @@ class StorefrontCache
 
         rescue(function () {
             Product::query()->pluck('slug')->each(
-                fn ($slug) => Cache::forget('storefront:product:'.$slug)
+                fn ($slug) => Cache::forget(StorefrontRepository::productCacheKey($slug))
             );
         }, report: false);
 

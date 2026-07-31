@@ -76,7 +76,7 @@ class ListSiteSettings extends ListRecords
                 'linkedinUrl' => '',
                 'googleMapsIframe' => '',
                 'salesMode' => 'wholesale',
-                'orderNotificationNumber' => '',
+                'orderNotificationChatId' => '',
                 'minimumOrderAmount' => 0,
                 'pricesIncludeTax' => true,
                 'allowOutOfStockOrders' => false,

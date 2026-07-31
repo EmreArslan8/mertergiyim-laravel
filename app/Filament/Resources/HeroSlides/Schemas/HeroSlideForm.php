@@ -17,7 +17,7 @@ class HeroSlideForm
             ->components([
                 Section::make('Görsel')
                     ->schema([
-                        StorageUpload::image('image_path', 'site')
+                        StorageUpload::image('image_path', 'site', 'hero')
                             ->label('Slider görseli')
                             ->required()
                             ->columnSpanFull(),

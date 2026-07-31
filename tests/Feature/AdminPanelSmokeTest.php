@@ -7,7 +7,6 @@ use App\Models\ContentPage;
 use App\Models\HeroSlide;
 use App\Models\MediaPost;
 use App\Models\Product;
-use App\Models\SiteLink;
 use App\Models\SiteSetting;
 use App\Models\User;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -58,7 +57,6 @@ class AdminPanelSmokeTest extends TestCase
             '/admin/products',
             '/admin/products/create',
             '/admin/categories',
-            '/admin/categories/create',
             '/admin/sizes',
             '/admin/colors',
             '/admin/currencies',
@@ -66,7 +64,6 @@ class AdminPanelSmokeTest extends TestCase
             '/admin/hero-slides',
             '/admin/hero-slides/create',
             '/admin/site-links',
-            '/admin/site-links/create',
             '/admin/site-settings',
             '/admin/orders',
             '/admin/orders/create',
@@ -84,6 +81,9 @@ class AdminPanelSmokeTest extends TestCase
 
     /**
      * Düzenleme sayfaları relation manager'ları da render ediyor mu?
+     *
+     * Renk/beden/kategori/para birimi/dil/site linki kaynaklarında ayrı
+     * düzenleme sayfası yok; bunlar liste üzerindeki pencerede düzenleniyor.
      * (Ürün görsellerindeki "Alternatif metin" alanı buradan geçiyor.)
      */
     public function test_edit_pages_render(): void
@@ -96,7 +96,6 @@ class AdminPanelSmokeTest extends TestCase
             ($id = ContentPage::query()->value('id')) ? '/admin/content-pages/'.$id.'/edit' : null,
             ($id = BlogPost::query()->value('id')) ? '/admin/blog-posts/'.$id.'/edit' : null,
             ($id = MediaPost::query()->value('id')) ? '/admin/media/'.$id.'/edit' : null,
-            ($id = SiteLink::query()->value('id')) ? '/admin/site-links/'.$id.'/edit' : null,
             ($key = SiteSetting::query()->value('key')) ? '/admin/site-settings/'.$key.'/edit' : null,
             ($id = User::query()->value('id')) ? '/admin/admin-users/'.$id.'/edit' : null,
         ]);

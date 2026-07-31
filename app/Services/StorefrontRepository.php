@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Category;
 use App\Models\BlogPost;
+use App\Models\Category;
 use App\Models\ContentPage;
 use App\Models\Currency;
 use App\Models\HeroSlide;
@@ -23,6 +23,18 @@ use Illuminate\Support\Facades\Cache;
  */
 class StorefrontRepository
 {
+    /**
+     * Ürün sayfası cache anahtarı. Sürüm eki ("v2") veri şekli değişince
+     * artırılır; StorefrontCache aynı sabiti kullandığı için temizleme ile
+     * yazma anahtarı asla ayrışmaz.
+     */
+    public const PRODUCT_KEY = 'product:v2:';
+
+    public static function productCacheKey(string $slug): string
+    {
+        return 'storefront:'.self::PRODUCT_KEY.$slug;
+    }
+
     private function ttl(): int
     {
         return config('storefront.cache_ttl');
@@ -84,7 +96,7 @@ class StorefrontRepository
      */
     public function product(string $slug): ?array
     {
-        $data = $this->remember('product:v2:'.$slug, function () use ($slug) {
+        $data = $this->remember(self::PRODUCT_KEY.$slug, function () use ($slug) {
             $product = Product::query()->active()->with(['category', 'images', 'variants.size', 'variants.color'])->where('slug', $slug)->first();
 
             if (! $product) {
@@ -93,10 +105,12 @@ class StorefrontRepository
 
             return [
                 'product' => $product,
+                // Öneriler ana sayfayla aynı kart bileşenini kullanıyor ve
+                // ızgara 3 kolon; tek satır dolsun diye 3 ürün getirilir.
                 'recommendations' => Product::query()->active()->with(['images', 'category'])
                     ->whereKeyNot($product->id)
                     ->orderByDesc('created_at')
-                    ->limit(4)
+                    ->limit(3)
                     ->get()
                     ->all(),
             ];

@@ -39,58 +39,8 @@
     @endif
     <div class="product-grid" data-product-grid>
         @foreach ($cards as $card)
-            @php
-                $product = $card['product'];
-                $href = Storefront::productHref($locale, $product->slug);
-                $name = Storefront::text($product->name, $locale);
-                $whatsappText = str_replace(
-                    '{product}',
-                    $product->code.' '.$name,
-                    $whatsappMessageTemplate ?: ($messages['home']['whatsappText'] ?? ''),
-                );
-                $whatsappHref = 'https://wa.me/'.$whatsappNumber.'?text='.rawurlencode($whatsappText);
-            @endphp
-            <article class="product-card" data-category-id="{{ $product->category_id }}">
-                {{-- ToggleImage.tsx --}}
-                <div class="product-image toggle-img" data-toggle-image>
-                    @if ($product->pack_size)
-                        <span class="pack-badge">{{ str_replace('{count}', $product->pack_size, $messages['home']['packBadge'] ?? '') }}</span>
-                    @endif
-                    @if (! empty($messages['home']['touchTip']))
-                        <span class="touch-tip">{{ $messages['home']['touchTip'] }}</span>
-                    @endif
-                    @if ($card['primaryImage'])
-                        {{-- İlk satır (masaüstünde 3 kart) ekranda açılışta görünür: lazy olmamalı. --}}
-                        <img class="main" src="{{ $card['primaryImage'] }}" alt="{{ $name }}"
-                             loading="{{ $loop->index < 3 ? 'eager' : 'lazy' }}"
-                             @if ($loop->index < 3) fetchpriority="high" @endif
-                             decoding="async" style="object-fit:cover">
-                    @endif
-                    @if ($card['secondaryImage'])
-                        <img class="alt" src="{{ $card['secondaryImage'] }}" alt="" loading="lazy" decoding="async" style="object-fit:cover">
-                    @endif
-                </div>
-                <div class="product-card-body">
-                    {{-- Referans: KOD ve fiyat aynı satırda, taban hizasında --}}
-                    <div class="product-card-head">
-                        <h3>{{ $messages['product']['code'] ?? '' }} {{ $product->code }}</h3>
-                        <strong class="price">{{ Storefront::formatPrice($card['price'], $card['currency']) }}</strong>
-                    </div>
-                    <div class="product-category">{{ Storefront::text($product->category?->name_i18n, $locale) ?: $product->category?->name }}</div>
-                    <h4>{{ $name }}</h4>
-                    <div class="product-divider"></div>
-                    <div class="product-actions {{ $whatsappOrderingEnabled ? '' : 'product-actions--single' }}">
-                        <a class="buy-button" href="{{ $href }}">{{ $messages['cart']['add'] ?? ($messages['home']['buy'] ?? '') }}</a>
-                        @if ($whatsappOrderingEnabled)
-                        <a class="whatsapp-button" href="{{ $whatsappHref }}" target="_blank" rel="noreferrer">
-                            <img class="whatsapp-icon" src="/images/whatsapp.svg" alt="" aria-hidden="true">
-                            <span>{{ $messages['home']['whatsapp'] ?? '' }}</span>
-                        </a>
-                        @endif
-                    </div>
-                    <a class="detail-link" href="{{ $href }}">{{ $messages['home']['detail'] ?? '' }}</a>
-                </div>
-            </article>
+            {{-- Kart işaretlemesi ürün detayındaki önerilerle ortak --}}
+            <x-storefront.product-card :card="$card" :eager-image="$loop->index < 3" />
         @endforeach
     </div>
     <div class="store-empty" role="status" data-store-empty @if (count($cards)) style="display:none" @endif>

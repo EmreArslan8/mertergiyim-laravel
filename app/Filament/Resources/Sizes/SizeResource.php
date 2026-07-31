@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\Sizes;
 
 use App\Filament\Resources\ManagedResource;
-use App\Filament\Resources\Sizes\Pages\CreateSize;
-use App\Filament\Resources\Sizes\Pages\EditSize;
 use App\Filament\Resources\Sizes\Pages\ListSizes;
 use App\Filament\Resources\Sizes\Schemas\SizeForm;
 use App\Filament\Resources\Sizes\Tables\SizesTable;
@@ -50,8 +48,6 @@ class SizeResource extends ManagedResource
     {
         return [
             'index' => ListSizes::route('/'),
-            'create' => CreateSize::route('/create'),
-            'edit' => EditSize::route('/{record}/edit'),
         ];
     }
 }

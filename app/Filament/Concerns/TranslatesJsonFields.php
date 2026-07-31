@@ -4,6 +4,7 @@ namespace App\Filament\Concerns;
 
 use App\Filament\Support\Multilingual;
 use App\Services\TranslateService;
+use App\Support\Storefront;
 use App\Support\TranslationStatus;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
@@ -89,7 +90,7 @@ trait TranslatesJsonFields
             $turkish[$field] = $value;
 
             if ($value !== '' && (
-                $value !== $this->originalTrValue($field)
+                $this->trValueHasChanged($value, $this->originalTrValue($field))
                 || TranslationStatus::missingLocales($this->originalJsonValue($field)) !== []
             )) {
                 $changed[$field] = $value;
@@ -190,6 +191,26 @@ trait TranslatesJsonFields
         }
 
         return trim((string) (Arr::get($data, $field.'.tr') ?? ''));
+    }
+
+    /**
+     * Türkçe metin gerçekten değişti mi?
+     *
+     * Zengin editör alanları (ürün açıklaması) eski düz metin kayıtlarını
+     * "<p>…</p>" hâline getirir. Yalnızca biçim farkı 10 dilin boşuna yeniden
+     * çevrilmesine yol açmasın diye karşılaştırma düz metin üzerinden yapılır.
+     */
+    protected function trValueHasChanged(string $value, ?string $original): bool
+    {
+        if ($original === null) {
+            return true;
+        }
+
+        if ($value === $original) {
+            return false;
+        }
+
+        return Storefront::plainText($value, 'tr') !== Storefront::plainText($original, 'tr');
     }
 
     /**

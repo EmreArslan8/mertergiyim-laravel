@@ -12,6 +12,11 @@ class Storefront
     private const EXTERNAL_URL_PATTERN = '#^(https?://|mailto:|tel:|\#)#i';
 
     /**
+     * Zengin editör alanlarında vitrine geçmesine izin verilen etiketler.
+     */
+    private const RICH_TEXT_TAGS = ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li'];
+
+    /**
      * Bilgilendirme sayfaları /{locale}/{slug} altında yaşıyor. Bu segmentler
      * routes/web.php'de sabit rotalara ait, sayfa slug'ı olarak kullanılamaz.
      */
@@ -53,6 +58,50 @@ class Storefront
         }
 
         return (string) ($value[$locale] ?? $value['tr'] ?? '');
+    }
+
+    /**
+     * Panelde zengin editörle girilen alanlar (ürün açıklaması) için güvenli HTML.
+     *
+     * - Editör öncesi düz metin kayıtları satır sonlarıyla korunur.
+     * - Yalnızca izin verilen etiketler kalır, tüm attribute'lar (style, class,
+     *   onclick ...) atılır; böylece vitrin tasarımı ve güvenliği bozulmaz.
+     */
+    public static function richText(mixed $value, string $locale): string
+    {
+        $raw = trim(self::text($value, $locale));
+
+        if ($raw === '') {
+            return '';
+        }
+
+        if (! preg_match('/<[a-z][a-z0-9]*\b[^>]*>/i', $raw)) {
+            return nl2br(e($raw));
+        }
+
+        $html = preg_replace('#<(script|style)\b[^>]*>.*?</\1\s*>#is', '', $raw) ?? '';
+        $html = strip_tags($html, '<'.implode('><', self::RICH_TEXT_TAGS).'>');
+        // Açılış etiketlerinde attribute bırakma.
+        $html = preg_replace('#<\s*([a-z0-9]+)\b[^>]*?(/?)>#i', '<$1$2>', $html) ?? '';
+
+        return trim($html);
+    }
+
+    /**
+     * Zengin metinden meta description / bildirim gibi düz metin alanlar için sade karşılık.
+     */
+    public static function plainText(mixed $value, string $locale): string
+    {
+        $raw = self::text($value, $locale);
+
+        if ($raw === '') {
+            return '';
+        }
+
+        $raw = preg_replace('#<(?:br|/p|/li|/ul|/ol)\s*/?>#i', ' ', $raw) ?? $raw;
+        $text = html_entity_decode(strip_tags($raw), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        return trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
     }
 
     /**

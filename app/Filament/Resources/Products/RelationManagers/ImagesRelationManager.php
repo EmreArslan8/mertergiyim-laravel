@@ -7,10 +7,8 @@ use App\Filament\Support\Multilingual;
 use App\Filament\Support\StorageUpload;
 use App\Services\ImageUploader;
 use App\Support\Storefront;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -72,7 +70,6 @@ class ImagesRelationManager extends RelationManager
                     ->mutateDataUsing(fn (array $data, ?Model $record): array => $this->fillAutomaticTranslationsFor($data, $record)),
                 // Kayıt silinince dosyayı da bucket'tan kaldır.
                 DeleteAction::make()->before(fn ($record) => app(ImageUploader::class)->delete('products', $record->storage_path)),
-            ])
-            ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
+            ]);
     }
 }
