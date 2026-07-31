@@ -3,9 +3,13 @@
 namespace App\Filament\Resources\SiteSettings\Pages;
 
 use App\Filament\Concerns\TranslatesJsonFields;
+use App\Filament\Resources\Currencies\CurrencyResource;
+use App\Filament\Resources\Languages\LanguageResource;
 use App\Filament\Resources\SiteSettings\Schemas\SiteSettingForm;
 use App\Filament\Resources\SiteSettings\SiteSettingResource;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Arr;
 
 class EditSiteSetting extends EditRecord
@@ -24,6 +28,28 @@ class EditSiteSetting extends EditRecord
     public function getSubheading(): string
     {
         return 'Genel · Marka · Satış · SEO · İletişim · Sosyal · Analitik';
+    }
+
+    /**
+     * Diller ve Para Birimi sidebar'da yer kaplamasın diye bu ekranın üstüne
+     * bağlandı: ikisi de nadiren dokunulan sistem ayarları.
+     */
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('languages')
+                ->label('Diller')
+                ->icon(Heroicon::OutlinedLanguage)
+                ->color('gray')
+                ->visible(fn (): bool => LanguageResource::canAccess())
+                ->url(fn (): string => LanguageResource::getUrl()),
+            Action::make('currencies')
+                ->label('Para Birimi')
+                ->icon(Heroicon::OutlinedBanknotes)
+                ->color('gray')
+                ->visible(fn (): bool => CurrencyResource::canAccess())
+                ->url(fn (): string => CurrencyResource::getUrl()),
+        ];
     }
 
     /**

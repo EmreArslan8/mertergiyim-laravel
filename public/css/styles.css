@@ -15,7 +15,8 @@
 .toggle-img.is-active img.alt{opacity:1}
 .touch-tip{position:absolute;bottom:16px;left:0;width:100%;text-align:center;color:#fff;font-weight:800;z-index:2;pointer-events:none;text-shadow:0 2px 6px rgba(0,0,0,.6);display:none}
 .product-card-body{padding:24px}
-@media(max-width:900px){.product-grid{grid-template-columns:1fr;gap:28px}.touch-tip{display:block}.product-image{aspect-ratio:auto}.product-image img{position:relative;object-fit:contain;background:#f2f3f5}.product-image img.alt{position:absolute}}
+@media(max-width:900px){.product-grid{grid-template-columns:1fr;gap:28px}.touch-tip{display:block}.product-image{aspect-ratio:9/12.8}.product-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#f2f3f5}.product-card{animation:none}}
+@media(prefers-reduced-motion:reduce){.product-card{animation:none}}
 
 /* Alt sayfalarda (home dışı) solid koyu header */
 .site-header--solid{position:static;background:#171719}
@@ -32,3 +33,14 @@
 .detail-loading .skeleton-block{width:100%;height:120px;border-radius:10px;margin-bottom:22px}
 .detail-loading .skeleton-button{width:100%;height:52px;border-radius:10px}
 @media(prefers-color-scheme:dark){.skeleton{background:#26282c}.skeleton::after{background:linear-gradient(90deg,transparent,#33363b,transparent)}}
+
+/* Sayfa geçişleri — cross-document View Transitions (destekleyen tarayıcıda yumuşak fade,
+   desteklemeyende hiçbir etkisi yok, normal geçiş olarak kalır). */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:page-fade-out .16s ease-in both}
+::view-transition-new(root){animation:page-fade-in .22s ease-out both}
+@keyframes page-fade-out{to{opacity:0}}
+@keyframes page-fade-in{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+}

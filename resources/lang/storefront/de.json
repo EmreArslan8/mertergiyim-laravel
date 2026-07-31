@@ -4,7 +4,15 @@
         "home": "Startseite",
         "categories": "Kategorien",
         "contact": "Kontakt",
-        "language": "Sprache"
+        "language": "Sprache",
+        "menu": "Menü",
+        "showMoreCategories": "Weitere Kategorien anzeigen",
+        "openProductDetail": "Produktdetails für {product} öffnen",
+        "imageNumber": "{product} · Bild {number}",
+        "decrease": "Verringern",
+        "increase": "Erhöhen",
+        "piece": "Stk.",
+        "information": "Informationen"
     },
     "home": {
         "home": "STARTSEITE",
@@ -42,7 +50,13 @@
         "wholesale": "Großhandel",
         "size": "Größe",
         "color": "Farbe",
-        "multiple": "Mehrfachauswahl möglich"
+        "multiple": "Mehrfachauswahl möglich",
+        "unitPrice": "STÜCKPREIS",
+        "packageSummary": "Paketgesamtpreis: {total} / Paket: {count} Stk.",
+        "descriptionTitle": "PRODUKTBESCHREIBUNG",
+        "packageContent": "PAKETINHALT",
+        "packageSizes": "Größen im Paket",
+        "recommendedKicker": "FÜR SIE AUSGEWÄHLT"
     },
     "order": {
         "name": "Vor- und Nachname",
@@ -126,6 +140,7 @@
     },
     "cart": {
         "title": "Ihr Warenkorb",
+        "kicker": "BESTELLUNG",
         "subtitle": "Prüfen Sie Ihre Produkte und vervollständigen Sie Ihre Bestelldaten.",
         "add": "In den Warenkorb",
         "added": "Produkt wurde in den Warenkorb gelegt.",
@@ -138,6 +153,12 @@
         "emptyText": "Entdecken Sie Produkte und legen Sie Ihre Auswahl in den Warenkorb.",
         "continueShopping": "Zurück zu den Produkten",
         "placeOrder": "Bestellung aufgeben",
+        "goToCart": "Zum Warenkorb",
+        "orderInformation": "Bestellinformationen",
+        "bankAccounts": "Unsere Bankkonten",
+        "packagePrice": "Paketpreis",
+        "packageContent": "Paketinhalt",
+        "color": "Farbe",
         "paymentNote": "Keine Online-Zahlung. Der Shop bestätigt Ihre Bestellung telefonisch.",
         "errors": {
             "empty": "Ihr Warenkorb ist leer.",
@@ -145,7 +166,8 @@
             "outOfStock": "Ein Produkt ist ausverkauft.",
             "variant": "Die gewählte Kombination wurde nicht gefunden.",
             "stock": "Nicht genügend Bestand verfügbar.",
-            "phone": "Geben Sie eine gültige Telefonnummer mit Ländervorwahl ein."
+            "phone": "Geben Sie eine gültige Telefonnummer mit Ländervorwahl ein.",
+            "minimumOrder": "Der Mindestbestellwert beträgt {amount} {currency}."
         }
     },
     "orderSuccess": {
@@ -160,6 +182,14 @@
         "title": "Medien",
         "subtitle": "Bilder, Videos und Dokumente aus unseren neuesten Kollektionen.",
         "openDocument": "Dokument öffnen",
+        "close": "Schließen",
+        "previous": "Zurück",
+        "next": "Weiter",
+        "open": "Galerie öffnen",
+        "collection": "Kollektion",
+        "untitled": "Ein Moment aus der Kollektion",
+        "fileCount": "{count} Dateien",
+        "emptyTitle": "Galerie wird vorbereitet",
         "empty": "Noch keine Medieninhalte vorhanden."
     },
     "contact": {
@@ -185,8 +215,16 @@
         "send": "Nachricht senden",
         "success": "Ihre Nachricht ist eingegangen. Wir melden uns schnellstmöglich."
     },
+    "maintenance": {
+        "kicker": "WARTUNGSMODUS",
+        "title": "Wir sind bald wieder da",
+        "message": "Wir verbessern unseren Shop. Bitte besuchen Sie uns in Kürze erneut."
+    },
     "blog": {
         "kicker": "MERTER BEKLEIDUNG",
-        "title": "Blog"
+        "title": "Blog",
+        "empty": "Noch keine Blogbeiträge vorhanden.",
+        "emptyDescription": "Neue Inhalte folgen in Kürze. Schau später wieder vorbei.",
+        "backHome": "Zurück zur Startseite"
     }
 }

@@ -1,5 +1,5 @@
 @php
-    $metaTitle = ($messages['orderSuccess']['title'] ?? 'Siparişiniz Alındı').' | '.$siteName;
+    $metaTitle = data_get($messages, 'orderSuccess.title').' | '.$siteName;
 @endphp
 
 @extends('layouts.app')
@@ -11,26 +11,26 @@
 @section('content')
     <main class="order-success-page" dir="{{ $dir }}" data-order-success>
         <div class="success-mark" aria-hidden="true">✓</div>
-        <span>{{ $messages['orderSuccess']['eyebrow'] ?? 'SİPARİŞ OLUŞTURULDU' }}</span>
-        <h1>{{ $messages['orderSuccess']['title'] ?? 'Siparişiniz alındı' }}</h1>
+        <span>{{ data_get($messages, 'orderSuccess.eyebrow') }}</span>
+        <h1>{{ data_get($messages, 'orderSuccess.title') }}</h1>
         <p>{{ trim((string) ($footerSettings['orderSuccessText'] ?? ''))
-            ?: ($messages['orderSuccess']['text'] ?? 'Siparişiniz mağazaya iletildi. Onay için sizinle telefon üzerinden iletişime geçilecektir.') }}</p>
+            ?: data_get($messages, 'orderSuccess.text') }}</p>
 
         <section class="success-codes">
             <div>
-                <small>{{ $messages['tracking']['orderNo'] ?? 'Sipariş No' }}</small>
+                <small>{{ data_get($messages, 'tracking.orderNo') }}</small>
                 <strong>{{ $order->order_number }}</strong>
             </div>
             <div>
-                <small>{{ $messages['tracking']['trackingCode'] ?? 'Takip Kodu' }}</small>
+                <small>{{ data_get($messages, 'tracking.trackingCode') }}</small>
                 <strong>{{ $order->tracking_code }}</strong>
             </div>
         </section>
 
-        <p class="success-warning">{{ $messages['orderSuccess']['saveCode'] ?? 'Takip kodunuzu kaydedin. Sipariş durumunu bu kodla sorgulayabilirsiniz.' }}</p>
+        <p class="success-warning">{{ data_get($messages, 'orderSuccess.saveCode') }}</p>
         <div class="success-actions">
-            <a class="primary" href="/{{ $locale }}/siparis-takibi?q={{ urlencode($order->tracking_code) }}">{{ $messages['orderSuccess']['track'] ?? 'Siparişi Takip Et' }}</a>
-            <a href="/{{ $locale }}">{{ $messages['common']['home'] ?? 'Anasayfa' }}</a>
+            <a class="primary" href="/{{ $locale }}/siparis-takibi?q={{ urlencode($order->tracking_code) }}">{{ data_get($messages, 'orderSuccess.track') }}</a>
+            <a href="/{{ $locale }}">{{ data_get($messages, 'common.home') }}</a>
         </div>
     </main>
 @endsection

@@ -80,16 +80,19 @@
                 </div>
 
                 <div class="detail-pricing">
-                    <span>{{ $packSize > 1 ? 'ADET FİYATI' : ($messages['product']['price'] ?? 'Fiyat') }}</span>
+                    <span>{{ $packSize > 1 ? data_get($messages, 'product.unitPrice') : data_get($messages, 'product.price') }}</span>
                     <strong>{{ $price }}</strong>
                     @if ($packSize > 1)
-                        <p>Paket toplam: {{ $packageTotal }} / Paket: {{ $packSize }} adet</p>
+                        <p>{{ strtr(data_get($messages, 'product.packageSummary'), [
+                            '{total}' => $packageTotal,
+                            '{count}' => $packSize,
+                        ]) }}</p>
                     @endif
                 </div>
 
                 @if ($productDescription)
                     <div class="detail-description">
-                        <span>ÜRÜN AÇIKLAMASI</span>
+                        <span>{{ data_get($messages, 'product.descriptionTitle') }}</span>
                         {{-- İçerik App\Support\Storefront::richText() ile temizlendi. --}}
                         <div class="rich-text">{!! $productDescription !!}</div>
                     </div>
@@ -108,14 +111,14 @@
                       data-product-package-content="{{ $packageContent }}"
                       data-product-package-content-source="database"
                       data-order-config="{{ json_encode([
-                          'ready' => $messages['cart']['ready'] ?? 'Ürün sepete eklenmeye hazır.',
-                          'select' => $messages['cart']['selectVariant'] ?? 'Devam etmek için renk seçin.',
-                          'added' => $messages['cart']['added'] ?? 'Ürün sepete eklendi.',
-                          'goToCart' => $messages['cart']['goToCart'] ?? 'Sepete git',
+                          'ready' => data_get($messages, 'cart.ready'),
+                          'select' => data_get($messages, 'cart.selectVariant'),
+                          'added' => data_get($messages, 'cart.added'),
+                          'goToCart' => data_get($messages, 'cart.goToCart'),
                           'cartHref' => '/'.$locale.'/sepet',
                       ], JSON_UNESCAPED_UNICODE) }}">
                     <fieldset>
-                        <legend>{{ $messages['product']['color'] ?? 'Renk' }}</legend>
+                        <legend>{{ data_get($messages, 'product.color') }}</legend>
                         <div class="choice-row color-choices">
                             @foreach ($colors as $color)
                                 <button type="button"
@@ -137,17 +140,17 @@
                     @if ($packSize > 1 || count($sizes))
                         <div class="detail-package">
                             <div class="detail-section-heading">
-                                <span>PAKET İÇERİĞİ</span>
+                                <span>{{ data_get($messages, 'product.packageContent') }}</span>
                                 @if ($packSize > 1)
-                                    <b>{{ $packSize }} adet</b>
+                                    <b>{{ $packSize }} {{ data_get($messages, 'common.piece') }}</b>
                                 @endif
                             </div>
                             @if (count($packageBreakdown))
-                                <div class="detail-size-list" aria-label="Paket bedenleri">
+                                <div class="detail-size-list" aria-label="{{ data_get($messages, 'product.packageSizes') }}">
                                     @foreach ($packageBreakdown as $item)
                                         <span>
                                             <strong>{{ $item['name'] }}</strong>
-                                            <small>{{ $item['quantity'] }} adet</small>
+                                            <small>{{ $item['quantity'] }} {{ data_get($messages, 'common.piece') }}</small>
                                         </span>
                                     @endforeach
                                 </div>
@@ -156,22 +159,22 @@
                     @endif
 
                     <div class="detail-quantity-row">
-                        <span>{{ $messages['cart']['quantity'] ?? 'Adet' }}</span>
+                        <span>{{ data_get($messages, 'cart.quantity') }}</span>
                         <div class="detail-stepper">
-                            <button type="button" aria-label="Azalt" data-quantity-decrease>−</button>
+                            <button type="button" aria-label="{{ data_get($messages, 'common.decrease') }}" data-quantity-decrease>−</button>
                             <output data-quantity-value>1</output>
-                            <button type="button" aria-label="Arttır" data-quantity-increase>+</button>
+                            <button type="button" aria-label="{{ data_get($messages, 'common.increase') }}" data-quantity-increase>+</button>
                         </div>
                     </div>
                     <input name="quantity" type="hidden" value="1">
                     <button class="whatsapp-order" type="submit" data-order-submit
                             @if (count($colors) > 1) disabled @endif>
-                        <span>{{ $messages['cart']['add'] ?? 'Sepete Ekle' }}</span>
+                        <span>{{ data_get($messages, 'cart.add') }}</span>
                     </button>
                     <p class="order-note" data-order-note>
                         {{ count($colors) <= 1
-                            ? ($messages['cart']['ready'] ?? 'Ürün sepete eklenmeye hazır.')
-                            : ($messages['cart']['selectVariant'] ?? 'Devam etmek için renk seçin.') }}
+                            ? data_get($messages, 'cart.ready')
+                            : data_get($messages, 'cart.selectVariant') }}
                     </p>
 
                     <div class="detail-mobile-purchase">
@@ -179,21 +182,21 @@
                             <div class="detail-mobile-purchase-grid">
                                 <div class="detail-mobile-add-cluster">
                                     <div class="detail-mobile-wheel">
-                                        <button type="button" aria-label="Azalt" data-quantity-decrease>
+                                        <button type="button" aria-label="{{ data_get($messages, 'common.decrease') }}" data-quantity-decrease>
                                             <span data-quantity-previous></span>
                                         </button>
                                         <output data-quantity-value>1</output>
-                                        <button type="button" aria-label="Arttır" data-quantity-increase>
+                                        <button type="button" aria-label="{{ data_get($messages, 'common.increase') }}" data-quantity-increase>
                                             <span data-quantity-next>2</span>
                                         </button>
                                     </div>
                                     <button class="detail-mobile-add" type="submit" data-order-submit
                                             @if (count($colors) > 1) disabled @endif>
-                                        {{ $messages['cart']['add'] ?? 'Sepete Ekle' }}
+                                        {{ data_get($messages, 'cart.add') }}
                                     </button>
                                 </div>
                                 <a class="detail-mobile-cart" href="/{{ $locale }}/sepet"
-                                   aria-label="{{ $messages['cart']['title'] ?? 'Sepet' }}">
+                                   aria-label="{{ data_get($messages, 'cart.title') }}">
                                     @include('storefront.partials.icon', ['name' => 'shopping-cart', 'size' => 28, 'strokeWidth' => 2.4])
                                     <span class="cart-count" data-cart-count hidden>0</span>
                                 </a>
@@ -207,8 +210,8 @@
         @if (count($recommendations))
             <section class="recommended-products">
                 <div class="recommended-heading">
-                    <span>SİZİN İÇİN SEÇTİK</span>
-                    <h2>{{ $messages['product']['recommended'] ?? 'Beğenebileceğiniz Ürünler' }}</h2>
+                    <span>{{ data_get($messages, 'product.recommendedKicker') }}</span>
+                    <h2>{{ data_get($messages, 'product.recommended') }}</h2>
                 </div>
                 {{-- Kartlar ana sayfadakiyle aynı bileşen --}}
                 <div class="product-grid">

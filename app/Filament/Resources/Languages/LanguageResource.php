@@ -20,9 +20,15 @@ class LanguageResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Diller';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Ayarlar';
+    protected static ?int $navigationSort = 13;
 
-    protected static ?int $navigationSort = 2;
+    /**
+     * Sidebar'da yer kaplamasın: Site Ayarları ekranının üst butonlarından açılıyor.
+     */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     protected static ?string $modelLabel = 'dil';
 

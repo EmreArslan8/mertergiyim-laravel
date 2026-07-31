@@ -4,7 +4,15 @@
         "home": "Home",
         "categories": "Categories",
         "contact": "Contact",
-        "language": "Language"
+        "language": "Language",
+        "menu": "Menu",
+        "showMoreCategories": "Show more categories",
+        "openProductDetail": "Open product details for {product}",
+        "imageNumber": "{product} · image {number}",
+        "decrease": "Decrease",
+        "increase": "Increase",
+        "piece": "pcs",
+        "information": "Information"
     },
     "home": {
         "home": "HOME",
@@ -42,7 +50,13 @@
         "wholesale": "Wholesale",
         "size": "Size",
         "color": "Color",
-        "multiple": "You can select more than one"
+        "multiple": "You can select more than one",
+        "unitPrice": "UNIT PRICE",
+        "packageSummary": "Package total: {total} / Package: {count} pcs",
+        "descriptionTitle": "PRODUCT DESCRIPTION",
+        "packageContent": "PACKAGE CONTENT",
+        "packageSizes": "Package sizes",
+        "recommendedKicker": "SELECTED FOR YOU"
     },
     "order": {
         "name": "Full Name",
@@ -126,6 +140,7 @@
     },
     "cart": {
         "title": "Your Cart",
+        "kicker": "ORDER",
         "subtitle": "Review your products and complete your order details.",
         "add": "Add to Cart",
         "added": "Product added to cart.",
@@ -138,6 +153,12 @@
         "emptyText": "Browse products, choose a size and color, and add them to your cart.",
         "continueShopping": "Back to products",
         "placeOrder": "Place Order",
+        "goToCart": "Go to cart",
+        "orderInformation": "Order Information",
+        "bankAccounts": "Our Bank Accounts",
+        "packagePrice": "Package price",
+        "packageContent": "Package content",
+        "color": "Color",
         "paymentNote": "No online payment is taken. The store will confirm your order by phone.",
         "errors": {
             "empty": "Your cart is empty.",
@@ -145,7 +166,8 @@
             "outOfStock": "A product in your cart is out of stock.",
             "variant": "The selected size and color combination was not found.",
             "stock": "There is not enough stock for the selected product.",
-            "phone": "Enter a valid phone number including the country code."
+            "phone": "Enter a valid phone number including the country code.",
+            "minimumOrder": "The minimum order amount is {amount} {currency}."
         }
     },
     "orderSuccess": {
@@ -160,6 +182,14 @@
         "title": "Media",
         "subtitle": "Images, videos and documents from our latest collections.",
         "openDocument": "Open document",
+        "close": "Close",
+        "previous": "Previous",
+        "next": "Next",
+        "open": "Open gallery",
+        "collection": "Collection",
+        "untitled": "A moment from the collection",
+        "fileCount": "{count} files",
+        "emptyTitle": "Gallery is being prepared",
         "empty": "No media content has been added yet."
     },
     "contact": {
@@ -185,8 +215,16 @@
         "send": "Send Message",
         "success": "We received your message. We will contact you as soon as possible."
     },
+    "maintenance": {
+        "kicker": "MAINTENANCE MODE",
+        "title": "We’ll be back shortly",
+        "message": "We are improving our store. Please visit us again soon."
+    },
     "blog": {
         "kicker": "MERTER CLOTHING",
-        "title": "Blog"
+        "title": "Blog",
+        "empty": "No blog posts yet.",
+        "emptyDescription": "New stories are coming very soon. Please check back later.",
+        "backHome": "Back to home"
     }
 }

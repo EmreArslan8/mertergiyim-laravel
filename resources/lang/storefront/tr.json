@@ -4,7 +4,15 @@
         "home": "Anasayfa",
         "categories": "Kategoriler",
         "contact": "İletişim",
-        "language": "Dil"
+        "language": "Dil",
+        "menu": "Menü",
+        "showMoreCategories": "Diğer kategorileri göster",
+        "openProductDetail": "{product} ürün detayını aç",
+        "imageNumber": "{product} · {number}. görsel",
+        "decrease": "Azalt",
+        "increase": "Artır",
+        "piece": "adet",
+        "information": "Bilgilendirmeler"
     },
     "home": {
         "home": "ANASAYFA",
@@ -42,7 +50,13 @@
         "wholesale": "Toptan",
         "size": "Beden",
         "color": "Renk",
-        "multiple": "Birden fazla seçebilirsin"
+        "multiple": "Birden fazla seçebilirsin",
+        "unitPrice": "ADET FİYATI",
+        "packageSummary": "Paket toplam: {total} / Paket: {count} adet",
+        "descriptionTitle": "ÜRÜN AÇIKLAMASI",
+        "packageContent": "PAKET İÇERİĞİ",
+        "packageSizes": "Paket bedenleri",
+        "recommendedKicker": "SİZİN İÇİN SEÇTİK"
     },
     "order": {
         "name": "Ad Soyad",
@@ -126,6 +140,7 @@
     },
     "cart": {
         "title": "Sepetiniz",
+        "kicker": "SİPARİŞ",
         "subtitle": "Ürünlerinizi kontrol edin ve sipariş bilgilerinizi tamamlayın.",
         "add": "Sepete Ekle",
         "added": "Ürün sepete eklendi.",
@@ -138,6 +153,12 @@
         "emptyText": "Ürünleri inceleyip beden ve renk seçerek sepetinize ekleyebilirsiniz.",
         "continueShopping": "Ürünlere dön",
         "placeOrder": "Siparişi Oluştur",
+        "goToCart": "Sepete git",
+        "orderInformation": "Sipariş Bilgileri",
+        "bankAccounts": "Banka Hesaplarımız",
+        "packagePrice": "Paket fiyatı",
+        "packageContent": "Paket içeriği",
+        "color": "Renk",
         "paymentNote": "Online ödeme alınmaz. Siparişiniz mağaza tarafından telefonla teyit edilir.",
         "errors": {
             "empty": "Sepetiniz boş.",
@@ -145,7 +166,8 @@
             "outOfStock": "Sepetteki ürünlerden biri tükendi.",
             "variant": "Seçilen beden ve renk kombinasyonu bulunamadı.",
             "stock": "Seçilen ürün için yeterli stok bulunmuyor.",
-            "phone": "Geçerli bir telefon numarası girin. Örnek: 0532 325 97 88"
+            "phone": "Geçerli bir telefon numarası girin. Örnek: 0532 325 97 88",
+            "minimumOrder": "Minimum sipariş tutarı {amount} {currency} olmalıdır."
         }
     },
     "orderSuccess": {
@@ -160,6 +182,14 @@
         "title": "Multimedya",
         "subtitle": "Yeni koleksiyonlardan görseller, videolar ve belgeler.",
         "openDocument": "Belgeyi aç",
+        "close": "Kapat",
+        "previous": "Önceki",
+        "next": "Sonraki",
+        "open": "Galeriyi aç",
+        "collection": "Koleksiyon",
+        "untitled": "Koleksiyondan bir kare",
+        "fileCount": "{count} dosya",
+        "emptyTitle": "Galeri hazırlanıyor",
         "empty": "Henüz multimedya içeriği eklenmedi."
     },
     "contact": {
@@ -185,8 +215,16 @@
         "send": "Mesajı Gönder",
         "success": "Mesajınız alındı. En kısa sürede sizinle iletişime geçeceğiz."
     },
+    "maintenance": {
+        "kicker": "BAKIM MODU",
+        "title": "Kısa bir bakımdayız",
+        "message": "Mağazamızı iyileştiriyoruz. Lütfen kısa süre sonra tekrar ziyaret edin."
+    },
     "blog": {
         "kicker": "MERTER GİYİM",
-        "title": "Blog"
+        "title": "Blog",
+        "empty": "Henüz blog yazısı eklenmedi.",
+        "emptyDescription": "Yeni içerikler çok yakında burada olacak. Lütfen daha sonra tekrar göz at.",
+        "backHome": "Anasayfaya dön"
     }
 }

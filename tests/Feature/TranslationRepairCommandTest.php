@@ -3,11 +3,45 @@
 namespace Tests\Feature;
 
 use App\Models\Product;
+use App\Models\SiteSetting;
 use App\Services\TranslateService;
 use Tests\TestCase;
 
 class TranslationRepairCommandTest extends TestCase
 {
+    public function test_fix_repairs_nested_site_setting_translations(): void
+    {
+        $languages = config('storefront.translation.languages');
+        $setting = SiteSetting::query()->whereKey('storefront')->firstOrFail();
+        $value = ['tr' => ['footerDescription' => 'Dünyaya toptan giyim.']];
+        $setting->forceFill(['value' => $value])->save();
+
+        $translated = [];
+
+        foreach ($languages as $locale) {
+            $translated[$locale] = 'footer-'.$locale;
+        }
+
+        $this->mock(TranslateService::class, function ($mock) use ($translated): void {
+            $mock->shouldReceive('configured')->once()->andReturnTrue();
+            $mock->shouldReceive('translateFields')
+                ->once()
+                ->with(['footerDescription' => 'Dünyaya toptan giyim.'])
+                ->andReturn(['footerDescription' => $translated]);
+        });
+
+        $this->artisan('translations:check', [
+            '--fix' => true,
+            '--model' => 'SiteSetting',
+        ])->assertExitCode(0);
+
+        $fresh = $setting->fresh()->value;
+
+        foreach ($languages as $locale) {
+            $this->assertSame('footer-'.$locale, $fresh[$locale]['footerDescription']);
+        }
+    }
+
     public function test_fix_retries_when_gemini_omits_a_locale(): void
     {
         Product::query()->each(fn (Product $product) => $product->delete());

@@ -30,9 +30,7 @@ class ContentPageResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Bilgilendirme Sayfaları';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Vitrin';
-
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 9;
 
     protected static ?string $modelLabel = 'bilgilendirme sayfası';
 
@@ -43,13 +41,17 @@ class ContentPageResource extends ManagedResource
         return $schema->components([
             Section::make('Sayfa')
                 ->description('Metinleri Türkçe girin; diğer 9 dil kaydederken otomatik hazırlanır.')
+                // Kısa alanlar yan yana: tek kolonda pencerenin yarısı boş kalıyordu.
+                ->columns(2)
                 ->schema([
                     Multilingual::turkish('title', 'Başlık')
+                        ->columnSpan(1)
                         ->live(onBlur: true)
                         ->afterStateUpdated(fn ($state, $set) => $set('slug', Str::slug((string) $state))),
                     TextInput::make('slug')
                         ->label('URL kısa adı')
                         ->helperText('Sayfa /tr/{kısa-ad} adresinde yayınlanır.')
+                        ->columnSpan(1)
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->rule(fn () => function (string $attribute, $value, callable $fail) {
@@ -60,8 +62,8 @@ class ContentPageResource extends ManagedResource
                     Multilingual::turkish('content', 'İçerik', long: true),
                     Multilingual::turkish('seo_title', 'SEO başlığı', required: false),
                     Multilingual::turkish('seo_description', 'SEO açıklaması', long: true, required: false),
-                    TextInput::make('sort_order')->label('Sıra')->numeric()->default(0),
-                    Toggle::make('active')->label('Yayında')->default(true),
+                    TextInput::make('sort_order')->label('Sıra')->numeric()->default(0)->columnSpan(1),
+                    Toggle::make('active')->label('Yayında')->default(true)->columnSpan(1),
                 ]),
         ]);
     }

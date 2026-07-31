@@ -28,9 +28,7 @@ class AdminUserResource extends Resource
 
     protected static ?string $navigationLabel = 'Admin Ayarları';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Ayarlar';
-
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 13;
 
     protected static ?string $modelLabel = 'Yönetici';
 

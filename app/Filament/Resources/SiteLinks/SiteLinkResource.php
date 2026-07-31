@@ -20,9 +20,7 @@ class SiteLinkResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Site Linkleri';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Vitrin';
-
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 11;
 
     protected static ?string $modelLabel = 'bağlantı';
 

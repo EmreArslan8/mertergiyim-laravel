@@ -39,7 +39,6 @@ class CheckoutController extends Controller
                 PhoneNumber::rule($this->copy(
                     $locale,
                     'cart.errors.phone',
-                    'Geçerli bir telefon numarası girin. Örnek: 0532 325 97 88',
                 )),
             ],
             'address' => ['required', 'string', 'max:2000'],
@@ -53,8 +52,8 @@ class CheckoutController extends Controller
             'items.*.color_id' => ['nullable', 'uuid'],
             'items.*.quantity' => ['required', 'integer', 'min:1', 'max:99'],
         ], [
-            'items.required' => $this->copy($locale, 'cart.errors.empty', 'Sepetiniz boş.'),
-            'items.min' => $this->copy($locale, 'cart.errors.empty', 'Sepetiniz boş.'),
+            'items.required' => $this->copy($locale, 'cart.errors.empty'),
+            'items.min' => $this->copy($locale, 'cart.errors.empty'),
         ]);
 
         $orderKey = $data['order_key'] ?? null;
@@ -136,7 +135,7 @@ class CheckoutController extends Controller
 
             if ($products->count() !== $productIds->count()) {
                 throw ValidationException::withMessages([
-                    'cart' => $this->copy($locale, 'cart.errors.unavailable', 'Sepetteki ürünlerden biri artık satışta değil.'),
+                    'cart' => $this->copy($locale, 'cart.errors.unavailable'),
                 ]);
             }
 
@@ -149,7 +148,7 @@ class CheckoutController extends Controller
 
                 if ($product->stock_status === 'out_of_stock' && ! $allowOutOfStockOrders) {
                     throw ValidationException::withMessages([
-                        'cart' => $this->copy($locale, 'cart.errors.outOfStock', 'Sepetteki ürünlerden biri tükendi.'),
+                        'cart' => $this->copy($locale, 'cart.errors.outOfStock'),
                     ]);
                 }
 
@@ -159,7 +158,7 @@ class CheckoutController extends Controller
 
                     if (! $variant) {
                         throw ValidationException::withMessages([
-                            'cart' => $this->copy($locale, 'cart.errors.variant', 'Seçilen renk için uygun stok bulunamadı.'),
+                            'cart' => $this->copy($locale, 'cart.errors.variant'),
                         ]);
                     }
                 }
@@ -187,9 +186,20 @@ class CheckoutController extends Controller
             }
 
             if ($minimumOrderAmount > 0 && $total < $minimumOrderAmount) {
+                $minimumOrderMessage = strtr(
+                    $this->copy(
+                        $locale,
+                        'cart.errors.minimumOrder',
+                        '',
+                    ),
+                    [
+                        '{amount}' => number_format($minimumOrderAmount, 2, ',', '.'),
+                        '{currency}' => $currency,
+                    ],
+                );
+
                 throw ValidationException::withMessages([
-                    'cart' => 'Minimum sipariş tutarı '
-                        .number_format($minimumOrderAmount, 2, ',', '.').' '.$currency.' olmalıdır.',
+                    'cart' => $minimumOrderMessage,
                 ]);
             }
 
@@ -297,7 +307,7 @@ class CheckoutController extends Controller
                     }
 
                     throw ValidationException::withMessages([
-                        'cart' => $this->copy($locale, 'cart.errors.stock', 'Seçilen ürün için yeterli paket stoğu bulunmuyor.'),
+                        'cart' => $this->copy($locale, 'cart.errors.stock'),
                     ]);
                 }
 
@@ -321,7 +331,7 @@ class CheckoutController extends Controller
             }
 
             throw ValidationException::withMessages([
-                'cart' => $this->copy($locale, 'cart.errors.stock', 'Seçilen ürün için yeterli stok bulunmuyor.'),
+                'cart' => $this->copy($locale, 'cart.errors.stock'),
             ]);
         }
 
@@ -330,7 +340,7 @@ class CheckoutController extends Controller
         return $variant;
     }
 
-    private function copy(string $locale, string $key, string $fallback): string
+    private function copy(string $locale, string $key, string $fallback = ''): string
     {
         return (string) app(\App\Services\DictionaryService::class)->get($locale, $key, $fallback);
     }

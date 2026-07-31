@@ -20,9 +20,7 @@ class ColorResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Renkler';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Katalog';
-
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 6;
 
     protected static ?string $modelLabel = 'renk';
 

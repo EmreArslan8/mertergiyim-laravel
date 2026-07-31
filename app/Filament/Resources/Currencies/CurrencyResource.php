@@ -20,9 +20,15 @@ class CurrencyResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Para Birimi';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Ayarlar';
+    protected static ?int $navigationSort = 14;
 
-    protected static ?int $navigationSort = 3;
+    /**
+     * Sidebar'da yer kaplamasın: Site Ayarları ekranının üst butonlarından açılıyor.
+     */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     protected static ?string $modelLabel = 'para birimi';
 

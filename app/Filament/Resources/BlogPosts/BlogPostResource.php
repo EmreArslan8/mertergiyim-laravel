@@ -31,9 +31,7 @@ class BlogPostResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Blog Sayfaları';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Vitrin';
-
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 8;
 
     protected static ?string $modelLabel = 'blog yazısı';
 

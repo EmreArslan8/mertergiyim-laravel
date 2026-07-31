@@ -12,12 +12,15 @@
         </button>
         <div class="mobile-language-menu" id="mobile-language-menu" data-language-menu style="display:none">
             @foreach ($languages as $language)
-                <a class="{{ $language->code === $locale ? 'selected' : '' }}" href="/{{ $language->code }}">{{ $language->name }}</a>
+                <a class="{{ $language->code === $locale ? 'selected' : '' }}"
+                   href="{{ isset($alternatePath) ? $alternatePath($language->code) : '/'.$language->code }}">
+                    {{ $language->name }}
+                </a>
             @endforeach
         </div>
     </div>
 
-    <button type="button" class="mobile-menu-trigger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-main-menu" data-menu-trigger>
+    <button type="button" class="mobile-menu-trigger" aria-label="{{ data_get($messages, 'common.menu') }}" aria-expanded="false" aria-controls="mobile-main-menu" data-menu-trigger>
         <span data-menu-icon="open">@include('storefront.partials.icon', ['name' => 'menu', 'size' => 38])</span>
         <span data-menu-icon="close" style="display:none">@include('storefront.partials.icon', ['name' => 'x', 'size' => 34])</span>
     </button>
@@ -37,7 +40,7 @@
                             @include('storefront.partials.icon', ['name' => 'chevron-left', 'size' => 20])
                             {{ $label }}
                         </button>
-                        <a class="selected" href="/{{ $locale }}/kategori">{{ ($messages['home']['allCategories'] ?? null) ?: 'Tümü' }}</a>
+                        <a class="selected" href="/{{ $locale }}/kategori">{{ data_get($messages, 'home.allCategories') }}</a>
                         @foreach ($categories as $category)
                             <a href="/{{ $locale }}/kategori/{{ $category->slug }}">{{ Storefront::text($category->name_i18n, $locale) ?: $category->name }}</a>
                         @endforeach

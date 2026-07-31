@@ -1,12 +1,12 @@
 /* Hero — kaynak index.html ile birebir eşitlendi (Tailwind karşılıkları yorumda). */
-.hero{height:76vh;min-height:540px;background:#020618}
+.hero{height:76vh;height:76svh;min-height:540px;background:#020618}
 /* img.opacity-70 + bg-slate-950 bileşkesi */
 .hero-overlay{background:rgba(2,6,24,.3)}
 /* flex ortalama, ekstra üst boşluk yok; px-4 yan pay */
 .hero-copy{padding:0 16px}
 .hero-eyebrow{margin:0 0 12px;color:rgba(255,255,255,.75);font-size:12px;font-weight:700;line-height:16px;letter-spacing:.35em;text-transform:uppercase}
 /* text-5xl / sm:text-7xl / md:text-8xl + max-w-5xl + font-black italic */
-.hero-copy h1{max-width:1024px;margin:0 0 32px;font-family:'Montserrat',sans-serif;font-size:48px;font-style:italic;font-weight:900;line-height:1;letter-spacing:-.025em;white-space:pre-line}
+.hero-copy h1{max-width:1024px;margin:0 0 32px;font-family:'Montserrat',sans-serif;font-size:48px;font-style:italic;font-weight:600;line-height:1;letter-spacing:-.025em;white-space:pre-line}
 /* border-2 border-white px-10 py-4 uppercase font-bold + transition (150ms) */
 .hero-copy a{padding:16px 36px;font-size:14px;font-weight:700;line-height:20px;text-transform:uppercase;transition:background-color .15s,color .15s}
 .hero-copy a:hover{background:#fff;color:#000}
@@ -14,6 +14,9 @@
 .site-header:not(.site-header--solid){background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent)}
 @media(min-width:640px){.hero-copy h1{font-size:72px}}
 @media(min-width:768px){.hero-copy h1{font-size:96px}}
+/* Bölüm başlıkları — 900 fazla kalın duruyordu, 600'e çekildi. */
+.section-title h2{font-weight:600}
+
 /* Üst header — kaynak index.html nav'ı ile birebir (py-6 px-10, z-50). */
 .site-header{height:auto;padding:24px 40px;z-index:50}
 .site-header .brand{font-size:30px;font-weight:900;font-style:italic;letter-spacing:-.05em;line-height:1.2}
@@ -86,7 +89,7 @@ body{background:var(--surface)}                             /* bg-slate-50 */
 /* ---- Footer — kaynak index.html ile birebir ---- */
 .site-footer{background:#000}                               /* bg-black */
 .site-footer-inner{width:min(100% - 48px,1152px);padding:80px 0 32px}  /* pt-20 pb-8 px-6, max-w-6xl */
-.site-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:128px;padding-bottom:80px}
+.site-footer-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1.05fr);gap:clamp(36px,4vw,72px);padding-bottom:80px}
 .footer-brand-block{padding-top:8px}                        /* pt-2 */
 .footer-logo{line-height:1.2}                               /* 30px → 36px */
 .footer-brand-image{display:block;width:auto;max-width:240px;height:68px;object-fit:contain}
@@ -101,6 +104,17 @@ body{background:var(--surface)}                             /* bg-slate-50 */
 .site-footer-bottom{padding-top:32px;border-top-color:#0f172a}
 .site-footer-bottom p{color:#475569;font-size:12px;line-height:16px;letter-spacing:.1em}
 
+/* İletişim sütunu — adres/telefon/WhatsApp/e-posta alt bardan buraya taşındı. */
+.footer-contact-list{display:flex;flex-direction:column;gap:14px;margin:0;padding:0;list-style:none}
+.footer-contact-list li{display:flex;align-items:flex-start;gap:12px;color:#94a3b8;font-size:14px;line-height:1.6}
+.footer-contact-list a{color:#94a3b8;text-decoration:none;transition:color .3s}
+.footer-contact-list a:hover{color:#f97316}
+.footer-contact-icon{display:grid;flex:0 0 34px;width:34px;height:34px;place-items:center;border-radius:10px;background:#111827;color:#f97316;box-shadow:inset 0 0 0 1px #1e293b}
+.footer-contact-icon svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+/* Alt bardaki sosyal linkler — pill görünüm */
+.site-footer-bottom .footer-contact-links a{padding:7px 14px;border-radius:999px;background:#0b1220;box-shadow:inset 0 0 0 1px #1e293b;transition:background-color .3s,color .3s}
+.site-footer-bottom .footer-contact-links a:hover{background:#1a1005;color:#f97316}
+
 /* Tailwind md kırılımı 768px: 768–800px arası masaüstü davranışını geri al */
 @media(min-width:768px){
   .main-nav{display:flex}
@@ -110,12 +124,26 @@ body{background:var(--surface)}                             /* bg-slate-50 */
   .product-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}
   .touch-tip{display:none}
   .site-footer-inner{width:min(100% - 48px,1152px);padding:80px 0 32px}
-  .site-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:128px;padding-bottom:80px}
-  .footer-policy-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 24px}
+  .site-footer-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1.05fr);gap:clamp(36px,4vw,72px);padding-bottom:80px}
+  /* Alt sütuna bölünce uzun etiketler sarıyordu: tek sütunda tam genişlik. */
+  .footer-policy-links{grid-template-columns:minmax(0,1fr);gap:12px}
   .footer-logo{font-size:30px}
+  /* Tablette üç sütun sıkışıyor: iletişim bloğu ikinci satıra insin. */
+  @media(max-width:1023px){
+    .site-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:48px}
+    .footer-contact-block{grid-column:1/-1}
+  }
   .product-card:hover .product-card-slide:first-child:nth-last-child(n+2){opacity:0}
   .product-card:hover .product-card-slide:nth-child(2){opacity:1}
   .product-card:hover .product-card-slide img{transform:scale(1.05)}
+}
+@media(min-width:768px) and (max-width:1023px){
+  /* On dil tek satıra zorlandığında son seçenekler ekran dışında kalıyordu.
+     Tablette iki satıra sararak bütün dilleri görünür ve dokunulabilir tut. */
+  .language-bar{padding-bottom:10px}
+  .language-bar-inner{align-items:flex-start;overflow:visible;white-space:normal}
+  .language-options{flex-wrap:wrap}
+  .language-bar a{display:inline-flex;min-height:32px;align-items:center}
 }
 @media(max-width:767px){
   .products{padding-right:16px;padding-left:16px}
@@ -135,7 +163,11 @@ body{background:var(--surface)}                             /* bg-slate-50 */
   .product-card-dots i.selected{width:18px;background:#fff}
 }
 @media(max-width:767px){
-  .hero{height:76vh;min-height:540px}
+  /* Mobilde yükseklik viewport birimine bağlı DEĞİL: adres çubuğu açılıp kapanınca
+     hero uzayıp kısalıyor, background:cover da her seferinde yeniden ölçeklenip
+     zoom yapıyordu. Sabit px ile görsel ölçeği scroll boyunca sabit kalır. */
+  .hero{height:540px;min-height:0}
+  .hero-media{background-attachment:scroll;background-position:center;background-size:cover}
   .site-header{height:80px;padding:24px;overflow:visible}
   .site-header .brand{position:relative;z-index:26;flex:0 0 auto;max-width:none;font-size:24px;line-height:32px;overflow:visible;white-space:nowrap}
   .brand-image{max-width:150px;height:40px}
@@ -143,12 +175,12 @@ body{background:var(--surface)}                             /* bg-slate-50 */
   .language-bar{display:none}
   .mobile-header-actions{display:flex;align-items:center;gap:12px}
   .mobile-language-picker{position:relative;z-index:26}
-  .mobile-language-trigger{height:30px;display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #ffffff33;border-radius:8px;background:#0008;color:#fff;font:700 12px/16px Montserrat,sans-serif;cursor:pointer}
+  .mobile-language-trigger{min-height:44px;display:flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid #ffffff33;border-radius:8px;background:#0008;color:#fff;font:700 12px/16px Montserrat,sans-serif;cursor:pointer}
   .mobile-language-trigger svg{width:14px;height:14px}
-  .mobile-language-menu{position:absolute;z-index:30;top:38px;right:0;min-width:170px;padding:7px;border:1px solid #ffffff20;border-radius:13px;background:#18181bf5;box-shadow:0 18px 42px #0006;backdrop-filter:blur(12px)}
-  .mobile-language-menu a{display:block;padding:10px 12px;border-radius:8px;color:#d4d4d8;font-size:12px;font-weight:700;text-decoration:none}
+  .mobile-language-menu{position:absolute;z-index:30;top:50px;right:0;min-width:170px;padding:7px;border:1px solid #ffffff20;border-radius:13px;background:#18181bf5;box-shadow:0 18px 42px #0006;backdrop-filter:blur(12px)}
+  .mobile-language-menu a{display:flex;min-height:44px;align-items:center;padding:10px 12px;border-radius:8px;color:#d4d4d8;font-size:12px;font-weight:700;text-decoration:none}
   .mobile-language-menu a.selected{background:#ea580c;color:#fff}
-  .mobile-menu-trigger{position:relative;z-index:26;width:32px;height:32px;display:grid;place-items:center;padding:0;border:0;background:transparent;color:#fff;cursor:pointer}
+  .mobile-menu-trigger{position:relative;z-index:26;width:44px;height:44px;display:grid;place-items:center;padding:0;border:0;background:transparent;color:#fff;cursor:pointer}
   .mobile-menu-trigger svg{width:32px;height:32px}
   .mobile-main-menu{position:fixed;z-index:25;inset:0;display:grid;grid-template-columns:minmax(0,1fr);align-content:center;justify-items:center;gap:16px;width:100vw;height:100dvh;min-height:100vh;padding:104px 24px 40px;border:0;background:#000000f2;box-shadow:none;overflow-y:auto;overscroll-behavior:contain}
   .mobile-main-menu>a,.mobile-main-menu>.mobile-category-group{width:min(100%,320px)}
@@ -336,8 +368,28 @@ body{background:var(--surface)}                             /* bg-slate-50 */
     padding-left: 24px;
   }
 
+  .site-header .mobile-language-trigger {
+    min-height: 44px;
+    padding-block: 8px;
+  }
+
+  .site-header .mobile-language-menu {
+    top: 50px;
+  }
+
+  .site-header .mobile-language-menu a {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .site-header .mobile-menu-trigger {
+    width: 44px;
+    height: 44px;
+  }
+
   .site-header--solid .mobile-language-trigger {
-    height: 40px;
+    height: 44px;
     gap: 8px;
     padding: 0 12px;
     border: 1px solid #e4e4e7;
@@ -348,8 +400,8 @@ body{background:var(--surface)}                             /* bg-slate-50 */
   }
 
   .site-header--solid .mobile-menu-trigger {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 8px;
     background: #f4f4f5;
     color: #09090b;

@@ -20,9 +20,7 @@ class CategoryResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Kategoriler';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Katalog';
-
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $modelLabel = 'kategori';
 

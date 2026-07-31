@@ -8,13 +8,13 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/content.css">
+    <link rel="stylesheet" href="/css/content.css?v=20260731-5">
 @endpush
 
 @section('content')
     <main class="editorial-page" dir="{{ $dir }}">
         <article class="editorial-card">
-            <span class="editorial-kicker">MERTER GİYİM</span>
+            <span class="editorial-kicker">{{ $siteName }}</span>
             <h1>{{ $title }}</h1>
             <div class="editorial-copy">{!! nl2br(e(Storefront::text($page->content, $locale))) !!}</div>
         </article>

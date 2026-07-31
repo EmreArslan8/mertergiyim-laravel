@@ -17,7 +17,8 @@
     $images = $card['images'] ?? [];
 
     $whatsappNumber = $siteSettings['whatsappNumber'] ?? config('storefront.whatsapp_number');
-    $whatsappOrderingEnabled = (bool) ($siteSettings['whatsappOrderingEnabled'] ?? true);
+    // WhatsApp butonu ayrı bir aç/kapa istemiyor: numara girilmişse görünür.
+    $whatsappOrderingEnabled = trim((string) $whatsappNumber) !== '';
     $whatsappMessageTemplate = trim((string) ($footerSettings['whatsappMessage'] ?? ''));
     $whatsappText = str_replace(
         '{product}',
@@ -32,7 +33,7 @@
 @endphp
 
 <article class="product-card" data-category-id="{{ $product->category_id }}">
-    <a class="product-card-link" href="{{ $href }}" aria-label="{{ $name }} ürün detayını aç"></a>
+    <a class="product-card-link" href="{{ $href }}" aria-label="{{ strtr(data_get($messages, 'common.openProductDetail'), ['{product}' => $name]) }}"></a>
     <div class="product-image">
         @if ($product->pack_size)
             <span class="pack-badge">{{ str_replace('{count}', $product->pack_size, $messages['home']['packBadge'] ?? '') }}</span>
@@ -43,7 +44,10 @@
         @if (count($images))
             <div class="product-card-gallery" data-card-gallery>
                 @foreach ($images as $image)
-                    <a class="product-card-slide" href="{{ $href }}" aria-label="{{ $name }} · {{ $loop->iteration }}. görsel">
+                    <a class="product-card-slide" href="{{ $href }}" aria-label="{{ strtr(data_get($messages, 'common.imageNumber'), [
+                        '{product}' => $name,
+                        '{number}' => $loop->iteration,
+                    ]) }}">
                         <img
                              @if ($loop->first) src="{{ $image }}" @else data-src="{{ $image }}" @endif
                              alt="{{ $loop->first ? $name : '' }}"

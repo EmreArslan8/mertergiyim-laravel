@@ -1,6 +1,6 @@
 :root {
   --page-heading-title-size: clamp(32px, 3vw, 46px);
-  --page-heading-title-weight: 750;
+  --page-heading-title-weight: 600;
   --page-heading-title-line-height: 1.08;
   --page-heading-title-letter-spacing: -.04em;
 }

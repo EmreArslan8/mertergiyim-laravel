@@ -21,9 +21,7 @@ class SiteSettingResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Site Ayarları';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Ayarlar';
-
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 12;
 
     protected static ?string $modelLabel = 'ayar';
 

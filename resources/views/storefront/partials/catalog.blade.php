@@ -2,7 +2,6 @@
     use App\Support\Storefront;
 
     $whatsappNumber = $siteSettings['whatsappNumber'] ?? config('storefront.whatsapp_number');
-    $whatsappOrderingEnabled = (bool) ($siteSettings['whatsappOrderingEnabled'] ?? true);
     $whatsappMessageTemplate = trim((string) ($footerSettings['whatsappMessage'] ?? ''));
 @endphp
 
@@ -19,7 +18,7 @@
                     <button type="button" data-category-pill data-category-pick="{{ $category->id }}">{{ Storefront::text($category->name_i18n, $locale) ?: $category->name }}</button>
                 @endforeach
                 <div class="category-overflow" data-category-overflow hidden>
-                    <button type="button" aria-expanded="false" aria-label="Diğer kategorileri göster" data-category-overflow-trigger>+0</button>
+                    <button type="button" aria-expanded="false" aria-label="{{ data_get($messages, 'common.showMoreCategories') }}" data-category-overflow-trigger>+0</button>
                     <div class="category-overflow-menu" data-category-overflow-menu hidden></div>
                 </div>
             </div>

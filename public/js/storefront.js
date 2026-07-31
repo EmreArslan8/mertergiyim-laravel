@@ -692,9 +692,9 @@
 
       writeCart(items);
       cartToast(
-        config.added || 'Ürün sepete eklendi.',
+        config.added || '',
         form.getAttribute('data-product-name') || '',
-        config.goToCart || 'Sepete git',
+        config.goToCart || '',
         config.cartHref || '/'
       );
     });
@@ -877,7 +877,7 @@
         element.rel = 'noreferrer';
         element.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M7 3h7l5 5v13H7zM14 3v6h5M10 14h6M10 18h4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
         var label = document.createElement('span');
-        label.textContent = viewer.getAttribute('data-label-open-document') || 'Belgeyi aç';
+        label.textContent = viewer.getAttribute('data-label-open-document') || '';
         element.appendChild(label);
         return element;
       }

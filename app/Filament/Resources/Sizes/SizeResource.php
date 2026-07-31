@@ -20,9 +20,7 @@ class SizeResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Bedenler';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Katalog';
-
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 5;
 
     protected static ?string $modelLabel = 'beden';
 
