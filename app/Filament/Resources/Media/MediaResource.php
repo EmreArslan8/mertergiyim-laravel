@@ -33,11 +33,13 @@ class MediaResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Multimedya';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Vitrin';
+
+    protected static ?int $navigationSort = 4;
+
     protected static ?string $modelLabel = 'medya albümü';
 
     protected static ?string $pluralModelLabel = 'medya albümleri';
-
-    protected static ?int $navigationSort = 9;
 
     public static function form(Schema $schema): Schema
     {

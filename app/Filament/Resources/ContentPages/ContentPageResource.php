@@ -30,11 +30,13 @@ class ContentPageResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Bilgilendirme Sayfaları';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Vitrin';
+
+    protected static ?int $navigationSort = 3;
+
     protected static ?string $modelLabel = 'bilgilendirme sayfası';
 
     protected static ?string $pluralModelLabel = 'bilgilendirme sayfaları';
-
-    protected static ?int $navigationSort = 7;
 
     public static function form(Schema $schema): Schema
     {

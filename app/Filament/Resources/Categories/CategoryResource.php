@@ -20,12 +20,13 @@ class CategoryResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Kategoriler';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Katalog';
+
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $modelLabel = 'kategori';
 
     protected static ?string $pluralModelLabel = 'kategoriler';
-
-
-    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {

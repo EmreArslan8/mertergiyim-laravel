@@ -20,12 +20,13 @@ class LanguageResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Diller';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Ayarlar';
+
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $modelLabel = 'dil';
 
     protected static ?string $pluralModelLabel = 'diller';
-
-
-    protected static ?int $navigationSort = 12;
 
     public static function form(Schema $schema): Schema
     {

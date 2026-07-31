@@ -20,12 +20,13 @@ class CurrencyResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Para Birimi';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Ayarlar';
+
+    protected static ?int $navigationSort = 3;
+
     protected static ?string $modelLabel = 'para birimi';
 
     protected static ?string $pluralModelLabel = 'para birimleri';
-
-
-    protected static ?int $navigationSort = 13;
 
     public static function form(Schema $schema): Schema
     {
