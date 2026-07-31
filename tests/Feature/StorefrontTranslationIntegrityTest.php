@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Product;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class StorefrontTranslationIntegrityTest extends TestCase
@@ -64,22 +65,33 @@ class StorefrontTranslationIntegrityTest extends TestCase
 
     public function test_product_gallery_uses_localized_image_alt_text(): void
     {
-        // Sıralama tie-breaker'sız bırakılırsa hangi ürünün/görselin geldiği
-        // sqlite sürümüne göre değişiyor ve test yalnızca bazı ortamlarda
-        // patlıyordu. Ürün id ile sabitlenir, alt metin de galeride hangi
-        // görsel öne çıkarsa çıksın eşleşsin diye tüm görsellere yazılır.
+        // Storefront::storageUrl dosyayı diskte arar; bulamazsa boş URL döner ve
+        // galeri o görseli listeden düşürür. Geliştirme makinesinde yüklü
+        // dosyalar olduğu için test geçiyor, temiz bir checkout'ta (CI) galeri
+        // boşalıyordu. Test kendi dosyalarını yazar, ortamdan bağımsız olur.
+        Storage::fake('public_media');
+
         $product = Product::query()
             ->where('active', true)
             ->whereHas('images')
             ->orderBy('id')
             ->firstOrFail();
 
-        $product->images()->get()->each(fn ($image) => $image->update([
-            'alt' => [
-                'tr' => 'Ürünün önden görünümü',
-                'de' => 'Vorderansicht des Produkts',
-            ],
-        ]));
+        $bucket = (string) config('storefront.buckets.products');
+
+        $product->images()->get()->each(function ($image) use ($bucket): void {
+            Storage::disk('public_media')->put(
+                $bucket.'/'.ltrim((string) $image->storage_path, '/'),
+                'fake-image',
+            );
+
+            $image->update([
+                'alt' => [
+                    'tr' => 'Ürünün önden görünümü',
+                    'de' => 'Vorderansicht des Produkts',
+                ],
+            ]);
+        });
 
         $this->get('/de/product/'.$product->slug)
             ->assertOk()
