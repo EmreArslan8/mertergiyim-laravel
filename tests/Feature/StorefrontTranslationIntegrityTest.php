@@ -64,17 +64,22 @@ class StorefrontTranslationIntegrityTest extends TestCase
 
     public function test_product_gallery_uses_localized_image_alt_text(): void
     {
+        // Sıralama tie-breaker'sız bırakılırsa hangi ürünün/görselin geldiği
+        // sqlite sürümüne göre değişiyor ve test yalnızca bazı ortamlarda
+        // patlıyordu. Ürün id ile sabitlenir, alt metin de galeride hangi
+        // görsel öne çıkarsa çıksın eşleşsin diye tüm görsellere yazılır.
         $product = Product::query()
             ->where('active', true)
             ->whereHas('images')
+            ->orderBy('id')
             ->firstOrFail();
-        $image = $product->images()->orderByDesc('is_primary')->orderBy('sort_order')->firstOrFail();
-        $image->update([
+
+        $product->images()->get()->each(fn ($image) => $image->update([
             'alt' => [
                 'tr' => 'Ürünün önden görünümü',
                 'de' => 'Vorderansicht des Produkts',
             ],
-        ]);
+        ]));
 
         $this->get('/de/product/'.$product->slug)
             ->assertOk()
