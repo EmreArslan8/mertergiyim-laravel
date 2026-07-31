@@ -21,7 +21,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/commerce.css">
+    <link rel="stylesheet" href="/css/commerce.css?v=20260731-7">
     <link rel="stylesheet" href="/css/contact.css">
 @endpush
 

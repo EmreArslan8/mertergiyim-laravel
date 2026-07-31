@@ -82,7 +82,24 @@ class OrdersTable
                 TextColumn::make('customer_name')
                     ->label('Müşteri')
                     ->description(fn ($record) => $record->phone)
-                    ->searchable(),
+                    // Telefon bu sütunun altında görünüyor ama aranabilir
+                    // değildi. Ayrıca numaralar "0535 123 45 67" gibi ayraçlı
+                    // kaydediliyor: aramadaki ve kayıttaki rakamlar ayrıca
+                    // sadeleştirilmezse "5351234567" hiçbir zaman eşleşmez.
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $digits = preg_replace('/\D+/', '', $search) ?? '';
+
+                        return $query->where(function (Builder $query) use ($search, $digits): void {
+                            $query->where('customer_name', 'like', '%'.$search.'%');
+
+                            if ($digits !== '') {
+                                $query->orWhereRaw(
+                                    "replace(replace(replace(replace(phone, ' ', ''), '-', ''), '(', ''), ')', '') like ?",
+                                    ['%'.$digits.'%'],
+                                );
+                            }
+                        });
+                    }),
                 // Rozet değil düz metin: "Kargoda / Bekliyor" rozeti kargo
                 // firmasının dolu olmasına bakıyordu, siparişin gerçek
                 // durumuna değil. Durumu "Yeni" olan siparişe firma girilince
