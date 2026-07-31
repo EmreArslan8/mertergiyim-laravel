@@ -25,7 +25,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 class AdminPanelProvider extends PanelProvider
 {
     /** Tarayıcı önbelleğini kırmak için tema sürümü. */
-    public const THEME_VERSION = '25';
+    public const THEME_VERSION = '53';
 
     public function panel(Panel $panel): Panel
     {
@@ -44,7 +44,9 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(fn (): ?string => BrandSettings::logoUrl())
             ->brandLogoHeight('2.25rem')
             ->favicon(fn (): string => BrandSettings::faviconUrl() ?? asset('icon.png'))
-            ->sidebarWidth('13.5rem')
+            // Temel genişlik; merter-admin.css bunu ekran boyuna göre ezer
+            // (1024–1279px: 14rem, 1280+: 16rem, 1536+: 17rem, mobil drawer: 17.5rem).
+            ->sidebarWidth('16rem')
             ->maxContentWidth(Width::Full)
             ->colors([
                 'primary' => Color::hex('#171717'),
@@ -55,6 +57,10 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::STYLES_AFTER,
                 fn (): string => '<link rel="stylesheet" href="'.asset('css/merter-admin.css').'?v='.static::THEME_VERSION.'" data-navigate-track />',
+            )
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
+                fn (): string => '<script src="'.asset('js/merter-admin.js').'?v='.static::THEME_VERSION.'" data-navigate-track></script>',
             )
             ->renderHook(
                 PanelsRenderHook::SIDEBAR_NAV_START,

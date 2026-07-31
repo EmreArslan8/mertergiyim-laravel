@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\Languages;
 
 use App\Filament\Resources\ManagedResource;
-use App\Filament\Resources\Languages\Pages\CreateLanguage;
-use App\Filament\Resources\Languages\Pages\EditLanguage;
 use App\Filament\Resources\Languages\Pages\ListLanguages;
 use App\Filament\Resources\Languages\Schemas\LanguageForm;
 use App\Filament\Resources\Languages\Tables\LanguagesTable;
@@ -50,8 +48,6 @@ class LanguageResource extends ManagedResource
     {
         return [
             'index' => ListLanguages::route('/'),
-            'create' => CreateLanguage::route('/create'),
-            'edit' => EditLanguage::route('/{record}/edit'),
         ];
     }
 }

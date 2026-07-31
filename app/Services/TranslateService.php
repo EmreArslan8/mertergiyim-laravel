@@ -56,6 +56,9 @@ class TranslateService
             .implode(', ', $this->languages())
             .'. Return ONLY valid JSON with this shape: {"field": {"en":"...", "ar":"..."}}.'
             .' Keep the same field keys, do not add markdown, and keep clothing terms natural and concise.'
+            .' A value may contain simple HTML markup (p, br, strong, b, em, i, u, ul, ol, li).'
+            .' In that case translate only the visible text and keep the tag structure byte-identical:'
+            .' same tags, same order, same nesting, no extra or missing tags, no added attributes.'
             .' Turkish texts: '.json_encode($source, JSON_UNESCAPED_UNICODE);
 
         $response = Http::timeout(60)

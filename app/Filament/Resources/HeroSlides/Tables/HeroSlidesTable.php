@@ -5,9 +5,7 @@ namespace App\Filament\Resources\HeroSlides\Tables;
 use App\Filament\Resources\HeroSlides\HeroSlideResource;
 use App\Filament\Support\Multilingual;
 use App\Support\Storefront;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -25,6 +23,10 @@ class HeroSlidesTable
             ->columns([
                 ImageColumn::make('image_path')
                     ->label('Önizleme')
+                    // Çerçeve/boşluk olmadan, görselin tamamı görünecek şekilde.
+                    ->imageWidth('7rem')
+                    ->imageHeight('3.9375rem')
+                    ->extraImgAttributes(['class' => 'merter-thumb-wide', 'loading' => 'lazy'])
                     ->getStateUsing(fn ($record) => Storefront::storageUrl('site', $record->image_path)),
                 TextColumn::make('title')
                     ->label('Başlık')
@@ -40,7 +42,6 @@ class HeroSlidesTable
                 EditAction::make()
                     ->url(fn ($record): string => HeroSlideResource::getUrl('edit', ['record' => $record])),
                 DeleteAction::make(),
-            ])
-            ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
+            ]);
     }
 }

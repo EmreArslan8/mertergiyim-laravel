@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Filament\Resources\Categories\Pages\CreateCategory;
+use App\Filament\Resources\Categories\Pages\ListCategories;
 use App\Models\Category;
 use App\Models\User;
 use App\Services\TranslateService;
@@ -28,13 +28,13 @@ class CategoryAutoTranslateTest extends TestCase
                 ]);
         });
 
-        Livewire::test(CreateCategory::class)
-            ->fillForm([
+        // Kategori ekleme ayrı sayfada değil, liste üzerindeki pencerede.
+        Livewire::test(ListCategories::class)
+            ->callAction('create', data: [
                 'name_i18n' => ['tr' => 'Yazlık Elbiseler'],
                 'active' => true,
             ])
-            ->call('create')
-            ->assertHasNoFormErrors();
+            ->assertHasNoActionErrors();
 
         $category = Category::query()->where('slug', 'yazlik-elbiseler')->firstOrFail();
 

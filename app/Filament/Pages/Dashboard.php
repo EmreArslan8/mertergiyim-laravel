@@ -108,10 +108,11 @@ class Dashboard extends BaseDashboard
                     'url' => OrderResource::getUrl('create'),
                 ] : null,
                 CategoryResource::canCreate() ? [
-                    'label' => 'Yeni kategori',
+                    'label' => 'Kategoriler',
                     'description' => 'Katalog yapısını düzenle',
                     'icon' => 'heroicon-o-plus',
-                    'url' => CategoryResource::getUrl('create'),
+                    // Kategori ekleme/düzenleme pencerede açılıyor; ayrı sayfa yok.
+                    'url' => CategoryResource::getUrl('index'),
                 ] : null,
                 HeroSlideResource::canCreate() ? [
                     'label' => 'Yeni slider',

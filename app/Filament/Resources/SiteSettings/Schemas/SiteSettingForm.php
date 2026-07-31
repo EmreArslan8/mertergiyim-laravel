@@ -163,11 +163,10 @@ class SiteSettingForm
                                                 'both' => 'Toptan ve perakende',
                                             ])
                                             ->default('wholesale'),
-                                        TextInput::make('value.general.orderNotificationNumber')
-                                            ->label('Sipariş bildirimi WhatsApp numarası')
-                                            ->tel()
-                                            ->regex('/^[0-9]{10,15}$/')
-                                            ->placeholder('905321234567'),
+                                        TextInput::make('value.general.orderNotificationChatId')
+                                            ->label('Sipariş bildirimi Telegram Chat ID')
+                                            ->placeholder('-1001234567890')
+                                            ->helperText('Yeni sipariş bildiriminin gideceği Telegram kişi/grup chat id\'si. Grup ise "-100" ile başlar.'),
                                         TextInput::make('value.general.minimumOrderAmount')
                                             ->label('Minimum sipariş tutarı')
                                             ->numeric()

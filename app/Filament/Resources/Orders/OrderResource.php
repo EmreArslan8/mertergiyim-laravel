@@ -6,7 +6,6 @@ use App\Filament\Resources\ManagedResource;
 use App\Filament\Resources\Orders\Pages\CreateOrder;
 use App\Filament\Resources\Orders\Pages\EditOrder;
 use App\Filament\Resources\Orders\Pages\ListOrders;
-use App\Filament\Resources\Orders\RelationManagers\ItemsRelationManager;
 use App\Filament\Resources\Orders\Schemas\OrderForm;
 use App\Filament\Resources\Orders\Tables\OrdersTable;
 use App\Models\Order;
@@ -40,11 +39,14 @@ class OrderResource extends ManagedResource
         return OrdersTable::configure($table);
     }
 
+    /**
+     * Kalemler detay sayfasında salt okunur bir kart olarak gösteriliyor,
+     * düzenleme o kartın başlığındaki aksiyondan yapılıyor: aynı veriyi
+     * altta ikinci bir tabloda tekrar göstermenin anlamı yok.
+     */
     public static function getRelations(): array
     {
-        return [
-            ItemsRelationManager::class,
-        ];
+        return [];
     }
 
     public static function getPages(): array

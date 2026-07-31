@@ -27,28 +27,54 @@ return [
 
     'whatsapp_number' => env('STOREFRONT_WHATSAPP_NUMBER', '905323259788'),
 
-    // Sipariş oluşunca mağazaya WhatsApp bildirimi (Meta Cloud API).
+    // Sipariş oluşunca mağazaya Telegram bildirimi (Telegram Bot API).
     // Kimlik bilgileri boşken bildirim sessizce atlanır, sipariş normal kaydedilir.
-    'whatsapp' => [
-        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
-        'token' => env('WHATSAPP_ACCESS_TOKEN'),
-        'api_version' => env('WHATSAPP_API_VERSION', 'v21.0'),
+    // Kurulum: @BotFather'dan bot token alın; bildirimlerin gideceği kişi/grubun
+    // chat id'sini env'e (TELEGRAM_CHAT_ID) veya panel > Site Ayarları'na girin.
+    'telegram' => [
+        'token' => env('TELEGRAM_BOT_TOKEN'),
 
-        // Bildirimin gideceği numara; boşsa yukarıdaki mağaza numarası kullanılır.
-        'recipient' => env('WHATSAPP_NOTIFY_NUMBER'),
-
-        // 'template': onaylı şablonla gönderir (24 saat kuralı nedeniyle
-        // varsayılan ve tek güvenilir yol). 'text': düz metin gönderir, yalnızca
-        // mağaza son 24 saat içinde yazmışsa çalışır.
-        'mode' => env('WHATSAPP_MESSAGE_MODE', 'template'),
-        'template' => env('WHATSAPP_TEMPLATE_NAME', 'yeni_siparis'),
-        'template_language' => env('WHATSAPP_TEMPLATE_LANGUAGE', 'tr'),
+        // Mesajın gideceği chat id (kişi veya grup). Grupta '-100...' ile başlar.
+        // Boşsa panelden girilen "Sipariş bildirimi Telegram Chat ID" kullanılır.
+        'chat_id' => env('TELEGRAM_CHAT_ID'),
     ],
 
     'site_url' => env('STOREFRONT_SITE_URL', env('APP_URL', 'http://localhost')),
 
     // Sorgu cache süresi (saniye). Kaynak Next.js projesindeki revalidate = 3600.
     'cache_ttl' => (int) env('STOREFRONT_CACHE_TTL', 3600),
+
+    /*
+    |----------------------------------------------------------------------
+    | Paket (seri) varsayılanları
+    |----------------------------------------------------------------------
+    |
+    | Toptan satışta ürün paket halinde satılır; paket içindeki beden
+    | dağılımı sabit kalıplardan gelir. Buradaki değerler yalnızca
+    | VARSAYILAN: panelde beden adetleri her zaman elle değiştirilebilir,
+    | değiştirildiği anda otomatik dağıtım devreden çıkar ("Otomatik dağıt"
+    | bağlantısı kalıbı geri getirir).
+    |
+    | 'templates' -> beden sayısı => [adetler]. Kalıbın toplamı paket
+    | adediyle eşleşmiyorsa kalıp atlanır ve hesaplanmış dağıtım kullanılır
+    | (taban pay + kalanı ortadan küçük bedenlere doğru).
+    |
+    */
+    'pack' => [
+        // Yeni ürün açılırken önerilen paket adedi.
+        'default_size' => (int) env('STOREFRONT_PACK_DEFAULT_SIZE', 5),
+
+        // 5'li seride sahadaki kalıplar.
+        'templates' => [
+            3 => [2, 2, 1],
+            4 => [1, 2, 1, 1],
+        ],
+
+        // Panelde tablonun üstünde çıkan hazır seri butonları. Basınca dağılım
+        // o adede göre kurulur; ayrı bir "paket adedi" alanı yok, paket adedi
+        // her zaman tablodaki adetlerin toplamıdır.
+        'presets' => [5, 6, 8, 10],
+    ],
 
     // Panelden yapılan görsel yüklemeleri.
     'upload' => [

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\StorefrontRepository;
 use App\Services\ExchangeRateService;
+use App\Services\ProductCardService;
+use App\Services\StorefrontRepository;
 use App\Support\Storefront;
 use Illuminate\View\View;
 
@@ -12,7 +13,10 @@ use Illuminate\View\View;
  */
 class ProductController extends Controller
 {
-    public function __construct(private StorefrontRepository $repository) {}
+    public function __construct(
+        private StorefrontRepository $repository,
+        private ProductCardService $cards,
+    ) {}
 
     public function __invoke(string $locale, string $slug): View
     {
@@ -35,18 +39,9 @@ class ProductController extends Controller
             Storefront::sortedImages($product->images),
         )));
 
-        $recommendations = array_map(function ($item) use ($currencies, $locale, $rates) {
-            $images = Storefront::sortedImages($item->images);
-
-            return [
-                'product' => $item,
-                'image' => Storefront::imageUrl('products', $images[0]->storage_path ?? null, 600),
-                'price' => Storefront::formatPrice(
-                    $item->priceForLocale($locale, $rates),
-                    Storefront::resolveCurrency($currencies, $item->currencyForLocale($locale)),
-                ),
-            ];
-        }, $data['recommendations']);
+        // Öneriler ana sayfadaki kartlarla aynı bileşeni kullandığı için
+        // veri de aynı üreticiden gelir.
+        $recommendations = $this->cards->make($data['recommendations'], $locale);
 
         $options = $this->repository->productOptions($product, $locale);
         $packSize = max(1, (int) ($product->pack_size ?? 1));
@@ -72,7 +67,7 @@ class ProductController extends Controller
         return view('storefront.product', [
             'product' => $product,
             'productName' => Storefront::text($product->name, $locale),
-            'productDescription' => Storefront::text($product->description, $locale),
+            'productDescription' => Storefront::richText($product->description, $locale),
             'categoryName' => $product->category
                 ? (Storefront::text($product->category->name_i18n, $locale) ?: $product->category->name)
                 : '',

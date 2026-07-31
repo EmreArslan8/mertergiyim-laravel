@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Filament\Resources\SiteLinks\Pages\CreateSiteLink;
+use App\Filament\Resources\SiteLinks\Pages\ListSiteLinks;
 use App\Models\SiteLink;
 use App\Models\User;
 use App\Services\TranslateService;
@@ -44,8 +44,8 @@ class SiteLinkAutoTranslateTest extends TestCase
                 ]);
         });
 
-        Livewire::test(CreateSiteLink::class)
-            ->fillForm([
+        Livewire::test(ListSiteLinks::class)
+            ->callAction('create', data: [
                 'location' => 'footer',
                 'link_key' => 'phpunit-stores',
                 'url' => '/magazalarimiz',
@@ -53,8 +53,7 @@ class SiteLinkAutoTranslateTest extends TestCase
                 'active' => true,
                 'label' => ['tr' => 'Mağazalarımız'],
             ])
-            ->call('create')
-            ->assertHasNoFormErrors();
+            ->assertHasNoActionErrors();
 
         $link = SiteLink::query()
             ->where('location', 'footer')

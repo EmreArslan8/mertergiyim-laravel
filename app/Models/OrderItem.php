@@ -25,4 +25,14 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Order::class);
     }
+
+    /**
+     * Sipariş kalemi ürün adını/kodunu kendi içinde tutar (ürün sonradan
+     * silinse bile sipariş okunabilir kalsın diye). İlişki yalnızca sipariş
+     * detayındaki görsel için var; ürün silinmişse null döner.
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

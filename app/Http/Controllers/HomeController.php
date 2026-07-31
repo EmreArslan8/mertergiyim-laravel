@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\StorefrontRepository;
 use App\Services\ProductCardService;
+use App\Services\StorefrontRepository;
 use App\Support\Storefront;
 use Illuminate\View\View;
 
@@ -24,9 +24,8 @@ class HomeController extends Controller
 
         return view('storefront.home', [
             'hero' => $hero,
-            // LCP görseli: tam ekran, 1600px retina dahil her ekrana yeter.
-            // Koyu overlay + büyük başlık altında kaldığı için q65 gözle ayırt edilmiyor.
-            'heroImage' => $hero ? Storefront::imageUrl('site', $hero->image_path, 1600, 65) : '',
+            // Canlı referans hero kalitesi: 1920px, quality 80.
+            'heroImage' => $hero ? Storefront::imageUrl('site', $hero->image_path, 1920, 80) : '',
             'cards' => $this->cards->make($data['products'], $locale),
             'canonicalPath' => '/'.$locale,
             'alternatePath' => fn (string $code) => '/'.$code,

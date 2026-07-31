@@ -79,9 +79,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     {{-- Kaynak projedeki import sırası korunuyor. --}}
-    <link rel="stylesheet" href="/css/storefront.css">
+    <link rel="stylesheet" href="/css/storefront.css?v=20260730-1">
     <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/hero-override.css">
+    <link rel="stylesheet" href="/css/hero-override.css?v=20260729-4">
     <link rel="stylesheet" href="/css/category-filter.css">
     <link rel="stylesheet" href="/css/page-heading.css">
     <link rel="stylesheet" href="/css/site-links.css">
@@ -132,7 +132,7 @@
 
     @include('storefront.partials.footer')
 
-    <script src="/js/storefront.js" defer></script>
+    <script src="/js/storefront.js?v=20260730-1" defer></script>
     @stack('scripts')
 </body>
 </html>

@@ -6,8 +6,6 @@ use App\Filament\Resources\ManagedResource;
 use App\Filament\Resources\TranslationUsages\Pages\ListTranslationUsages;
 use App\Models\TranslationUsage;
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -61,8 +59,7 @@ class TranslationUsageResource extends ManagedResource
             ])
             ->filters([
                 TernaryFilter::make('ok')->label('Durum'),
-            ])
-            ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
+            ]);
     }
 
     public static function getPages(): array

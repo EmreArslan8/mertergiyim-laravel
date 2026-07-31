@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\SiteLinks;
 
 use App\Filament\Resources\ManagedResource;
-use App\Filament\Resources\SiteLinks\Pages\CreateSiteLink;
-use App\Filament\Resources\SiteLinks\Pages\EditSiteLink;
 use App\Filament\Resources\SiteLinks\Pages\ListSiteLinks;
 use App\Filament\Resources\SiteLinks\Schemas\SiteLinkForm;
 use App\Filament\Resources\SiteLinks\Tables\SiteLinksTable;
@@ -50,8 +48,6 @@ class SiteLinkResource extends ManagedResource
     {
         return [
             'index' => ListSiteLinks::route('/'),
-            'create' => CreateSiteLink::route('/create'),
-            'edit' => EditSiteLink::route('/{record}/edit'),
         ];
     }
 }

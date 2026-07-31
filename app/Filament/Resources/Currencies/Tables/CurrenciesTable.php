@@ -2,9 +2,7 @@
 
 namespace App\Filament\Resources\Currencies\Tables;
 
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -27,7 +25,6 @@ class CurrenciesTable
                 IconColumn::make('is_default')->label('Varsayılan')->boolean(),
                 TextColumn::make('sort_order')->label('Sıra'),
             ])
-            ->recordActions([EditAction::make(), DeleteAction::make()])
-            ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
+            ->recordActions([EditAction::make(), DeleteAction::make()]);
     }
 }

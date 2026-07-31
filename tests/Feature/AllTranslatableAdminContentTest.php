@@ -3,14 +3,14 @@
 namespace Tests\Feature;
 
 use App\Filament\Resources\BlogPosts\Pages\CreateBlogPost;
-use App\Filament\Resources\Colors\Pages\CreateColor;
+use App\Filament\Resources\Colors\Pages\ListColors;
 use App\Filament\Resources\ContentPages\Pages\CreateContentPage;
 use App\Filament\Resources\HeroSlides\Pages\CreateHeroSlide;
 use App\Filament\Resources\Media\Pages\CreateMedia;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\SiteSettings\Pages\EditSiteSetting;
-use App\Filament\Resources\Sizes\Pages\CreateSize;
+use App\Filament\Resources\Sizes\Pages\ListSizes;
 use App\Models\BlogPost;
 use App\Models\Color;
 use App\Models\ContentPage;
@@ -41,14 +41,14 @@ class AllTranslatableAdminContentTest extends TestCase
     {
         $this->mockTranslations(['name_i18n' => 'E2E Beden']);
 
-        Livewire::test(CreateSize::class)
-            ->fillForm([
+        // Beden ekleme liste sayfasındaki pencerede yapılır.
+        Livewire::test(ListSizes::class)
+            ->callAction('create', data: [
                 'name_i18n' => ['tr' => 'E2E Beden'],
                 'sort_order' => 99,
                 'active' => true,
             ])
-            ->call('create')
-            ->assertHasNoFormErrors();
+            ->assertHasNoActionErrors();
 
         $this->assertTranslated(Size::query()->where('name', 'E2E Beden')->firstOrFail(), ['name_i18n']);
     }
@@ -57,15 +57,14 @@ class AllTranslatableAdminContentTest extends TestCase
     {
         $this->mockTranslations(['name_i18n' => 'E2E Renk']);
 
-        Livewire::test(CreateColor::class)
-            ->fillForm([
+        Livewire::test(ListColors::class)
+            ->callAction('create', data: [
                 'name_i18n' => ['tr' => 'E2E Renk'],
                 'hex' => '#123456',
                 'sort_order' => 99,
                 'active' => true,
             ])
-            ->call('create')
-            ->assertHasNoFormErrors();
+            ->assertHasNoActionErrors();
 
         $this->assertTranslated(Color::query()->where('name', 'E2E Renk')->firstOrFail(), ['name_i18n']);
     }

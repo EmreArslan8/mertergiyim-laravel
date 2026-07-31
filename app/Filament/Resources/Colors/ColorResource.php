@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\Colors;
 
 use App\Filament\Resources\ManagedResource;
-use App\Filament\Resources\Colors\Pages\CreateColor;
-use App\Filament\Resources\Colors\Pages\EditColor;
 use App\Filament\Resources\Colors\Pages\ListColors;
 use App\Filament\Resources\Colors\Schemas\ColorForm;
 use App\Filament\Resources\Colors\Tables\ColorsTable;
@@ -50,8 +48,6 @@ class ColorResource extends ManagedResource
     {
         return [
             'index' => ListColors::route('/'),
-            'create' => CreateColor::route('/create'),
-            'edit' => EditColor::route('/{record}/edit'),
         ];
     }
 }
