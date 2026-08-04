@@ -83,7 +83,7 @@ class TelegramAccount extends Model
      */
     public function forgetSession(): void
     {
-        $path = $this->session_path ?: 'telegram/sessions/'.$this->getKey();
+        $path = $this->sessionPath();
 
         rescue(function () use ($path): void {
             $disk = Storage::disk('local');
@@ -202,6 +202,11 @@ class TelegramAccount extends Model
      */
     public function sessionPath(): string
     {
-        return $this->session_path ?: 'telegram/sessions/'.$this->getKey();
+        // Yol bilerek kısa: MadelineProto'nun IPC Unix-socket'i bu klasörün
+        // altına açılıyor ve Linux'ta socket yol sınırı 108 bayt. Derin proje
+        // dizini + 36 karakterlik uuid ile toplam yol bu sınırı aşınca IPC
+        // sunucusu başlayamıyor ("Could not connect to MadelineProto"). Kısa
+        // hash ile klasör adı 12 karaktere iniyor, yol sınırın altında kalıyor.
+        return $this->session_path ?: 'tg/'.substr(sha1($this->getKey()), 0, 12);
     }
 }
