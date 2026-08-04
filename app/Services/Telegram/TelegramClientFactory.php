@@ -5,6 +5,7 @@ namespace App\Services\Telegram;
 use App\Models\TelegramAccount;
 use danog\MadelineProto\API;
 use danog\MadelineProto\Logger;
+use danog\MadelineProto\Magic;
 use danog\MadelineProto\Settings;
 use danog\MadelineProto\Settings\AppInfo;
 use danog\MadelineProto\Settings\Logger as LoggerSettings;
@@ -39,7 +40,21 @@ class TelegramClientFactory
             throw new RuntimeException('Oturum klasörü oluşturulamadı: '.$parent);
         }
 
-        return new API($sessionPath, $this->settings($account));
+        $settings = $this->settings($account);
+
+        // Paylaşımlı hostta (alwaysdata) MadelineProto'yu tek süreçte çalıştır.
+        //
+        // Varsayılan mimari, oturumu ayrı bir arka plan (IPC) sürecine devredip
+        // ona bağlanıyor. alwaysdata gibi kalıcı arka plan süreci vermeyen
+        // ortamlarda bu el sıkışması tamamlanmıyor ve MadelineProto 30 sn sonra
+        // "Could not connect to MadelineProto" diye düşüyor. Altervista bayrağı
+        // MadelineProto'nun tam da bu tür hostlar için yazılmış "forceFull"
+        // yolunu açıyor: oturum fork'suz, mevcut süreçte yükleniyor. Ayarlar
+        // kurulurken Magic::start çalıştığı için bayrağı API'den hemen önce,
+        // yani en son yazıyoruz ki üzerine yazılmasın.
+        Magic::$altervista = true;
+
+        return new API($sessionPath, $settings);
     }
 
     private function settings(TelegramAccount $account): Settings
