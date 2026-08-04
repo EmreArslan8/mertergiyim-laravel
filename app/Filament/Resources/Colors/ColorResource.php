@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\Colors;
 
-use App\Filament\Resources\ManagedResource;
 use App\Filament\Resources\Colors\Pages\ListColors;
 use App\Filament\Resources\Colors\Schemas\ColorForm;
 use App\Filament\Resources\Colors\Tables\ColorsTable;
+use App\Filament\Resources\ManagedResource;
 use App\Models\Color;
 use BackedEnum;
 use Filament\Schemas\Schema;
@@ -20,7 +20,7 @@ class ColorResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Renkler';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 70;
 
     protected static ?string $modelLabel = 'renk';
 

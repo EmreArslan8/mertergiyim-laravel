@@ -6,6 +6,7 @@
         'filament.admin.resources.sizes.*' => ['Bedenler', 'heroicon-o-arrows-pointing-out'],
         'filament.admin.resources.colors.*' => ['Renkler', 'heroicon-o-swatch'],
         'filament.admin.resources.currencies.*' => ['Para Birimi', 'heroicon-o-banknotes'],
+        'filament.admin.resources.bank-accounts.*' => ['Banka Hesapları', 'heroicon-o-building-library'],
         'filament.admin.resources.products.*' => ['Ürünler', 'heroicon-o-shopping-bag'],
         'filament.admin.resources.orders.*' => ['Siparişler', 'heroicon-o-clipboard-document-list'],
         'filament.admin.resources.hero-slides.*' => ['Slider', 'heroicon-o-photo'],

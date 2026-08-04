@@ -73,13 +73,13 @@ class StorefrontCache
         }
 
         if ($model instanceof Language || $model instanceof SiteLink) {
-            Cache::forget('storefront:chrome');
+            self::flushChrome();
 
             return;
         }
 
         if ($model instanceof SiteSetting) {
-            self::forgetMany(['chrome', 'sitemap']);
+            self::forgetMany(['chrome', 'home', 'sitemap']);
 
             return;
         }
@@ -129,6 +129,21 @@ class StorefrontCache
                 fn ($slug) => Cache::forget('storefront:blog:'.$slug)
             );
         }, report: false);
+    }
+
+    /**
+     * Filament sürükle-bırak sıralaması toplu SQL update kullandığı için model
+     * observer'ı çalışmaz; menü/dil listeleri işlem sonunda bunu çağırır.
+     */
+    public static function flushChrome(): void
+    {
+        Cache::forget('storefront:chrome');
+    }
+
+    /** Sürükle-bırak ürün sıralaması model observer'ını çalıştırmaz. */
+    public static function flushHome(): void
+    {
+        Cache::forget('storefront:home');
     }
 
     /**

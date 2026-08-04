@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\Colors\Tables;
 
 use App\Filament\Support\Multilingual;
+use App\Filament\Support\Reorderable;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
@@ -19,6 +21,9 @@ class ColorsTable
             ->stackedOnMobile()
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
+            // Sürükle-bırak ikonu tek başına ne işe yaradığını anlatmıyordu;
+            // ürün listesindeki gibi yazılı bir düğmeye çevrildi.
+            ->reorderRecordsTriggerAction(Reorderable::triggerAction())
             ->columns([
                 ColorColumn::make('color_preview')
                     ->label('Renk')
@@ -36,6 +41,9 @@ class ColorsTable
             ])
             ->recordActions([
                 EditAction::make()
+                    ->modalHeading('Rengi düzenle')
+                    ->modalWidth(Width::TwoExtraLarge)
+                    ->extraModalWindowAttributes(['class' => 'merter-color-modal'])
                     ->mutateDataUsing(fn (array $data, $livewire, ?Model $record): array => $livewire->fillAutomaticTranslationsFor($data, $record)),
                 DeleteAction::make(),
             ]);

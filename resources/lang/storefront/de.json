@@ -76,7 +76,8 @@
     "gallery": {
         "zoomHint": "Zum Zoomen bewegen oder tippen",
         "galleryNote": "Tippen Sie auf ein Vorschaubild.",
-        "showImage": "Bild anzeigen"
+        "showImage": "Bild anzeigen",
+        "video": "Video"
     },
     "meta": {
         "title": "Merter Giyim | Groß- und Einzelhandel für Bekleidung aus Merter",
@@ -89,7 +90,7 @@
         "heading": "Sendungsverfolgung",
         "subheading": "Suche per Bestellnummer oder Tracking-Code.",
         "inputLabel": "Bestellnr. / Tracking-Code",
-        "placeholder": "z. B. MG-20260723-8H4K2P9X",
+        "placeholder": "z. B. ORD-20260723-8H4K2P9X",
         "submit": "Bestellung verfolgen",
         "loading": "Suche…",
         "errorEmpty": "Bitte geben Sie Ihre Bestellnummer oder Ihren Tracking-Code ein.",
@@ -169,6 +170,16 @@
             "phone": "Geben Sie eine gültige Telefonnummer mit Ländervorwahl ein.",
             "minimumOrder": "Der Mindestbestellwert beträgt {amount} {currency}."
         }
+    },
+    "bankAccounts": {
+        "eyebrow": "Information",
+        "subtitle": "Unsere aktuellen Bankverbindungen, die Sie zur Zahlungsbestätigung nach Ihrer Bestellung verwenden können.",
+        "owner": "Kontoinhaber",
+        "iban": "IBAN",
+        "branch": "Filiale",
+        "copy": "IBAN kopieren",
+        "copied": "Kopiert",
+        "empty": "Derzeit sind keine Bankkonten verfügbar."
     },
     "orderSuccess": {
         "eyebrow": "BESTELLUNG ERSTELLT",

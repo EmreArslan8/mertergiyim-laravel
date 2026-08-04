@@ -2,6 +2,7 @@
     $brandName = \App\Support\BrandSettings::name('tr');
     $brandLogo = \App\Support\BrandSettings::logoUrl();
 @endphp
+
 <div class="merter-brand">
     <div class="merter-brand-avatar" aria-hidden="true">
         @if ($brandLogo)

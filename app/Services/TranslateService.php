@@ -83,7 +83,12 @@ class TranslateService
             .' same tags, same order, same nesting, no extra or missing tags, no added attributes.'
             .' Turkish texts: '.json_encode($source, JSON_UNESCAPED_UNICODE);
 
-        $response = Http::timeout(60)
+        // Ad + açıklamayı 9 dile tek istekte çevirmek 8 sn'yi aşıp cURL 28
+        // (timeout) veriyordu; süre 20 sn'ye çıkarıldı ve geçici ağ/gecikme
+        // sorunlarında bir kez daha denensin diye retry eklendi.
+        $response = Http::connectTimeout(5)
+            ->timeout(20)
+            ->retry(2, 500)
             ->withHeaders(['x-goog-api-key' => (string) config('storefront.translation.api_key')])
             ->post($this->endpoint().$this->model().':generateContent', [
                 'contents' => [['parts' => [['text' => $prompt]]]],

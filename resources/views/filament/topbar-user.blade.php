@@ -13,6 +13,7 @@
             @csrf
             <button type="submit" class="merter-topbar-logout" aria-label="Çıkış yap">
                 <x-filament::icon icon="heroicon-o-arrow-right-start-on-rectangle" />
+                <span class="merter-topbar-logout-label">Çıkış</span>
             </button>
         </form>
     </div>

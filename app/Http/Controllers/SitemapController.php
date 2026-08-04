@@ -28,16 +28,16 @@ class SitemapController extends Controller
             $categorySlugs = Category::query()->where('active', true)->pluck('slug')->filter()->all();
 
             $paths = [
-                ['path' => fn (string $locale) => '/'.$locale, 'freq' => 'daily', 'priority' => '1.0'],
-                ['path' => fn (string $locale) => '/'.$locale.'/siparis-takibi', 'freq' => 'monthly', 'priority' => '0.4'],
-                ['path' => fn (string $locale) => '/'.$locale.'/blog', 'freq' => 'weekly', 'priority' => '0.7'],
-                ['path' => fn (string $locale) => '/'.$locale.'/multimedya', 'freq' => 'weekly', 'priority' => '0.6'],
-                ['path' => fn (string $locale) => '/'.$locale.'/iletisim', 'freq' => 'monthly', 'priority' => '0.5'],
+                ['path' => fn (string $locale) => Storefront::localePath($locale), 'freq' => 'daily', 'priority' => '1.0'],
+                ['path' => fn (string $locale) => Storefront::localePath($locale, '/siparis-takibi'), 'freq' => 'monthly', 'priority' => '0.4'],
+                ['path' => fn (string $locale) => Storefront::localePath($locale, '/blog'), 'freq' => 'weekly', 'priority' => '0.7'],
+                ['path' => fn (string $locale) => Storefront::localePath($locale, '/multimedya'), 'freq' => 'weekly', 'priority' => '0.6'],
+                ['path' => fn (string $locale) => Storefront::localePath($locale, '/iletisim'), 'freq' => 'monthly', 'priority' => '0.5'],
             ];
 
             foreach ($categorySlugs as $slug) {
                 $paths[] = [
-                    'path' => fn (string $locale) => '/'.$locale.'/kategori/'.$slug,
+                    'path' => fn (string $locale) => Storefront::localePath($locale, '/kategori/'.$slug),
                     'freq' => 'weekly',
                     'priority' => '0.8',
                 ];
@@ -53,7 +53,7 @@ class SitemapController extends Controller
 
             foreach ($pageSlugs as $slug) {
                 $paths[] = [
-                    'path' => fn (string $locale) => '/'.$locale.'/'.$slug,
+                    'path' => fn (string $locale) => Storefront::localePath($locale, '/'.$slug),
                     'freq' => 'monthly',
                     'priority' => '0.6',
                 ];
@@ -61,7 +61,7 @@ class SitemapController extends Controller
 
             foreach ($postSlugs as $slug) {
                 $paths[] = [
-                    'path' => fn (string $locale) => '/'.$locale.'/blog/'.$slug,
+                    'path' => fn (string $locale) => Storefront::localePath($locale, '/blog/'.$slug),
                     'freq' => 'monthly',
                     'priority' => '0.6',
                 ];

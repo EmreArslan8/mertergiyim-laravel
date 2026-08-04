@@ -5,6 +5,9 @@
     $metaDescription = Storefront::plainText($product->description, $locale) ?: ($messages['meta']['description'] ?? '');
     $metaKeywords = '';
     $ogImage = $gallery[0] ?? null;
+    $hasVideo = filled($product->video_url);
+    $mediaCount = count($gallery) + ($hasVideo ? 1 : 0);
+    $videoLabel = data_get($messages, 'gallery.video', 'Video');
     $packageTotal = Storefront::formatPrice($numericPrice * $packSize, $currencyDisplay);
     $bodyClass = 'product-detail-body';
 
@@ -16,8 +19,8 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/product.css?v=20260730-1">
-    <link rel="stylesheet" href="/css/commerce.css?v=20260731-7">
+    <link rel="stylesheet" href="/css/product.css?v=20260804-2">
+    <link rel="stylesheet" href="/css/commerce.css?v=20260802-1">
 @endpush
 
 @section('content')
@@ -25,7 +28,7 @@
         <div class="detail-layout">
             <section class="detail-gallery">
                 <div class="product-image-wrap">
-                    <div class="zoom-wrap" data-zoom-wrap>
+                    <div class="zoom-wrap {{ count($gallery) ? '' : 'is-video' }}" data-zoom-wrap>
                         @if (count($gallery))
                             <img class="zoom-main-image" src="{{ $gallery[0] }}" alt="{{ $galleryAlts[0] ?? $productName }}"
                                  fetchpriority="high" data-zoom-main>
@@ -35,39 +38,60 @@
                                 <span class="zoom-icon" aria-hidden="true">⌕</span>
                                 {{ $messages['gallery']['zoomHint'] ?? '' }}
                             </div>
-                        @else
+                        @elseif (! $hasVideo)
                             <div class="detail-image-empty">{{ $productName }}</div>
+                        @endif
+
+                        @if ($hasVideo)
+                            <div class="detail-gallery-video" data-gallery-video @if(count($gallery)) hidden @endif>
+                                @if ($videoEmbedUrl)
+                                    <iframe src="{{ count($gallery) ? 'about:blank' : $videoEmbedUrl }}"
+                                            data-gallery-video-iframe data-video-src="{{ $videoEmbedUrl }}"
+                                            title="{{ $videoLabel }}: {{ $productName }}" loading="lazy"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen></iframe>
+                                @else
+                                    <video src="{{ $videoUrl }}" controls playsinline preload="metadata"
+                                           data-gallery-video-element></video>
+                                @endif
+                            </div>
                         @endif
                     </div>
                 </div>
 
-                @if (count($gallery) > 1)
-                    <div class="detail-thumbs" id="thumbs" data-thumbs>
-                        @foreach ($gallery as $index => $image)
-                            <button type="button"
-                                    aria-label="{{ $index + 1 }}. {{ $galleryAlts[$index] ?? $productName }}"
-                                    class="detail-thumb {{ $index === 0 ? 'active' : '' }}"
-                                    data-thumb="{{ $image }}"
-                                    data-thumb-alt="{{ $galleryAlts[$index] ?? $productName }}">
-                                <img src="{{ $image }}" alt="" width="96" height="112" loading="lazy">
-                            </button>
-                        @endforeach
-                    </div>
-                @endif
+                @if ($mediaCount > 1)
+                    <div class="detail-thumbs-shell" data-thumbs-shell>
+                        <button class="detail-thumbs-nav detail-thumbs-nav--previous" type="button"
+                                aria-label="{{ data_get($messages, 'media.previous') }}" data-thumbs-previous>
+                            <span aria-hidden="true">{{ $dir === 'rtl' ? '›' : '‹' }}</span>
+                        </button>
+                        <div class="detail-thumbs" id="thumbs" data-thumbs>
+                            @foreach ($gallery as $index => $image)
+                                <button type="button"
+                                        aria-label="{{ $index + 1 }}. {{ $galleryAlts[$index] ?? $productName }}"
+                                        aria-current="{{ $index === 0 ? 'true' : 'false' }}"
+                                        class="detail-thumb {{ $index === 0 ? 'active' : '' }}"
+                                        data-thumb="{{ $image }}"
+                                        data-thumb-alt="{{ $galleryAlts[$index] ?? $productName }}">
+                                    <img src="{{ $image }}" alt="" width="96" height="112" loading="lazy">
+                                </button>
 
-                @if ($product->video_url)
-                    <div class="detail-video">
-                        <hr>
-                        <div class="section-title">Video</div>
-                        @if ($videoEmbedUrl)
-                            <div class="detail-video-frame">
-                                <iframe src="{{ $videoEmbedUrl }}" title="{{ $productName }}" loading="lazy"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowfullscreen></iframe>
-                            </div>
-                        @else
-                            <video class="detail-video-frame" src="{{ $product->video_url }}" controls playsinline></video>
-                        @endif
+                                @if ($index === 0 && $hasVideo)
+                                    <button type="button" class="detail-thumb detail-video-thumb"
+                                            aria-label="{{ $videoLabel }}: {{ $productName }}" aria-current="false"
+                                            data-video-thumb>
+                                        <img src="{{ $image }}" alt="" width="96" height="112" loading="lazy">
+                                        <span class="detail-video-thumb-shade" aria-hidden="true"></span>
+                                        <span class="detail-video-thumb-play" aria-hidden="true">▶</span>
+                                        <span class="detail-video-thumb-label">{{ $videoLabel }}</span>
+                                    </button>
+                                @endif
+                            @endforeach
+                        </div>
+                        <button class="detail-thumbs-nav detail-thumbs-nav--next" type="button"
+                                aria-label="{{ data_get($messages, 'media.next') }}" data-thumbs-next>
+                            <span aria-hidden="true">{{ $dir === 'rtl' ? '‹' : '›' }}</span>
+                        </button>
                     </div>
                 @endif
 
@@ -196,7 +220,7 @@
                                         {{ data_get($messages, 'cart.add') }}
                                     </button>
                                 </div>
-                                <a class="detail-mobile-cart" href="/{{ $locale }}/sepet"
+                                <a class="detail-mobile-cart" href="{{ Storefront::localePath($locale, '/sepet') }}"
                                    aria-label="{{ data_get($messages, 'cart.title') }}">
                                     @include('storefront.partials.icon', ['name' => 'shopping-cart', 'size' => 28, 'strokeWidth' => 2.4])
                                     <span class="cart-count" data-cart-count hidden>0</span>

@@ -18,7 +18,7 @@
     <div class="site-footer-inner">
         <div class="site-footer-grid">
             <div class="footer-brand-block">
-                <a class="footer-logo" href="/{{ $locale }}" aria-label="{{ $brand }}">
+                <a class="footer-logo" href="{{ Storefront::localePath($locale) }}" aria-label="{{ $brand }}">
                     @if (! empty($siteSettings['siteLogo']))
                         <img class="footer-brand-image" src="{{ Storefront::storageUrl('site', $siteSettings['siteLogo']) }}" alt="{{ $brand }}">
                     @else
@@ -26,7 +26,7 @@
                     @endif
                 </a>
                 @if (! empty($footerSettings['footerDescription']))
-                    <p>{{ $footerSettings['footerDescription'] }}</p>
+                    <div>{!! Storefront::richText($footerSettings['footerDescription'], $locale) !!}</div>
                 @endif
             </div>
             <div class="footer-info-block">
@@ -97,18 +97,12 @@
                 <small>{{ $footerSettings['copyright'] }}</small>
             @endif
             @php
-                $socialLinks = array_filter([
-                    'Instagram' => $siteSettings['instagramUrl'] ?? null,
-                    'Facebook' => $siteSettings['facebookUrl'] ?? null,
-                    'TikTok' => $siteSettings['tiktokUrl'] ?? null,
-                    'YouTube' => $siteSettings['youtubeUrl'] ?? null,
-                    'LinkedIn' => $siteSettings['linkedinUrl'] ?? null,
-                ]);
+                $socialLinks = \App\Support\Storefront::socialLinks($siteSettings);
             @endphp
             @if ($socialLinks)
                 <nav class="footer-contact-links" aria-label="Sosyal medya">
-                    @foreach ($socialLinks as $label => $url)
-                        <a href="{{ $url }}" target="_blank" rel="noreferrer">{{ $label }}</a>
+                    @foreach ($socialLinks as $social)
+                        <a href="{{ $social['url'] }}" target="_blank" rel="noreferrer">{{ $social['label'] }}</a>
                     @endforeach
                 </nav>
             @endif

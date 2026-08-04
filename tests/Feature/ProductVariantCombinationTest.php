@@ -10,6 +10,7 @@ use App\Models\Size;
 use App\Models\User;
 use App\Services\AdminOptionService;
 use App\Services\TranslateService;
+use App\Support\ProductName;
 use Illuminate\Http\UploadedFile;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -23,17 +24,15 @@ class ProductVariantCombinationTest extends TestCase
 
         Livewire::test(CreateProduct::class)
             ->fillForm([
-                'code' => 'NEGATIVE-'.$suffix,
-                'slug' => 'negative-'.$suffix,
-                'name' => ['tr' => 'Negatif Fiyat Testi'],
-                'price_try' => -0.01,
-                'stock_status' => 'in_stock',
+                'name' => ['tr' => 'Negatif Fiyat Testi '.$suffix],
+                'price_usd' => -0.01,
+                'stock_status' => true,
                 'active' => false,
             ])
             ->call('create')
-            ->assertHasFormErrors(['price_try' => 'min']);
+            ->assertHasFormErrors(['price_usd' => 'min']);
 
-        $this->assertDatabaseMissing('products', ['code' => 'NEGATIVE-'.$suffix]);
+        $this->assertDatabaseMissing('products', ['name_key' => ProductName::key('Negatif Fiyat Testi '.$suffix)]);
     }
 
     public function test_selected_sizes_and_colors_create_cartesian_variants(): void
@@ -57,29 +56,29 @@ class ProductVariantCombinationTest extends TestCase
             'slug' => 'test-'.$suffix,
             'active' => true,
         ]);
+        $languages = config('storefront.translation.languages');
+        $translations = array_combine($languages, array_map(fn ($language) => 'test-'.$language, $languages));
 
         $this->mock(TranslateService::class, fn ($mock) => $mock
             ->shouldReceive('translateFields')
             ->twice()
             ->andReturn(
                 [
-                    'name' => [],
-                    'description' => [],
+                    'name' => $translations,
+                    'description' => $translations,
                 ],
-                ['alt' => []],
+                ['alt' => $translations],
             ));
 
         try {
             Livewire::test(CreateProduct::class)
                 ->fillForm([
-                    'code' => 'COMBO-'.$suffix,
-                    'slug' => 'combo-'.$suffix,
-                    'name' => ['tr' => 'Kombinasyon Testi'],
+                    'name' => ['tr' => 'Kombinasyon Testi '.$suffix],
                     'description' => ['tr' => 'Test'],
-                    'price_try' => 100,
+                    'price_usd' => 100,
                     'pack_size' => 5,
-                    'category_id' => $category->id,
-                    'stock_status' => 'in_stock',
+                    'category_selection' => [$category->id],
+                    'stock_status' => true,
                     'active' => false,
                     'images' => [[
                         'storage_path' => [UploadedFile::fake()->image('combo.jpg', 800, 1000)],
@@ -99,12 +98,14 @@ class ProductVariantCombinationTest extends TestCase
                 ->call('create')
                 ->assertHasNoFormErrors();
 
-            $product = Product::query()->where('code', 'COMBO-'.$suffix)->firstOrFail();
+            $product = Product::query()->where('name_key', ProductName::key('Kombinasyon Testi '.$suffix))->firstOrFail();
             $this->assertCount(4, $product->variants);
             $this->assertSame(5, collect($product->pack_contents)->sum('quantity'));
             $this->assertTrue($product->active);
+            $this->assertSame('USD', $product->currency);
+            $this->assertSame('100.00', $product->price_usd);
         } finally {
-            Product::query()->where('code', 'COMBO-'.$suffix)->get()->each->delete();
+            Product::query()->where('name_key', ProductName::key('Kombinasyon Testi '.$suffix))->get()->each->delete();
             Size::query()->whereIn('id', $sizes->pluck('id'))->delete();
             Color::query()->whereIn('id', $colors->pluck('id'))->delete();
             $category->delete();
@@ -307,25 +308,25 @@ class ProductVariantCombinationTest extends TestCase
             'slug' => 'test-'.$suffix,
             'active' => true,
         ]);
+        $languages = config('storefront.translation.languages');
+        $translations = array_combine($languages, array_map(fn ($language) => 'test-'.$language, $languages));
 
         $this->mock(TranslateService::class, fn ($mock) => $mock
             ->shouldReceive('translateFields')
             ->twice()
             ->andReturn(
-                ['name' => [], 'description' => []],
-                ['alt' => []],
+                ['name' => $translations, 'description' => $translations],
+                ['alt' => $translations],
             ));
 
         try {
             $component = Livewire::test(CreateProduct::class)
                 ->fillForm([
-                    'code' => 'DERIVED-'.$suffix,
-                    'slug' => 'derived-'.$suffix,
-                    'name' => ['tr' => 'Türetilmiş Paket'],
+                    'name' => ['tr' => 'Türetilmiş Paket '.$suffix],
                     'description' => ['tr' => 'Test'],
-                    'price_try' => 100,
+                    'price_usd' => 100,
                     'category_id' => $category->id,
-                    'stock_status' => 'in_stock',
+                    'stock_status' => true,
                     'active' => false,
                     'images' => [[
                         'storage_path' => [UploadedFile::fake()->image('derived.jpg', 800, 1000)],
@@ -345,12 +346,12 @@ class ProductVariantCombinationTest extends TestCase
 
             $component->call('create')->assertHasNoFormErrors();
 
-            $product = Product::query()->where('code', 'DERIVED-'.$suffix)->firstOrFail();
+            $product = Product::query()->where('name_key', ProductName::key('Türetilmiş Paket '.$suffix))->firstOrFail();
 
             $this->assertSame(7, (int) $product->pack_size);
             $this->assertSame(7, collect($product->pack_contents)->sum('quantity'));
         } finally {
-            Product::query()->where('code', 'DERIVED-'.$suffix)->get()->each->delete();
+            Product::query()->where('name_key', ProductName::key('Türetilmiş Paket '.$suffix))->get()->each->delete();
             Size::query()->whereIn('id', $sizes->pluck('id'))->delete();
             $color->delete();
             $category->delete();

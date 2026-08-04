@@ -6,6 +6,7 @@ use App\Filament\Resources\BlogPosts\Pages\CreateBlogPost;
 use App\Filament\Resources\Colors\Pages\ListColors;
 use App\Filament\Resources\ContentPages\Pages\CreateContentPage;
 use App\Filament\Resources\HeroSlides\Pages\CreateHeroSlide;
+use App\Filament\Resources\Homepage\Pages\EditHomepage;
 use App\Filament\Resources\Media\Pages\CreateMedia;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\RelationManagers\ImagesRelationManager;
@@ -72,7 +73,8 @@ class AllTranslatableAdminContentTest extends TestCase
     public function test_new_hero_slide_is_translated_into_every_locale(): void
     {
         $this->mockTranslations([
-            'title' => 'E2E Yaz Koleksiyonu',
+            // Başlık artık zengin editör; düz metin kaydederken <p> ile sarılır.
+            'title' => '<p>E2E Yaz Koleksiyonu</p>',
             'button_text' => 'Şimdi İncele',
         ]);
 
@@ -82,15 +84,15 @@ class AllTranslatableAdminContentTest extends TestCase
                 'title' => ['tr' => 'E2E Yaz Koleksiyonu'],
                 'button_text' => ['tr' => 'Şimdi İncele'],
                 'button_url' => '/tr#urunler',
-                'sort_order' => 99,
                 'active' => false,
             ])
             ->call('create')
             ->assertHasNoFormErrors();
 
+        // Sıralama artık formda değil (listeden sürükle-bırak); kayıt buton
+        // bağlantısıyla bulunur.
         $slide = HeroSlide::query()
-            ->where('sort_order', 99)
-            ->whereJsonContains('title->tr', 'E2E Yaz Koleksiyonu')
+            ->where('button_url', '/tr#urunler')
             ->firstOrFail();
 
         $this->assertTranslated($slide, ['title', 'button_text']);
@@ -100,7 +102,7 @@ class AllTranslatableAdminContentTest extends TestCase
     {
         $this->mockTranslations([
             'title' => 'E2E Teslimat Rehberi',
-            'content' => 'E2E teslimat içeriği',
+            'content' => '<p>E2E teslimat içeriği</p>',
             'seo_title' => 'E2E Teslimat',
             'seo_description' => 'E2E teslimat açıklaması',
         ]);
@@ -129,7 +131,7 @@ class AllTranslatableAdminContentTest extends TestCase
         $this->mockTranslations([
             'title' => 'E2E Yaz Modası',
             'excerpt' => 'E2E blog özeti',
-            'content' => 'E2E blog içeriği',
+            'content' => '<p>E2E blog içeriği</p>',
         ]);
 
         Livewire::test(CreateBlogPost::class)
@@ -154,7 +156,7 @@ class AllTranslatableAdminContentTest extends TestCase
     {
         $this->mockTranslations([
             'title' => 'E2E Koleksiyon Görseli',
-            'description' => 'E2E medya açıklaması',
+            'description' => '<p>E2E medya açıklaması</p>',
         ]);
 
         Livewire::test(CreateMedia::class)
@@ -212,7 +214,7 @@ class AllTranslatableAdminContentTest extends TestCase
     {
         $this->mockTranslations([
             'footerInfoTitle' => 'E2E Bilgilendirmeler',
-            'footerDescription' => 'E2E footer açıklaması',
+            'footerDescription' => '<p>E2E footer açıklaması</p>',
         ]);
 
         $setting = SiteSetting::query()->whereKey('storefront')->firstOrFail();
@@ -233,12 +235,44 @@ class AllTranslatableAdminContentTest extends TestCase
 
         $turkish = [
             'footerInfoTitle' => 'E2E Bilgilendirmeler',
-            'footerDescription' => 'E2E footer açıklaması',
+            // Zengin editör alanı: metin panelde HTML olarak saklanır.
+            'footerDescription' => '<p>E2E footer açıklaması</p>',
         ];
 
         foreach ($turkish as $field => $value) {
             $this->assertSame($value, $fresh->value['tr'][$field]);
 
+            foreach (config('storefront.translation.languages') as $locale) {
+                $this->assertSame($field.'-'.$locale, $fresh->value[$locale][$field]);
+            }
+        }
+    }
+
+    public function test_changed_homepage_content_is_translated_into_every_locale(): void
+    {
+        $this->mockTranslations([
+            'homeFeaturedTitle' => 'E2E Ana Sayfa Ürünleri',
+            'homeSeoTitle' => 'E2E Ana Sayfa SEO',
+        ]);
+
+        $setting = SiteSetting::query()->whereKey('storefront')->firstOrFail();
+
+        Livewire::test(EditHomepage::class, ['record' => $setting->getKey()])
+            ->fillForm([
+                'value' => [
+                    'general' => ['homeProductLimit' => 12],
+                    'tr' => [
+                        'homeFeaturedTitle' => 'E2E Ana Sayfa Ürünleri',
+                        'homeSeoTitle' => 'E2E Ana Sayfa SEO',
+                    ],
+                ],
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $fresh = $setting->fresh();
+
+        foreach (['homeFeaturedTitle', 'homeSeoTitle'] as $field) {
             foreach (config('storefront.translation.languages') as $locale) {
                 $this->assertSame($field.'-'.$locale, $fresh->value[$locale][$field]);
             }

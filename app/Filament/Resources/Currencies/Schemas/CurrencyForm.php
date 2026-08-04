@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Currencies\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class CurrencyForm
@@ -26,10 +25,11 @@ class CurrencyForm
                     ->options(['prefix' => 'Önde ($100)', 'suffix' => 'Arkada (100 TL)'])
                     ->default('suffix')
                     ->required(),
-                TextInput::make('sort_order')->label('Sıra')->numeric()->default(0),
-                Toggle::make('is_default')
-                    ->label('Varsayılan para birimi')
-                    ->helperText('Yalnızca bir para birimi varsayılan olabilir.'),
+                // Sıra otomatik: yeni para birimi sona eklenir, tabloda
+                // sürükle-bırakla düzenlenir. Elle input gerekmiyor.
+                //
+                // "Varsayılan" kaldırıldı: fiyat motoru USD tabanlı ve para
+                // birimini dile göre seçtiği için is_default hiç kullanılmıyordu.
             ]);
     }
 }

@@ -22,7 +22,7 @@ class OrderResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Siparişler';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 10;
 
     protected static ?string $modelLabel = 'sipariş';
 

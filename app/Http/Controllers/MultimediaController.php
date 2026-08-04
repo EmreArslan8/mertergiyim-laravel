@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Storefront;
+
 use App\Models\Media;
 use App\Models\MediaPost;
 use Illuminate\Support\Collection;
@@ -10,12 +12,13 @@ use Illuminate\View\View;
 
 class MultimediaController extends Controller
 {
-    public function __invoke(string $locale): View
+    public function __invoke(): View
     {
+        $locale = app()->getLocale();
         return view('storefront.multimedia', [
             'mediaPosts' => $this->mediaPosts(),
-            'canonicalPath' => '/'.$locale.'/multimedya',
-            'alternatePath' => fn (string $code) => '/'.$code.'/multimedya',
+            'canonicalPath' => Storefront::localePath($locale, '/multimedya'),
+            'alternatePath' => fn (string $code) => Storefront::localePath($code, '/multimedya'),
         ]);
     }
 

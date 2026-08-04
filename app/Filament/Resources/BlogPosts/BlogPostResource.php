@@ -31,7 +31,7 @@ class BlogPostResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Blog Sayfaları';
 
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 110;
 
     protected static ?string $modelLabel = 'blog yazısı';
 
@@ -40,13 +40,15 @@ class BlogPostResource extends ManagedResource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Blog yazısı')->schema([
+            // Tam sayfa Create/Edit'te Filament form kök gridini 2 kolon yapar;
+            // columnSpanFull olmadan Section yarım genişlikte kalıyordu.
+            Section::make('Blog yazısı')->columnSpanFull()->schema([
                 Multilingual::turkish('title', 'Başlık')
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn ($state, $set) => $set('slug', Str::slug((string) $state))),
                 TextInput::make('slug')->label('URL kısa adı')->required()->unique(ignoreRecord: true),
                 Multilingual::turkish('excerpt', 'Özet', long: true, required: false),
-                Multilingual::turkish('content', 'İçerik', long: true),
+                Multilingual::turkish('content', 'İçerik', rich: true),
                 StorageUpload::image('cover_image', 'site', 'blog')->label('Kapak görseli'),
                 DateTimePicker::make('published_at')->label('Yayın tarihi')->default(now()),
                 Toggle::make('active')->label('Yayında')->default(true),

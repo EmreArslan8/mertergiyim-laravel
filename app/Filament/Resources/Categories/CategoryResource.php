@@ -20,7 +20,7 @@ class CategoryResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Kategoriler';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 50;
 
     protected static ?string $modelLabel = 'kategori';
 

@@ -10,6 +10,8 @@ use App\Filament\Support\Multilingual;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use App\Services\ExchangeRateService;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -24,6 +26,12 @@ class OrderDetailPageTest extends TestCase
         parent::setUp();
 
         $this->actingAs(User::query()->firstOrFail());
+        Cache::put('exchange:try:usd-eur:fresh', [
+            'USD' => 0.04,
+            'EUR' => 0.037,
+            'source' => 'Test',
+            'date' => now()->toDateString(),
+        ]);
     }
 
     /**
@@ -32,7 +40,7 @@ class OrderDetailPageTest extends TestCase
     private function pricedProduct(): Product
     {
         $product = Product::query()->firstOrFail();
-        $product->forceFill(['price_try' => 250])->save();
+        $product->forceFill(['price_usd' => 10])->save();
 
         return $product->refresh();
     }
@@ -140,7 +148,7 @@ class OrderDetailPageTest extends TestCase
         $this->assertSame($existing->getKey(), $item->getKey());
         $this->assertSame($product->getKey(), $item->product_id);
         // Birim fiyat ürünün katalog fiyatı, satır toplamı adet × fiyat.
-        $expected = number_format((float) $product->price_try * 3, 2, '.', '');
+        $expected = number_format($this->tryPrice($product) * 3, 2, '.', '');
         $this->assertSame($expected, $item->line_total);
         // Sipariş toplamı da kalemlerden türetilir.
         $this->assertSame($expected, $order->total);
@@ -218,12 +226,20 @@ class OrderDetailPageTest extends TestCase
         $order = Order::query()->where('order_number', 'MG-TEST-CREATE')->sole();
         $item = $order->items->sole();
 
-        $expected = number_format((float) $product->price_try * 2, 2, '.', '');
+        $expected = number_format($this->tryPrice($product) * 2, 2, '.', '');
 
         $this->assertSame($product->getKey(), $item->product_id);
         $this->assertSame($expected, $item->line_total);
         // Toplam formda girilmiyor, kalemlerden türetiliyor.
         $this->assertSame($expected, $order->total);
+    }
+
+    private function tryPrice(Product $product): float
+    {
+        return (float) $product->priceForLocale(
+            'tr',
+            app(ExchangeRateService::class)->ratesFromTry(),
+        );
     }
 
     public function test_saving_the_detail_page_stores_changes(): void

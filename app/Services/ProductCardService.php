@@ -20,7 +20,7 @@ class ProductCardService
     public function make(iterable $products, string $locale): array
     {
         $currencies = $this->repository->currencies();
-        $rates = $locale === 'tr' ? null : rescue(
+        $rates = rescue(
             fn () => $this->exchangeRates->ratesFromTry(),
             report: true,
         );

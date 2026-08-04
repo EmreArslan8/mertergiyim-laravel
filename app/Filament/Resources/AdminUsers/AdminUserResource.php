@@ -28,7 +28,7 @@ class AdminUserResource extends Resource
 
     protected static ?string $navigationLabel = 'Admin Ayarları';
 
-    protected static ?int $navigationSort = 13;
+    protected static ?int $navigationSort = 160;
 
     protected static ?string $modelLabel = 'Yönetici';
 
@@ -54,7 +54,7 @@ class AdminUserResource extends Resource
                 Select::make('role')->label('Yetki')->options([
                     'super_admin' => 'Süper Yönetici',
                     'editor' => 'İçerik Editörü',
-                    'order_manager' => 'Sipariş Yetkilisi',
+                    'order_manager' => 'Satış Elemanı',
                 ])->default('editor')->required(),
                 Toggle::make('is_active')->label('Hesap aktif')->default(true),
             ]),
@@ -68,7 +68,7 @@ class AdminUserResource extends Resource
             TextColumn::make('email')->label('E-posta')->searchable(),
             TextColumn::make('role')->label('Yetki')->badge()->formatStateUsing(fn ($state) => match ($state) {
                 'super_admin' => 'Süper Yönetici',
-                'order_manager' => 'Sipariş Yetkilisi',
+                'order_manager' => 'Satış Elemanı',
                 default => 'İçerik Editörü',
             }),
             IconColumn::make('is_active')->label('Aktif')->boolean(),

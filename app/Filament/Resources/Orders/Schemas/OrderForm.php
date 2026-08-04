@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Models\Currency;
+use App\Services\OrderCodeService;
 use App\Support\OrderStatus;
 use App\Support\PhoneNumber;
 use Filament\Forms\Components\Repeater;
@@ -12,7 +13,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Str;
 
 /**
  * Yeni sipariş formu (panelden elle açılan siparişler).
@@ -67,11 +67,12 @@ class OrderForm
                                     ->label('Sipariş no')
                                     ->required()
                                     ->unique(ignoreRecord: true)
-                                    ->default(fn () => 'MG-'.now()->format('ymd').'-'.strtoupper(Str::random(4))),
+                                    ->default(fn () => app(OrderCodeService::class)->generate()['order_number']),
                                 TextInput::make('tracking_code')
                                     ->label('Müşteri takip kodu')
                                     ->helperText('Müşteri sipariş takibi sayfasında bu kodu kullanır.')
-                                    ->default(fn () => strtoupper(Str::random(8))),
+                                    ->unique(ignoreRecord: true)
+                                    ->default(fn () => app(OrderCodeService::class)->generate()['tracking_code']),
                                 Select::make('status')
                                     ->label('Durum')
                                     ->options(OrderStatus::labels())

@@ -33,7 +33,7 @@ class MediaResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Multimedya';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 100;
 
     protected static ?string $modelLabel = 'medya albümü';
 
@@ -44,7 +44,7 @@ class MediaResource extends ManagedResource
         return $schema->components([
             Section::make('Albüm bilgileri')->schema([
                 Multilingual::turkish('title', 'Başlık', required: false),
-                Multilingual::turkish('description', 'Açıklama', long: true, required: false),
+                Multilingual::turkish('description', 'Açıklama', required: false, rich: true),
                 TextInput::make('sort_order')->label('Sıra')->numeric()->default(0),
                 Toggle::make('active')->label('Aktif')->default(true),
             ]),

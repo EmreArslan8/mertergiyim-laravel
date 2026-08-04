@@ -1,11 +1,13 @@
 @php
+    use App\Support\Storefront;
+
     $metaTitle = data_get($messages, 'orderSuccess.title').' | '.$siteName;
 @endphp
 
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/commerce.css?v=20260731-7">
+    <link rel="stylesheet" href="/css/commerce.css?v=20260801-1">
 @endpush
 
 @section('content')
@@ -13,8 +15,10 @@
         <div class="success-mark" aria-hidden="true">✓</div>
         <span>{{ data_get($messages, 'orderSuccess.eyebrow') }}</span>
         <h1>{{ data_get($messages, 'orderSuccess.title') }}</h1>
-        <p>{{ trim((string) ($footerSettings['orderSuccessText'] ?? ''))
-            ?: data_get($messages, 'orderSuccess.text') }}</p>
+        <div class="order-success-copy">{!! \App\Support\Storefront::richText(
+            trim((string) ($footerSettings['orderSuccessText'] ?? '')) ?: data_get($messages, 'orderSuccess.text'),
+            $locale,
+        ) !!}</div>
 
         <section class="success-codes">
             <div>
@@ -29,8 +33,8 @@
 
         <p class="success-warning">{{ data_get($messages, 'orderSuccess.saveCode') }}</p>
         <div class="success-actions">
-            <a class="primary" href="/{{ $locale }}/siparis-takibi?q={{ urlencode($order->tracking_code) }}">{{ data_get($messages, 'orderSuccess.track') }}</a>
-            <a href="/{{ $locale }}">{{ data_get($messages, 'common.home') }}</a>
+            <a class="primary" href="{{ Storefront::localePath($locale, '/siparis-takibi') }}?q={{ urlencode($order->tracking_code) }}">{{ data_get($messages, 'orderSuccess.track') }}</a>
+            <a href="{{ Storefront::localePath($locale) }}">{{ data_get($messages, 'common.home') }}</a>
         </div>
     </main>
 @endsection

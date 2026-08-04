@@ -22,7 +22,7 @@ class HeroSlideResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Slider';
 
-    protected static ?int $navigationSort = 7;
+    protected static ?int $navigationSort = 90;
 
     protected static ?string $modelLabel = 'slider';
 

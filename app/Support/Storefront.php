@@ -14,16 +14,36 @@ class Storefront
     /**
      * Zengin editör alanlarında vitrine geçmesine izin verilen etiketler.
      */
-    private const RICH_TEXT_TAGS = ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li'];
+    private const RICH_TEXT_TAGS = [
+        'p', 'br', 'h2', 'h3', 'h4', 'strong', 'b', 'em', 'i', 'u', 's', 'del',
+        'sub', 'sup', 'mark', 'pre', 'code', 'blockquote', 'ul', 'ol', 'li',
+        'a', 'hr', 'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td',
+    ];
 
     /**
-     * Bilgilendirme sayfaları /{locale}/{slug} altında yaşıyor. Bu segmentler
-     * routes/web.php'de sabit rotalara ait, sayfa slug'ı olarak kullanılamaz.
+     * Bilgilendirme sayfaları varsayılan dilde /{slug}, diğer dillerde
+     * /{locale}/{slug} altında yaşar. Bu segmentler sabit rotalara aittir.
      */
     public const RESERVED_SLUGS = [
         'sepet', 'siparis-takibi', 'siparisler', 'siparis-basarili',
         'multimedya', 'iletisim', 'blog', 'product', 'kategori',
-        'sitemap.xml', 'robots.txt',
+        'banka-hesaplarimiz', 'sitemap.xml', 'robots.txt',
+    ];
+
+    /**
+     * Panelde seçilebilen sosyal medya platformları: anahtar => görünen ad.
+     * Anahtar, eski tekil ayar alanlarının ön eki ile aynı (instagramUrl gibi).
+     */
+    public const SOCIAL_PLATFORMS = [
+        'instagram' => 'Instagram',
+        'facebook' => 'Facebook',
+        'tiktok' => 'TikTok',
+        'youtube' => 'YouTube',
+        'linkedin' => 'LinkedIn',
+        'x' => 'X',
+        'pinterest' => 'Pinterest',
+        'whatsapp' => 'WhatsApp',
+        'telegram' => 'Telegram',
     ];
 
     public static function isReservedSlug(?string $slug): bool
@@ -61,11 +81,38 @@ class Storefront
     }
 
     /**
+     * Ürün adlarında yalnızca kelimelerin ilk harflerini büyütür.
+     *
+     * CSS `text-transform: capitalize` Türkçedeki i/İ dönüşümünü güvenilir
+     * yapmadığı için vitrinde dile duyarlı dönüşüm sunucu tarafında yapılır.
+     * Kelimelerin kalanına dokunulmaz; mevcut kısaltmalar korunur.
+     */
+    public static function titleCase(string $value, string $locale): string
+    {
+        return preg_replace_callback(
+            '/(^|[\s\p{Pd}\/&(\[])(\p{L})/u',
+            static function (array $match) use ($locale): string {
+                $letter = $match[2];
+                $upper = $locale === 'tr'
+                    ? match ($letter) {
+                        'i' => 'İ',
+                        'ı' => 'I',
+                        default => mb_strtoupper($letter, 'UTF-8'),
+                    }
+                : mb_strtoupper($letter, 'UTF-8');
+
+                return $match[1].$upper;
+            },
+            $value,
+        ) ?? $value;
+    }
+
+    /**
      * Panelde zengin editörle girilen alanlar (ürün açıklaması) için güvenli HTML.
      *
      * - Editör öncesi düz metin kayıtları satır sonlarıyla korunur.
-     * - Yalnızca izin verilen etiketler kalır, tüm attribute'lar (style, class,
-     *   onclick ...) atılır; böylece vitrin tasarımı ve güvenliği bozulmaz.
+     * - Yalnızca izin verilen etiketler kalır. Bağlantılarda güvenli href,
+     *   target ve rel dışında tüm attribute'lar atılır.
      */
     public static function richText(mixed $value, string $locale): string
     {
@@ -81,10 +128,85 @@ class Storefront
 
         $html = preg_replace('#<(script|style)\b[^>]*>.*?</\1\s*>#is', '', $raw) ?? '';
         $html = strip_tags($html, '<'.implode('><', self::RICH_TEXT_TAGS).'>');
-        // Açılış etiketlerinde attribute bırakma.
-        $html = preg_replace('#<\s*([a-z0-9]+)\b[^>]*?(/?)>#i', '<$1$2>', $html) ?? '';
+        $html = preg_replace_callback(
+            '#<\s*(/?)\s*([a-z0-9]+)\b([^>]*)>#i',
+            static function (array $matches): string {
+                $closing = $matches[1] === '/';
+                $tag = strtolower($matches[2]);
+
+                if ($closing) {
+                    return '</'.$tag.'>';
+                }
+
+                if ($tag === 'a') {
+                    return self::sanitizedAnchor($matches[3]);
+                }
+
+                return self::sanitizedRichTextTag($tag, $matches[3]);
+            },
+            $html
+        ) ?? '';
 
         return trim($html);
+    }
+
+    private static function sanitizedRichTextTag(string $tag, string $attributes): string
+    {
+        $safeAttributes = [];
+
+        if (in_array($tag, ['p', 'h2', 'h3', 'h4', 'blockquote', 'li', 'th', 'td'], true)
+            && preg_match('/\bstyle\s*=\s*(["\'])(.*?)\1/is', $attributes, $style)
+            && preg_match('/(?:^|;)\s*text-align\s*:\s*(left|center|right|justify|start|end)\s*(?:;|$)/i', $style[2], $alignment)) {
+            $safeAttributes[] = 'style="text-align: '.strtolower($alignment[1]).'"';
+        }
+
+        if (in_array($tag, ['th', 'td'], true)) {
+            foreach (['colspan', 'rowspan'] as $attribute) {
+                if (preg_match('/\b'.$attribute.'\s*=\s*(["\']?)(\d{1,2})\1/i', $attributes, $match)) {
+                    $safeAttributes[] = $attribute.'="'.max(1, min(20, (int) $match[2])).'"';
+                }
+            }
+        }
+
+        return '<'.$tag.($safeAttributes === [] ? '' : ' '.implode(' ', $safeAttributes)).'>';
+    }
+
+    private static function sanitizedAnchor(string $attributes): string
+    {
+        if (! preg_match('/\bhref\s*=\s*(["\'])(.*?)\1/is', $attributes, $hrefMatch)) {
+            return '<a>';
+        }
+
+        $href = html_entity_decode(trim($hrefMatch[2]), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        if (! self::isSafeRichTextHref($href)) {
+            return '<a>';
+        }
+
+        $anchor = '<a href="'.e($href).'"';
+
+        if (preg_match('/\btarget\s*=\s*(["\'])_blank\1/i', $attributes)) {
+            $anchor .= ' target="_blank" rel="noopener noreferrer"';
+        }
+
+        return $anchor.'>';
+    }
+
+    private static function isSafeRichTextHref(string $href): bool
+    {
+        if ($href === '' || preg_match('/[\x00-\x1F\x7F]/u', $href)) {
+            return false;
+        }
+
+        if (str_starts_with($href, '#')) {
+            return true;
+        }
+
+        if (str_starts_with($href, '/') && ! str_starts_with($href, '//')) {
+            return true;
+        }
+
+        return (bool) preg_match('#^(https?://|mailto:|tel:)#i', $href);
     }
 
     /**
@@ -98,10 +220,33 @@ class Storefront
             return '';
         }
 
-        $raw = preg_replace('#<(?:br|/p|/li|/ul|/ol)\s*/?>#i', ' ', $raw) ?? $raw;
+        $raw = preg_replace(
+            '#<(?:br|hr|/p|/h2|/h3|/h4|/blockquote|/li|/ul|/ol|/th|/td|/tr|/table)\s*/?>#i',
+            ' ',
+            $raw,
+        ) ?? $raw;
         $text = html_entity_decode(strip_tags($raw), ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
         return trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
+    }
+
+    /**
+     * Dil ön eki. Varsayılan dil kökte yaşar (/iletisim), diğerleri ön ekli
+     * (/en/iletisim). Varsayılan dil panelden değiştirilebilir.
+     */
+    public static function prefix(string $locale): string
+    {
+        return $locale === BrandSettings::defaultLocale() ? '' : '/'.$locale;
+    }
+
+    /**
+     * Dil ön eki + yol: localePath('en', '/iletisim') → "/en/iletisim".
+     */
+    public static function localePath(string $locale, string $path = ''): string
+    {
+        $path = $path === '/' ? '' : $path;
+
+        return self::prefix($locale).$path ?: '/';
     }
 
     /**
@@ -132,12 +277,12 @@ class Storefront
 
         $path = implode('/', $segments) ?: '/';
 
-        return '/'.$locale.($path === '/' ? '' : $path).$suffix;
+        return self::localePath($locale, $path).$suffix;
     }
 
     public static function productHref(string $locale, string $slug): string
     {
-        return '/'.$locale.'/product/'.rawurlencode($slug);
+        return self::localePath($locale, '/product/'.rawurlencode($slug));
     }
 
     /**
@@ -175,6 +320,40 @@ class Storefront
         return $base !== ''
             ? $base.'/'.$bucket.'/'.ltrim($path, '/')
             : '';
+    }
+
+    /**
+     * Yerel bir /storage adresinin gösterdiği dosyanın ham içeriğini döndürür.
+     *
+     * Görsellerin url()'i yerelde göreli bir /storage yolu üretir; bunu HTTP ile
+     * çekmek gereksiz (sunucu kendine istek atar) ve alwaysdata'da çalışmaz.
+     * Diskten okumak isteyen (ör. Gemini'ye görsel gönderen ad üretici) burayı
+     * kullanır: adresin /storage önekini atıp public_media diskinden okur. Uzak
+     * (http) adresler ve diskte olmayan dosyalar için null döner.
+     */
+    public static function localStorageContents(?string $url): ?string
+    {
+        if (! $url || str_starts_with($url, 'http')) {
+            return null;
+        }
+
+        // public_media diskinin herkese açık öneki (varsayılan /storage).
+        $prefix = trim((string) config('filesystems.disks.public_media.url', '/storage'), '/');
+        $relative = ltrim($url, '/');
+
+        if ($prefix !== '' && str_starts_with($relative, $prefix.'/')) {
+            $relative = substr($relative, strlen($prefix) + 1);
+        }
+
+        foreach (['public_media', 'local_supabase_stub'] as $diskName) {
+            $disk = Storage::disk($diskName);
+
+            if ($disk->exists($relative)) {
+                return $disk->get($relative);
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -235,6 +414,34 @@ class Storefront
         return preg_match($pattern, $url, $matches) ? 'https://www.youtube.com/embed/'.$matches[1] : null;
     }
 
+    /**
+     * Panelde sıralanan sosyal medya bağlantıları (value.general.socialLinks).
+     *
+     * @return array<int, array{platform: string, label: string, url: string}>
+     */
+    public static function socialLinks(mixed $settings): array
+    {
+        $links = [];
+
+        foreach ((array) (((array) $settings)['socialLinks'] ?? []) as $item) {
+            $item = (array) $item;
+            $url = trim((string) ($item['url'] ?? ''));
+            $platform = (string) ($item['platform'] ?? '');
+
+            if ($url === '') {
+                continue;
+            }
+
+            $links[] = [
+                'platform' => $platform,
+                'label' => trim((string) ($item['label'] ?? '')) ?: (self::SOCIAL_PLATFORMS[$platform] ?? $platform),
+                'url' => $url,
+            ];
+        }
+
+        return $links;
+    }
+
     public static function isCartLink(mixed $link): bool
     {
         $key = $link->link_key ?? '';
@@ -248,12 +455,12 @@ class Storefront
         $key = mb_strtolower((string) ($link->link_key ?? ''), 'UTF-8');
 
         return match ($key) {
-            'cart', 'sepet' => '/'.$locale.'/sepet',
-            'tracking', 'siparis-takibi' => '/'.$locale.'/siparis-takibi',
-            'categories', 'kategori' => '/'.$locale.'/kategori',
-            'media', 'multimedia', 'multimedya' => '/'.$locale.'/multimedya',
-            'contact', 'iletisim' => '/'.$locale.'/iletisim',
-            'blog' => '/'.$locale.'/blog',
+            'cart', 'sepet' => self::localePath($locale, '/sepet'),
+            'tracking', 'siparis-takibi' => self::localePath($locale, '/siparis-takibi'),
+            'categories', 'kategori' => self::localePath($locale, '/kategori'),
+            'media', 'multimedia', 'multimedya' => self::localePath($locale, '/multimedya'),
+            'contact', 'iletisim' => self::localePath($locale, '/iletisim'),
+            'blog' => self::localePath($locale, '/blog'),
             default => self::href($link->url ?? '', $locale),
         };
     }
@@ -309,5 +516,16 @@ class Storefront
         return $currency['position'] === 'prefix'
             ? $currency['symbol'].$amount
             : $amount.' '.$currency['symbol'];
+    }
+
+    /**
+     * IBAN'ı okunur biçime getirir: boşlukları temizler, büyük harfe çevirir,
+     * 4'erli gruplar hâlinde ayırır. "TR760004..." → "TR76 0004 0060 ...".
+     */
+    public static function formatIban(?string $iban): string
+    {
+        $clean = strtoupper(preg_replace('/\s+/', '', (string) $iban));
+
+        return trim(chunk_split($clean, 4, ' '));
     }
 }

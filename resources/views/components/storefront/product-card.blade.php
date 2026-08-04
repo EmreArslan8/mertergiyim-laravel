@@ -13,7 +13,7 @@
      */
     $product = $card['product'];
     $href = Storefront::productHref($locale, $product->slug);
-    $name = Storefront::text($product->name, $locale);
+    $name = Storefront::titleCase(Storefront::text($product->name, $locale), $locale);
     $images = $card['images'] ?? [];
 
     $whatsappNumber = $siteSettings['whatsappNumber'] ?? config('storefront.whatsapp_number');

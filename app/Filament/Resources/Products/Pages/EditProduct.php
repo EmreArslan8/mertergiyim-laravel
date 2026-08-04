@@ -18,7 +18,8 @@ class EditProduct extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->modalDescription('Bu ürünü silerseniz adı yeniden kullanılabilir hâle gelir ve aynı ürün ikinci kez girilebilir. Kalıcı kayıtlarda silmek yerine "Yayında" seçeneğini kapatmanız önerilir.'),
         ];
     }
 

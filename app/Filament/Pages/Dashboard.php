@@ -8,6 +8,7 @@ use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Resources\ContactMessages\ContactMessageResource;
 use App\Filament\Resources\ContentPages\ContentPageResource;
 use App\Filament\Resources\HeroSlides\HeroSlideResource;
+use App\Filament\Resources\Homepage\HomepageResource;
 use App\Filament\Resources\Media\MediaResource;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\Products\ProductResource;
@@ -122,6 +123,11 @@ class Dashboard extends BaseDashboard
                 ] : null,
             ])),
             'shortcuts' => array_values(array_filter([
+                HomepageResource::canAccess() ? [
+                    'label' => 'Ana sayfa yönetimi',
+                    'icon' => 'heroicon-o-home',
+                    'url' => HomepageResource::getNavigationUrl(),
+                ] : null,
                 ContentPageResource::canAccess() ? [
                     'label' => 'Bilgilendirme sayfaları',
                     'icon' => 'heroicon-o-document-text',

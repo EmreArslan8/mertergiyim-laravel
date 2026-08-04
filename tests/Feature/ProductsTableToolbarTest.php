@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Filament\Resources\Products\Pages\ListProducts;
+use App\Models\Product;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -25,7 +27,10 @@ class ProductsTableToolbarTest extends TestCase
             ->assertOk()
             ->assertSee('Kategori')
             ->assertSee('Yayın durumu')
-            ->assertSee('Sıralama');
+            ->assertSee('Sıralama')
+            // Buton etiketi tek kelime; "Sıralama" filtresiyle karışmasın diye
+            // butonun kendi Livewire eylemi aranıyor.
+            ->assertSee('toggleTableReordering', escape: false);
     }
 
     public function test_search_works_on_the_current_database_driver(): void
@@ -62,5 +67,21 @@ class ProductsTableToolbarTest extends TestCase
 
         // Seed verisinde ürün kodu ekleme sırasıyla artıyor: en eski = küçük kod.
         $this->assertLessThan($newest[0], $oldest[0], 'En eski seçimi en yeniyi getirdi.');
+    }
+
+    public function test_reordering_products_updates_storefront_order_and_clears_home_cache(): void
+    {
+        $ids = Product::query()->orderBy('sort_order')->pluck('id')->all();
+        $reversed = array_reverse($ids);
+        Cache::put('storefront:home', ['stale' => true], 600);
+
+        Livewire::test(ListProducts::class)
+            ->call('reorderTable', $reversed);
+
+        $this->assertFalse(Cache::has('storefront:home'));
+        $this->assertSame(
+            $reversed,
+            Product::query()->orderBy('sort_order')->pluck('id')->all(),
+        );
     }
 }

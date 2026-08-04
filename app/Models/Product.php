@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasUuidKey;
+use App\Services\ProductCodeService;
+use App\Support\ProductName;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,7 +26,9 @@ class Product extends Model
         'price_eur' => 'decimal:2',
         'pack_size' => 'integer',
         'pack_contents' => 'array',
+        'sort_order' => 'integer',
         'active' => 'boolean',
+        'show_on_home' => 'boolean',
     ];
 
     protected static function booted(): void
@@ -36,22 +40,45 @@ class Product extends Model
             $product->images()->get()->each->delete();
         });
 
+        static::creating(function (Product $product): void {
+            // Kod sistem tarafından atanır; panelde elle girilmez.
+            if (blank($product->code)) {
+                $product->code = app(ProductCodeService::class)->next();
+            } else {
+                app(ProductCodeService::class)->reserve((string) $product->code);
+            }
+
+            if ((int) $product->sort_order < 1) {
+                $product->sort_order = ((int) Product::query()->max('sort_order')) + 1;
+            }
+        });
+
         static::saving(function (Product $product): void {
-            $product->price = $product->price_try;
-            $product->currency = 'TRY';
+            $product->price = $product->price_usd;
+            $product->currency = 'USD';
+
+            // Mükerrer ad kontrolünün dayandığı anahtar; panelden de, içe
+            // aktarmadan da gelse burada üretilir. Ad değişince link yenilenir.
+            $product->name_key = ProductName::key($product->name);
+
+            if ($product->name_key !== '' && $product->slug !== $product->name_key) {
+                $product->slug = $product->name_key;
+            }
         });
     }
 
     public function priceForLocale(string $locale, ?array $rates = null): mixed
     {
+        $usd = (float) $this->price_usd;
+
         return match ($locale) {
-            'tr' => $this->price_try ?? $this->price,
-            'ar', 'fa' => isset($rates['USD'])
-                ? round((float) ($this->price_try ?? $this->price) * $rates['USD'], 2)
-                : ($this->price_usd ?? $this->price),
-            default => isset($rates['EUR'])
-                ? round((float) ($this->price_try ?? $this->price) * $rates['EUR'], 2)
-                : ($this->price_eur ?? $this->price),
+            'ar', 'fa' => $usd,
+            'tr' => isset($rates['USD']) && (float) $rates['USD'] > 0
+                ? round($usd / (float) $rates['USD'], 2)
+                : $usd,
+            default => isset($rates['USD'], $rates['EUR']) && (float) $rates['USD'] > 0
+                ? round($usd * ((float) $rates['EUR'] / (float) $rates['USD']), 2)
+                : $usd,
         };
     }
 

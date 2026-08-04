@@ -6,7 +6,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/content.css?v=20260731-6">
+    <link rel="stylesheet" href="/css/content.css?v=20260802-1">
 @endpush
 
 @section('content')
@@ -27,14 +27,14 @@
                 </span>
                 <h2>{{ data_get($messages, 'blog.empty') }}</h2>
                 <p>{{ $messages['blog']['emptyDescription'] ?? '' }}</p>
-                <a class="editorial-empty-action" href="/{{ $locale }}">
+                <a class="editorial-empty-action" href="{{ Storefront::localePath($locale) }}">
                     {{ data_get($messages, 'blog.backHome') }}
                 </a>
             </section>
         @endif
         <section class="editorial-grid">
             @foreach ($posts as $post)
-                <a class="editorial-tile" href="/{{ $locale }}/blog/{{ $post->slug }}">
+                <a class="editorial-tile" href="{{ Storefront::localePath($locale, '/blog/'.$post->slug) }}">
                     @if ($post->cover_image)
                         <img src="{{ Storefront::storageUrl('site', $post->cover_image) }}" alt="">
                     @endif

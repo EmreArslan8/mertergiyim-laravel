@@ -9,7 +9,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/content.css?v=20260731-6">
+    <link rel="stylesheet" href="/css/content.css?v=20260802-1">
 @endpush
 
 @section('content')
@@ -20,7 +20,7 @@
             @if ($ogImage)
                 <img class="editorial-cover" src="{{ $ogImage }}" alt="{{ $title }}">
             @endif
-            <div class="editorial-copy">{!! nl2br(e(Storefront::text($post->content, $locale))) !!}</div>
+            <div class="editorial-copy">{!! Storefront::richText($post->content, $locale) !!}</div>
         </article>
     </main>
 @endsection

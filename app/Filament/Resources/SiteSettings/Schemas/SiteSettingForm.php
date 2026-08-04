@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources\SiteSettings\Schemas;
 
+use App\Filament\Support\Multilingual;
 use App\Filament\Support\StorageUpload;
+use App\Support\Storefront;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -10,6 +13,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class SiteSettingForm
@@ -99,9 +103,8 @@ class SiteSettingForm
                                         TextInput::make('value.tr.maintenanceTitle')
                                             ->label(self::FIELDS['maintenanceTitle'].' (Türkçe)')
                                             ->placeholder('Kısa bir bakımdayız'),
-                                        Textarea::make('value.tr.maintenanceMessage')
-                                            ->label(self::FIELDS['maintenanceMessage'].' (Türkçe)')
-                                            ->rows(2),
+                                        Multilingual::richEditor('value.tr.maintenanceMessage', self::FIELDS['maintenanceMessage'].' (Türkçe)')
+                                            ->columnSpanFull(),
                                         TextInput::make('value.tr.footerInfoTitle')
                                             ->label(self::FIELDS['footerInfoTitle'].' (Türkçe)'),
                                         Textarea::make('value.tr.footerAddress')
@@ -127,18 +130,23 @@ class SiteSettingForm
                                             ->label('Site logosu')
                                             ->imageEditor()
                                             ->helperText('Boş bırakılırsa site adı metin olarak gösterilir.'),
+                                        // Kayıtlı görsel, yükleme alanının JS
+                                        // önizlemesi gelene kadar boş beklemesin
+                                        // diye doğrudan basılır.
+                                        StorageUpload::preview('value.general.siteLogo', 'site', 'Mevcut logo'),
                                         StorageUpload::image('value.general.favicon', 'site', 'branding')
                                             ->label('Tarayıcı simgesi (favicon)')
                                             ->imageEditor()
                                             ->helperText('Kare bir görsel kullanın. Boşsa site logosu kullanılır.'),
+                                        StorageUpload::preview('value.general.favicon', 'site', 'Mevcut favicon'),
                                         StorageUpload::image('value.general.socialShareImage', 'site', 'branding')
                                             ->label('Varsayılan paylaşım görseli')
                                             ->imageEditor()
                                             ->helperText('Önerilen ölçü: 1200 × 630 px.')
                                             ->columnSpanFull(),
-                                        Textarea::make('value.tr.footerDescription')
-                                            ->label(self::FIELDS['footerDescription'].' (Türkçe)')
-                                            ->rows(3)
+                                        StorageUpload::preview('value.general.socialShareImage', 'site', 'Mevcut paylaşım görseli')
+                                            ->columnSpanFull(),
+                                        Multilingual::richEditor('value.tr.footerDescription', self::FIELDS['footerDescription'].' (Türkçe)')
                                             ->columnSpanFull(),
                                         TextInput::make('value.tr.copyright')
                                             ->label(self::FIELDS['copyright'].' (Türkçe)')
@@ -173,12 +181,7 @@ class SiteSettingForm
                                             ->label('Fiyatlara KDV dahil')
                                             ->formatStateUsing(fn ($state): bool => $state === null ? true : (bool) $state)
                                             ->default(true),
-                                        Toggle::make('value.general.allowOutOfStockOrders')
-                                            ->label('Stok bitince siparişe izin ver')
-                                            ->default(false),
-                                        Textarea::make('value.tr.orderSuccessText')
-                                            ->label(self::FIELDS['orderSuccessText'].' (Türkçe)')
-                                            ->rows(3)
+                                        Multilingual::richEditor('value.tr.orderSuccessText', self::FIELDS['orderSuccessText'].' (Türkçe)')
                                             ->columnSpanFull(),
                                     ]),
                             ]),
@@ -227,9 +230,8 @@ class SiteSettingForm
                                             ->placeholder('info@magaza.com'),
                                         TextInput::make('value.tr.contactTitle')
                                             ->label(self::FIELDS['contactTitle'].' (Türkçe)'),
-                                        Textarea::make('value.tr.contactDescription')
-                                            ->label(self::FIELDS['contactDescription'].' (Türkçe)')
-                                            ->rows(3),
+                                        Multilingual::richEditor('value.tr.contactDescription', self::FIELDS['contactDescription'].' (Türkçe)')
+                                            ->columnSpanFull(),
                                         Textarea::make('value.tr.contactAddress')
                                             ->label(self::FIELDS['contactAddress'].' (Türkçe)')
                                             ->rows(3)
@@ -246,28 +248,34 @@ class SiteSettingForm
                         Tab::make('Sosyal')
                             ->schema([
                                 Section::make('Sosyal medya')
-                                    ->columns(['default' => 1, 'md' => 2])
+                                    ->description('Sıralamayı soldaki tutamaçtan sürükleyerek değiştirin; sitede bu sırayla görünür.')
                                     ->schema([
-                                        TextInput::make('value.general.instagramUrl')
-                                            ->label('Instagram bağlantısı')
-                                            ->url()
-                                            ->placeholder('https://instagram.com/magaza'),
-                                        TextInput::make('value.general.facebookUrl')
-                                            ->label('Facebook bağlantısı')
-                                            ->url()
-                                            ->placeholder('https://facebook.com/magaza'),
-                                        TextInput::make('value.general.tiktokUrl')
-                                            ->label('TikTok bağlantısı')
-                                            ->url()
-                                            ->placeholder('https://tiktok.com/@magaza'),
-                                        TextInput::make('value.general.youtubeUrl')
-                                            ->label('YouTube bağlantısı')
-                                            ->url()
-                                            ->placeholder('https://youtube.com/@magaza'),
-                                        TextInput::make('value.general.linkedinUrl')
-                                            ->label('LinkedIn bağlantısı')
-                                            ->url()
-                                            ->placeholder('https://linkedin.com/company/magaza'),
+                                        Repeater::make('value.general.socialLinks')
+                                            ->label('Bağlantılar')
+                                            ->hiddenLabel()
+                                            ->addActionLabel('Sosyal medya ekle')
+                                            ->reorderable()
+                                            ->reorderableWithDragAndDrop()
+                                            ->collapsible()
+                                            ->itemLabel(fn (array $state): ?string => trim((string) ($state['label'] ?? ''))
+                                                ?: (Storefront::SOCIAL_PLATFORMS[$state['platform'] ?? ''] ?? null))
+                                            ->columns(['default' => 1, 'md' => 3])
+                                            ->schema([
+                                                Select::make('platform')
+                                                    ->label('Platform')
+                                                    ->options(Storefront::SOCIAL_PLATFORMS)
+                                                    ->required()
+                                                    ->live(),
+                                                TextInput::make('label')
+                                                    ->label('Görünen ad')
+                                                    ->placeholder(fn (Get $get): string => Storefront::SOCIAL_PLATFORMS[$get('platform')] ?? '')
+                                                    ->helperText('Boş bırakırsanız platform adı kullanılır.'),
+                                                TextInput::make('url')
+                                                    ->label('Bağlantı')
+                                                    ->url()
+                                                    ->required()
+                                                    ->placeholder('https://instagram.com/magaza'),
+                                            ]),
                                     ]),
                             ]),
 

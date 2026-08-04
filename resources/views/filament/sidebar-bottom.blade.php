@@ -10,9 +10,4 @@
             Çıkış
         </button>
     </form>
-
-    <p class="merter-sidebar-copy">
-        <span>&copy; {{ now()->year }} {{ \App\Support\BrandSettings::name('tr') }}</span>
-        <b>v1.0</b>
-    </p>
 </div>

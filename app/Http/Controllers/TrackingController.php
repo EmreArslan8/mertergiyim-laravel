@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\DictionaryService;
 use App\Services\StorefrontRepository;
+use App\Support\Storefront;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -14,8 +15,9 @@ class TrackingController extends Controller
 {
     public function __construct(private StorefrontRepository $repository) {}
 
-    public function __invoke(Request $request, string $locale): View
+    public function __invoke(Request $request): View
     {
+        $locale = app()->getLocale();
         $query = trim((string) $request->query('q', ''));
         $order = null;
         $error = '';
@@ -35,8 +37,8 @@ class TrackingController extends Controller
             'query' => $query,
             'order' => $order,
             'error' => $error,
-            'canonicalPath' => '/'.$locale.'/siparis-takibi',
-            'alternatePath' => fn (string $code) => '/'.$code.'/siparis-takibi',
+            'canonicalPath' => Storefront::localePath($locale, '/siparis-takibi'),
+            'alternatePath' => fn (string $code) => Storefront::localePath($code, '/siparis-takibi'),
         ]);
     }
 

@@ -7,6 +7,7 @@ use App\Filament\Resources\ContentPages\Pages\EditContentPage;
 use App\Filament\Resources\ContentPages\Pages\ListContentPages;
 use App\Filament\Resources\ManagedResource;
 use App\Filament\Support\Multilingual;
+use App\Filament\Support\Reorderable;
 use App\Models\ContentPage;
 use App\Support\Storefront;
 use BackedEnum;
@@ -30,7 +31,7 @@ class ContentPageResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Bilgilendirme Sayfaları';
 
-    protected static ?int $navigationSort = 9;
+    protected static ?int $navigationSort = 120;
 
     protected static ?string $modelLabel = 'bilgilendirme sayfası';
 
@@ -41,7 +42,11 @@ class ContentPageResource extends ManagedResource
         return $schema->components([
             Section::make('Sayfa')
                 ->description('Metinleri Türkçe girin; diğer 9 dil kaydederken otomatik hazırlanır.')
-                // Kısa alanlar yan yana: tek kolonda pencerenin yarısı boş kalıyordu.
+                // Tam sayfa Create/Edit'te Filament form kök gridini 2 kolon yapar
+                // (EditRecord::configureForm). Section varsayılan olarak tek kolon
+                // kaplayıp kart yarım genişlikte kalıyordu; kartı tam genişlik yapıyoruz.
+                ->columnSpanFull()
+                // Kısa alanlar kart içinde yan yana dursun.
                 ->columns(2)
                 ->schema([
                     Multilingual::turkish('title', 'Başlık')
@@ -50,7 +55,7 @@ class ContentPageResource extends ManagedResource
                         ->afterStateUpdated(fn ($state, $set) => $set('slug', Str::slug((string) $state))),
                     TextInput::make('slug')
                         ->label('URL kısa adı')
-                        ->helperText('Sayfa /tr/{kısa-ad} adresinde yayınlanır.')
+                        ->helperText('Türkçe sayfa /{kısa-ad}, diğer diller /en/{kısa-ad} benzeri adreslerde yayınlanır.')
                         ->columnSpan(1)
                         ->required()
                         ->unique(ignoreRecord: true)
@@ -59,11 +64,12 @@ class ContentPageResource extends ManagedResource
                                 $fail('Bu kısa ad sitenin sabit sayfalarına ait, başka bir ad seçin.');
                             }
                         }),
-                    Multilingual::turkish('content', 'İçerik', long: true),
+                    Multilingual::turkish('content', 'İçerik', rich: true),
                     Multilingual::turkish('seo_title', 'SEO başlığı', required: false),
                     Multilingual::turkish('seo_description', 'SEO açıklaması', long: true, required: false),
-                    TextInput::make('sort_order')->label('Sıra')->numeric()->default(0)->columnSpan(1),
-                    Toggle::make('active')->label('Yayında')->default(true)->columnSpan(1),
+                    // Sıra otomatik: yeni sayfa sona eklenir, tabloda "Manuel
+                    // sırayı düzenle" ile sürükle-bırakla değiştirilir.
+                    Toggle::make('active')->label('Yayında')->default(true)->columnSpanFull(),
                 ]),
         ]);
     }
@@ -73,6 +79,8 @@ class ContentPageResource extends ManagedResource
         return $table
             ->stackedOnMobile()
             ->defaultSort('sort_order')
+            ->reorderable('sort_order')
+            ->reorderRecordsTriggerAction(Reorderable::triggerAction())
             ->columns([
                 TextColumn::make('title')->label('Başlık')->getStateUsing(fn ($record) => Multilingual::tr($record->title))->searchable(),
                 TextColumn::make('slug')->label('URL')->color('gray'),

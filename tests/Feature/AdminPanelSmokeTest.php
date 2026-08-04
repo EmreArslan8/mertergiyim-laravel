@@ -32,6 +32,7 @@ class AdminPanelSmokeTest extends TestCase
             ->assertSee('Yönetim özeti')
             ->assertSee('Yeni ürün')
             ->assertSee('Kısayollar')
+            ->assertSee('Ana Sayfa Yönetimi')
             ->assertDontSee('Çeviri Kullanımı')
             ->assertDontSee('Siteyi görüntüle');
     }
@@ -63,6 +64,7 @@ class AdminPanelSmokeTest extends TestCase
             '/admin/languages',
             '/admin/hero-slides',
             '/admin/hero-slides/create',
+            '/admin/homepage/storefront/edit',
             '/admin/site-links',
             '/admin/site-settings',
             '/admin/orders',
@@ -73,6 +75,7 @@ class AdminPanelSmokeTest extends TestCase
             '/admin/blog-posts/create',
             '/admin/media',
             '/admin/media/create',
+            '/admin/telegram-channel-products',
             '/admin/admin-users',
             '/admin/admin-users/create',
         ]);
@@ -96,6 +99,7 @@ class AdminPanelSmokeTest extends TestCase
             ($id = BlogPost::query()->value('id')) ? '/admin/blog-posts/'.$id.'/edit' : null,
             ($id = MediaPost::query()->value('id')) ? '/admin/media/'.$id.'/edit' : null,
             ($key = SiteSetting::query()->value('key')) ? '/admin/site-settings/'.$key.'/edit' : null,
+            ($key = SiteSetting::query()->value('key')) ? '/admin/homepage/'.$key.'/edit' : null,
             ($id = User::query()->value('id')) ? '/admin/admin-users/'.$id.'/edit' : null,
         ]);
 
@@ -108,7 +112,7 @@ class AdminPanelSmokeTest extends TestCase
 
     public function test_storefront_still_renders(): void
     {
-        foreach (['/tr', '/ar', '/tr/siparis-takibi'] as $path) {
+        foreach (['/', '/ar', '/siparis-takibi'] as $path) {
             $this->get($path)->assertOk();
         }
     }

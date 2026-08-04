@@ -20,6 +20,9 @@ return [
         // kurulumunda istenirse env üzerinden products/site yapılabilir.
         'products' => env('STOREFRONT_PRODUCTS_DIRECTORY', 'product-images'),
         'site' => env('STOREFRONT_SITE_DIRECTORY', 'site-media'),
+        // Telegram kanallarından indirilen ham ürün görselleri; kataloğa
+        // aktarılana kadar products klasörüne karışmasınlar diye ayrı.
+        'telegram' => env('STOREFRONT_TELEGRAM_DIRECTORY', 'telegram-images'),
     ],
 
     // Görsel yoksa kullanılacak yer tutucu (boş bırakılırsa görsel basılmaz).
@@ -37,6 +40,27 @@ return [
         // Mesajın gideceği chat id (kişi veya grup). Grupta '-100...' ile başlar.
         // Boşsa panelden girilen "Sipariş bildirimi Telegram Chat ID" kullanılır.
         'chat_id' => env('TELEGRAM_CHAT_ID'),
+    ],
+
+    /*
+    |----------------------------------------------------------------------
+    | Telegram istemcisi (ürün çekimi — MTProto)
+    |----------------------------------------------------------------------
+    |
+    | api_id/api_hash Telegram'da KULLANICIYI değil UYGULAMAYI temsil eder:
+    | tek bir kimlik altında farklı numaralar giriş yapabilir. Bu yüzden
+    | anahtarlar burada, kurulum genelinde tanımlanır; panele numarasını
+    | giren kişinin my.telegram.org'a uğraması gerekmez, yalnızca telefon
+    | numarasını yazıp gelen kodu girer.
+    |
+    | Kurulum: my.telegram.org → API development tools → uygulama oluştur.
+    | Ayrı bir kimlikle çalışması gereken hesap olursa panelde kayıt bazında
+    | girilen değer buradakini geçersiz kılar.
+    |
+    */
+    'telegram_client' => [
+        'api_id' => env('TELEGRAM_API_ID'),
+        'api_hash' => env('TELEGRAM_API_HASH'),
     ],
 
     'site_url' => env('STOREFRONT_SITE_URL', env('APP_URL', 'http://localhost')),

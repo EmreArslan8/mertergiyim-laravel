@@ -80,7 +80,7 @@ class AutoTranslateOnSaveTest extends TestCase
             'price_usd' => 1,
             'price_eur' => 1,
             'pack_size' => 1,
-            'stock_status' => 'in_stock',
+            'stock_status' => true,
             'active' => false,
         ]);
         $this->product->images()->create([
@@ -132,46 +132,59 @@ class AutoTranslateOnSaveTest extends TestCase
                 ]);
             $mock->shouldReceive('translateFields')
                 ->once()
-                ->with(['alt' => 'Yeni ürün görseli'])
+                ->with([
+                    'alt' => 'Yeni ürün görseli',
+                    'alt_2' => 'Yeni ürün arka görseli',
+                ])
                 ->andReturn([
                     'alt' => array_combine($languages, array_map(fn ($lang) => 'alt-'.$lang, $languages)),
+                    'alt_2' => array_combine($languages, array_map(fn ($lang) => 'alt-2-'.$lang, $languages)),
                 ]);
         });
 
         Livewire::test(CreateProduct::class)
             ->fillForm([
-                'code' => 'PHPUNIT-'.$suffix,
-                'slug' => 'phpunit-'.$suffix,
                 'name' => ['tr' => 'Yeni Ürün'],
                 'description' => ['tr' => 'Yeni açıklama'],
-                'price_try' => 100,
+                'price_usd' => 100,
                 'pack_size' => 1,
                 'category_id' => $this->category->id,
-                'stock_status' => 'in_stock',
+                'stock_status' => true,
                 'active' => false,
-                'images' => [[
-                    'storage_path' => [UploadedFile::fake()->image('phpunit-product.jpg', 800, 1000)],
-                    'alt' => ['tr' => 'Yeni ürün görseli'],
-                    'is_primary' => true,
-                    'sort_order' => 0,
-                ]],
+                'images' => [
+                    [
+                        'storage_path' => [UploadedFile::fake()->image('phpunit-product.jpg', 800, 1000)],
+                        'alt' => ['tr' => 'Yeni ürün görseli'],
+                        'is_primary' => true,
+                        'sort_order' => 0,
+                    ],
+                    [
+                        'storage_path' => [UploadedFile::fake()->image('phpunit-product-back.jpg', 800, 1000)],
+                        'alt' => ['tr' => 'Yeni ürün arka görseli'],
+                        'is_primary' => false,
+                        'sort_order' => 1,
+                    ],
+                ],
                 'variant_size_ids' => [$this->size->id],
                 'variant_color_ids' => [$this->color->id],
             ])
             ->call('create')
             ->assertHasNoFormErrors();
 
-        $created = Product::query()->where('code', 'PHPUNIT-'.$suffix)->firstOrFail();
+        // Kodu sistem atar; ürün adından bulunur.
+        $created = Product::query()->where('name_key', 'yeni-urun')->firstOrFail();
 
         $this->assertCount(10, $created->name);
         $this->assertSame('Yeni Ürün', $created->name['tr']);
         $this->assertSame('name-en', $created->name['en']);
         $this->assertSame('desc-ar', $created->description['ar']);
 
-        $imageAlt = $created->images()->firstOrFail()->alt;
+        $this->assertCount(2, $created->images);
+        $imageAlt = $created->images[0]->alt;
         $this->assertCount(10, $imageAlt);
         $this->assertSame('Yeni ürün görseli', $imageAlt['tr']);
         $this->assertSame('alt-de', $imageAlt['de']);
+        $this->assertSame('alt-2-en', $created->images[1]->alt['en']);
     }
 
     public function test_it_does_not_translate_when_turkish_text_is_unchanged(): void
@@ -179,16 +192,39 @@ class AutoTranslateOnSaveTest extends TestCase
         $this->mock(TranslateService::class, fn ($mock) => $mock->shouldNotReceive('translateFields'));
 
         Livewire::test(EditProduct::class, ['record' => $this->product->getKey()])
-            ->fillForm(['price_try' => 42])
+            ->fillForm(['price_usd' => 42])
             ->call('save')
             ->assertHasNoFormErrors();
 
         $fresh = $this->product->fresh();
 
-        $this->assertSame('42.00', (string) $fresh->price);
+        $this->assertSame('42.00', (string) $fresh->price_usd);
+        $this->assertSame('USD', $fresh->currency);
         $this->assertSame('Test Ürün', $fresh->name['tr']);
         $this->assertSame('Test Product', $fresh->name['en']);
         $this->assertSame('Test Beschreibung', $fresh->description['de']);
+    }
+
+    public function test_image_alt_translation_failure_does_not_block_the_record(): void
+    {
+        $this->mock(TranslateService::class, function ($mock) {
+            $mock->shouldReceive('translateFields')
+                ->once()
+                ->with(['alt' => 'Yeni görsel'])
+                ->andThrow(new RuntimeException('Gemini geçici olarak kullanılamıyor.'));
+        });
+
+        $component = Livewire::test(EditProduct::class, ['record' => $this->product->getKey()])
+            ->set('data.images', [
+                ['alt' => ['tr' => 'Yeni görsel']],
+            ]);
+
+        $result = $component->instance()->fillAutomaticImageAltTranslations(
+            ['alt' => ['tr' => 'Yeni görsel']],
+            null,
+        );
+
+        $this->assertSame(['tr' => 'Yeni görsel'], $result['alt']);
     }
 
     public function test_it_translates_changed_turkish_text_into_all_locales(): void
@@ -258,7 +294,7 @@ class AutoTranslateOnSaveTest extends TestCase
         }
     }
 
-    public function test_it_saves_turkish_and_warns_when_translation_fails(): void
+    public function test_it_rolls_back_and_warns_when_translation_fails(): void
     {
         $this->mock(TranslateService::class, function ($mock) {
             $mock->shouldReceive('translateFields')->once()->andThrow(new RuntimeException('Gemini patladı.'));
@@ -268,12 +304,12 @@ class AutoTranslateOnSaveTest extends TestCase
             ->fillForm(['name' => ['tr' => 'Hatalı Çeviri Ürünü']])
             ->call('save')
             ->assertHasNoFormErrors()
-            ->assertNotified('Otomatik çeviri yapılamadı, metinler Türkçe kaydedildi.');
+            ->assertNotified('Kayıt yapılmadı: otomatik çeviri başarısız.');
 
         $fresh = $this->product->fresh();
 
-        $this->assertSame('Hatalı Çeviri Ürünü', $fresh->name['tr']);
-        // Eski çeviriler korunur.
+        $this->assertSame('Test Ürün', $fresh->name['tr']);
+        // İşlem tamamen geri alınır, mevcut çeviriler de korunur.
         $this->assertSame('Test Product', $fresh->name['en']);
         $this->assertSame('Test Produkt', $fresh->name['de']);
     }

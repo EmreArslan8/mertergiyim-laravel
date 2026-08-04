@@ -55,7 +55,8 @@ class ImagesRelationManager extends RelationManager
             ->columns([
                 ImageColumn::make('storage_path')
                     ->label('Görsel')
-                    ->getStateUsing(fn ($record) => Storefront::storageUrl('products', $record->storage_path)),
+                    // Küçük önizleme; ham dosya yerine transform ucundan küçüğü.
+                    ->getStateUsing(fn ($record) => Storefront::imageUrl('products', $record->storage_path, 120)),
                 TextColumn::make('storage_path')->label('Yol')->color('gray')->limit(48),
                 TextColumn::make('sort_order')->label('Sıra'),
                 IconColumn::make('is_primary')->label('Birincil')->boolean(),

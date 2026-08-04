@@ -3,8 +3,8 @@
 
     $siteUrl = rtrim((string) ($siteSettings['siteUrl'] ?? config('storefront.site_url')), '/');
     $defaultLocale = \App\Support\BrandSettings::defaultLocale();
-    $canonicalPath = $canonicalPath ?? '/'.$locale;
-    $alternatePath = $alternatePath ?? fn (string $code) => '/'.$code;
+    $canonicalPath = $canonicalPath ?? Storefront::localePath($locale);
+    $alternatePath = $alternatePath ?? fn (string $code) => Storefront::localePath($code);
     $defaultSeoTitle = trim((string) ($footerSettings['seoTitle'] ?? '')) ?: $siteName;
     $defaultSeoDescription = trim((string) ($footerSettings['seoDescription'] ?? ''))
         ?: ($messages['meta']['description'] ?? '');
@@ -83,9 +83,10 @@
     {{-- Kaynak projedeki import sırası korunuyor. --}}
     <link rel="stylesheet" href="/css/storefront.css?v=20260730-1">
     <link rel="stylesheet" href="/css/styles.css?v=20260731-6">
-    <link rel="stylesheet" href="/css/hero-override.css?v=20260731-6">
+    <link rel="stylesheet" href="/css/hero-override.css?v=20260804-1">
     <link rel="stylesheet" href="/css/category-filter.css">
-    <link rel="stylesheet" href="/css/page-heading.css?v=20260731-6">
+    <link rel="stylesheet" href="/css/page-heading.css?v=20260802-1">
+    <link rel="stylesheet" href="/css/rich-text.css?v=20260802-1">
     <link rel="stylesheet" href="/css/site-links.css">
     @stack('styles')
 
@@ -151,7 +152,7 @@
 
     @include('storefront.partials.footer')
 
-    <script src="/js/storefront.js?v=20260730-1" defer></script>
+    <script src="/js/storefront.js?v=20260803-2" defer></script>
     @stack('scripts')
 </body>
 </html>

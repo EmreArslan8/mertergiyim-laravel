@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Services\DictionaryService;
 use App\Services\StorefrontRepository;
+use App\Support\BrandSettings;
 use App\Support\Storefront;
 use Closure;
 use Illuminate\Http\Request;
@@ -24,6 +25,16 @@ class SetStorefrontLocale
     public function handle(Request $request, Closure $next): Response
     {
         $locale = (string) $request->route('locale');
+        $default = BrandSettings::defaultLocale();
+
+        // Varsayılan dil kökte yaşar: /tr/iletisim → /iletisim (kalıcı).
+        if ($locale === $default) {
+            return redirect(self::withoutPrefix($request, $locale), 301);
+        }
+
+        if ($locale === '') {
+            $locale = $default;
+        }
 
         abort_unless(Storefront::hasLocale($locale), 404);
 
@@ -41,6 +52,11 @@ class SetStorefrontLocale
         );
 
         app()->setLocale($locale);
+
+        // Controller'lar dili uygulama locale'inden okur. Parametreyi rotada
+        // bırakırsak ön eksiz rotalarda sonradan eklenen locale, slug/tracking
+        // parametrelerinin sırasını bozabilir.
+        $request->route()?->forgetParameter('locale');
 
         // Panelden gelen dinamik ayarlarda aktif dil eksikse kaynak Türkçe
         // değerini kullan. Böylece fallback de kod içindeki sabitlerden değil
@@ -70,6 +86,11 @@ class SetStorefrontLocale
             'footerLinks' => array_values(array_filter($chrome['links'], fn ($link) => $link->location === 'footer')),
             'siteName' => $siteName,
             'siteSettings' => $siteSettings,
+            'homeSettings' => array_filter(
+                $localeSettings,
+                fn ($key) => str_starts_with($key, 'home'),
+                ARRAY_FILTER_USE_KEY,
+            ),
             'footerSettings' => array_filter(
                 $localeSettings,
                 fn ($key) => str_starts_with($key, 'footer')
@@ -90,5 +111,16 @@ class SetStorefrontLocale
         }
 
         return $next($request);
+    }
+
+    /**
+     * "/tr/iletisim?x=1" → "/iletisim?x=1"
+     */
+    private static function withoutPrefix(Request $request, string $locale): string
+    {
+        $path = '/'.ltrim(substr($request->path(), strlen($locale)), '/');
+        $query = $request->getQueryString();
+
+        return $path.($query ? '?'.$query : '');
     }
 }

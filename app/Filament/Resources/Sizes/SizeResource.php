@@ -20,7 +20,7 @@ class SizeResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Bedenler';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 60;
 
     protected static ?string $modelLabel = 'beden';
 

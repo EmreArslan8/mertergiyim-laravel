@@ -15,7 +15,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/commerce.css?v=20260731-7">
+    <link rel="stylesheet" href="/css/commerce.css?v=20260802-1">
 @endpush
 
 @section('content')
@@ -30,7 +30,8 @@
                 @php
                     $cover = $post->files->first();
                     $postTitle = Storefront::text($post->title, $locale) ?: data_get($messages, 'media.untitled');
-                    $postDescription = Storefront::text($post->description, $locale);
+                    // Açıklama panelde zengin editörle girilir; görüntüleyiciye temizlenmiş HTML gider.
+                    $postDescription = Storefront::richText($post->description, $locale);
                     $postData = [
                         'title' => $postTitle,
                         'description' => $postDescription,
@@ -160,7 +161,7 @@
                         <div>
                             <span class="media-viewer-eyebrow">{{ $mediaUi['collection'] }}</span>
                             <h2 id="media-viewer-title" data-media-title></h2>
-                            <p data-media-description></p>
+                            <div class="media-viewer-description" data-media-description></div>
                         </div>
                         <div class="media-viewer-thumbnails" data-media-thumbnails></div>
                     </aside>

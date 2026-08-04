@@ -76,7 +76,8 @@
     "gallery": {
         "zoomHint": "Yakınlaştırmak için üzerine gel / tıkla",
         "galleryNote": "Görseli değiştirmek için küçük fotoğraflara dokun.",
-        "showImage": "görseli göster"
+        "showImage": "görseli göster",
+        "video": "Video"
     },
     "meta": {
         "title": "Merter Giyim | Merter Toptan ve Perakende Giyim",
@@ -89,7 +90,7 @@
         "heading": "Sipariş Takibi",
         "subheading": "Sipariş kodunu girerek durum, toplam tutar ve ürün detaylarını takip edebilirsin.",
         "inputLabel": "Sipariş No / Takip Kodu",
-        "placeholder": "Örn: MG-20260723-8H4K2P9X",
+        "placeholder": "Örn: ORD-20260723-8H4K2P9X",
         "submit": "Siparişi Sorgula",
         "loading": "Sorgulanıyor…",
         "errorEmpty": "Lütfen sipariş numaranızı veya takip kodunuzu girin.",
@@ -169,6 +170,16 @@
             "phone": "Geçerli bir telefon numarası girin. Örnek: 0532 325 97 88",
             "minimumOrder": "Minimum sipariş tutarı {amount} {currency} olmalıdır."
         }
+    },
+    "bankAccounts": {
+        "eyebrow": "Bilgilendirme",
+        "subtitle": "Sipariş sonrası ödeme teyidi için kullanabileceğiniz güncel banka hesap bilgilerimiz.",
+        "owner": "Hesap Sahibi",
+        "iban": "IBAN",
+        "branch": "Şube",
+        "copy": "IBAN kopyala",
+        "copied": "Kopyalandı",
+        "empty": "Şu anda görüntülenecek banka hesabı bulunmuyor."
     },
     "orderSuccess": {
         "eyebrow": "SİPARİŞ OLUŞTURULDU",

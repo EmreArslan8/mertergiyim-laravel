@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Storefront;
+
 use App\Models\ContactMessage;
 use App\Services\DictionaryService;
 use App\Support\PhoneNumber;
@@ -11,16 +13,18 @@ use Illuminate\View\View;
 
 class ContactController extends Controller
 {
-    public function show(string $locale): View
+    public function show(): View
     {
+        $locale = app()->getLocale();
         return view('storefront.contact', [
-            'canonicalPath' => '/'.$locale.'/iletisim',
-            'alternatePath' => fn (string $code) => '/'.$code.'/iletisim',
+            'canonicalPath' => Storefront::localePath($locale, '/iletisim'),
+            'alternatePath' => fn (string $code) => Storefront::localePath($code, '/iletisim'),
         ]);
     }
 
-    public function store(Request $request, string $locale): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
+        $locale = app()->getLocale();
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'phone' => [

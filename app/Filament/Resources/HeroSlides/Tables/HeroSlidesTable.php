@@ -4,6 +4,7 @@ namespace App\Filament\Resources\HeroSlides\Tables;
 
 use App\Filament\Resources\HeroSlides\HeroSlideResource;
 use App\Filament\Support\Multilingual;
+use App\Filament\Support\Reorderable;
 use App\Support\Storefront;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -24,6 +25,7 @@ class HeroSlidesTable
             ->recordUrl(fn ($record): string => HeroSlideResource::getUrl('edit', ['record' => $record]))
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
+            ->reorderRecordsTriggerAction(Reorderable::triggerAction())
             ->columns([
                 ImageColumn::make('image_path')
                     ->label('Önizleme')
@@ -44,8 +46,6 @@ class HeroSlidesTable
             ])
             ->recordActions([
                 EditAction::make()
-                    // Global EditAction ayarı modal açıyor; burada tam sayfa.
-                    ->modal(false)
                     ->url(fn ($record): string => HeroSlideResource::getUrl('edit', ['record' => $record])),
                 DeleteAction::make(),
             ]);

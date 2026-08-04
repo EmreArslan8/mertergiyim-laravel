@@ -25,7 +25,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 class AdminPanelProvider extends PanelProvider
 {
     /** Tarayıcı önbelleğini kırmak için tema sürümü. */
-    public const THEME_VERSION = '56';
+    public const THEME_VERSION = '88';
 
     public function panel(Panel $panel): Panel
     {
@@ -59,16 +59,15 @@ class AdminPanelProvider extends PanelProvider
                 fn (): string => '<link rel="stylesheet" href="'.asset('css/merter-admin.css').'?v='.static::THEME_VERSION.'" data-navigate-track />',
             )
             ->renderHook(
+                // Sortable, merter-admin.js'ten önce yüklenmeli: sürükle-bırak
+                // sıralama (Hızlı Ekle görselleri) global window.Sortable'a bakar.
                 PanelsRenderHook::SCRIPTS_AFTER,
-                fn (): string => '<script src="'.asset('js/merter-admin.js').'?v='.static::THEME_VERSION.'" data-navigate-track></script>',
+                fn (): string => '<script src="'.asset('js/sortable.min.js').'?v=1.15.6" data-navigate-track></script>'
+                    .'<script src="'.asset('js/merter-admin.js').'?v='.static::THEME_VERSION.'" data-navigate-track></script>',
             )
             ->renderHook(
                 PanelsRenderHook::SIDEBAR_NAV_START,
                 fn (): string => view('filament.sidebar-brand')->render(),
-            )
-            ->renderHook(
-                PanelsRenderHook::SIDEBAR_FOOTER,
-                fn (): string => view('filament.sidebar-bottom')->render(),
             )
             ->renderHook(
                 PanelsRenderHook::TOPBAR_START,

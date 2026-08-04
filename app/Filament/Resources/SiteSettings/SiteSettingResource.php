@@ -21,7 +21,7 @@ class SiteSettingResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Site Ayarları';
 
-    protected static ?int $navigationSort = 12;
+    protected static ?int $navigationSort = 140;
 
     protected static ?string $modelLabel = 'ayar';
 

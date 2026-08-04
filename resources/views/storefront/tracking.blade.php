@@ -1,4 +1,6 @@
 @php
+    use App\Support\Storefront;
+
     $t = $messages['tracking'] ?? [];
     $metaTitle = data_get($messages, 'tracking.heading').' | '.$siteName;
     $metaDescription = $messages['meta']['description'] ?? '';
@@ -50,7 +52,7 @@
             ])
 
             <div class="tracking-panel">
-                <form class="tracking-form" method="get" action="/{{ $locale }}/siparis-takibi" data-tracking-form>
+                <form class="tracking-form" method="get" action="{{ Storefront::localePath($locale, '/siparis-takibi') }}" data-tracking-form>
                     <label for="tracking-query">{{ $t['inputLabel'] ?? '' }}</label>
                     <div class="tracking-query-row">
                         <div class="tracking-query-field">

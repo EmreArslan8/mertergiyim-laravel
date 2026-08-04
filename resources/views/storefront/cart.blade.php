@@ -1,4 +1,6 @@
 @php
+    use App\Support\Storefront;
+
     $metaTitle = data_get($messages, 'cart.title').' | '.$siteName;
     $bodyClass = 'cart-detail-body';
 @endphp
@@ -6,7 +8,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/commerce.css?v=20260731-7">
+    <link rel="stylesheet" href="/css/commerce.css?v=20260801-1">
 @endpush
 
 @section('content')
@@ -31,7 +33,7 @@
                     <div class="cart-empty" data-cart-empty>
                         <strong>{{ data_get($messages, 'cart.emptyTitle') }}</strong>
                         <p>{{ data_get($messages, 'cart.emptyText') }}</p>
-                        <a href="/{{ $locale }}#urunler">{{ data_get($messages, 'cart.continueShopping') }}</a>
+                        <a href="{{ Storefront::localePath($locale) }}#urunler">{{ data_get($messages, 'cart.continueShopping') }}</a>
                     </div>
                     <div class="cart-total-row">
                         <span>{{ data_get($messages, 'cart.total') }}</span>
@@ -40,7 +42,7 @@
                 </section>
             </div>
 
-            <form class="checkout-card" method="post" action="/{{ $locale }}/siparisler" data-checkout-form>
+            <form class="checkout-card" method="post" action="{{ Storefront::localePath($locale, '/siparisler') }}" data-checkout-form>
                 @csrf
                 <input type="hidden" name="cart" data-cart-payload>
                 <input type="hidden" name="order_key" value="{{ old('order_key') ?: (string) \Illuminate\Support\Str::uuid() }}">
@@ -62,8 +64,8 @@
                 <button type="submit" data-checkout-submit disabled>
                     {{ data_get($messages, 'cart.placeOrder') }}
                 </button>
-                @if ($bankAccountsPage)
-                    <a class="bank-accounts-link" href="/{{ $locale }}/banka-hesaplarimiz">
+                @if ($hasBankAccounts)
+                    <a class="bank-accounts-link" href="{{ Storefront::localePath($locale, '/banka-hesaplarimiz') }}">
                         {{ data_get($messages, 'cart.bankAccounts') }}
                     </a>
                 @endif

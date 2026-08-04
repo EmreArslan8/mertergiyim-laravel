@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Languages\Tables;
 
+use App\Filament\Support\Reorderable;
+use App\Support\StorefrontCache;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -16,6 +18,8 @@ class LanguagesTable
             ->stackedOnMobile()
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
+            ->reorderRecordsTriggerAction(Reorderable::triggerAction())
+            ->afterReordering(fn () => StorefrontCache::flushChrome())
             ->columns([
                 TextColumn::make('code')->label('Kod')->weight('bold'),
                 TextColumn::make('name')->label('Dil')->searchable(),

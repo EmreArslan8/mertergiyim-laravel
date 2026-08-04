@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Sizes\Tables;
 
 use App\Filament\Support\Multilingual;
+use App\Filament\Support\Reorderable;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -18,6 +19,9 @@ class SizesTable
             ->stackedOnMobile()
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
+            // Sürükle-bırak ikonu tek başına ne işe yaradığını anlatmıyordu;
+            // ürün listesindeki gibi yazılı bir düğmeye çevrildi.
+            ->reorderRecordsTriggerAction(Reorderable::triggerAction())
             ->columns([
                 TextColumn::make('name_i18n')
                     ->label('Beden')
