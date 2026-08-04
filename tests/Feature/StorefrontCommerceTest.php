@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -209,6 +210,14 @@ class StorefrontCommerceTest extends TestCase
                 'is_primary' => false,
             ],
         ]);
+
+        // Storefront::storageUrl dosyayı diskte arar; bulamazsa görseli galeriden
+        // düşürür. Test kendi dosyalarını yazsın ki ortamdan bağımsız geçsin.
+        Storage::fake('public_media');
+        $bucket = (string) config('storefront.buckets.products');
+        foreach (['test/one.webp', 'test/two.webp'] as $path) {
+            Storage::disk('public_media')->put($bucket.'/'.$path, 'fake-image');
+        }
 
         $response = $this->get('/product/test-urun');
 
