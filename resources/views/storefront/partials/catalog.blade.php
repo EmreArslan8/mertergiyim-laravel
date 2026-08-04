@@ -3,6 +3,13 @@
 
     $whatsappNumber = $siteSettings['whatsappNumber'] ?? config('storefront.whatsapp_number');
     $whatsappMessageTemplate = trim((string) ($footerSettings['whatsappMessage'] ?? ''));
+    $homeText = fn (string $key, string $fallback = ''): string => trim((string) ($homeSettings[$key] ?? '')) ?: $fallback;
+    $homeRich = fn (string $key, string $fallback = ''): string => Storefront::richText(
+        $homeText($key, $fallback),
+        $locale,
+    );
+    $categoryTitle = $homeText('homeCategoryTitle', $messages['home']['categories'] ?? '');
+    $allCategoriesLabel = $homeText('homeAllCategoriesLabel', $messages['home']['allCategories'] ?? '');
 @endphp
 
 {{-- CategoryBar (CatalogSection.tsx) --}}
@@ -10,10 +17,10 @@
     <section class="category-section">
         <div class="category-section-inner">
             @if ($showCategoryFilterLabel ?? true)
-                <h2>{{ $messages['home']['categories'] ?? '' }}</h2>
+                <h2>{{ $categoryTitle }}</h2>
             @endif
             <div class="category-pills" data-category-pills>
-                <button type="button" class="selected" data-category-pill data-category-pick="">{{ $messages['home']['allCategories'] ?? '' }}</button>
+                <button type="button" class="selected" data-category-pill data-category-pick="">{{ $allCategoriesLabel }}</button>
                 @foreach ($categories as $category)
                     <button type="button" data-category-pill data-category-pick="{{ $category->id }}">{{ Storefront::text($category->name_i18n, $locale) ?: $category->name }}</button>
                 @endforeach
@@ -30,10 +37,10 @@
     @if ($showCatalogHeading ?? true)
         <div class="catalog-heading">
             <div>
-                <span>{{ $messages['home']['collection'] ?? '' }}</span>
-                <h2>{{ $messages['home']['featuredProducts'] ?? ($messages['home']['productTitle'] ?? '') }}</h2>
+                <span>{{ $homeText('homeCollectionLabel', $messages['home']['collection'] ?? '') }}</span>
+                <h2>{{ $homeText('homeFeaturedTitle', $messages['home']['featuredProducts'] ?? ($messages['home']['productTitle'] ?? '')) }}</h2>
             </div>
-            <p>{{ $messages['home']['orderNotice'] ?? '' }}</p>
+            <div class="catalog-description">{!! $homeRich('homeOrderNotice', $messages['home']['orderNotice'] ?? '') !!}</div>
         </div>
     @endif
     <div class="product-grid" data-product-grid>
@@ -50,17 +57,17 @@
             </svg>
         </span>
         <h3 data-empty-title
-            data-default-text="{{ $messages['home']['empty'] ?? '' }}"
-            data-filter-text="{{ $messages['home']['filterEmpty'] ?? ($messages['home']['empty'] ?? '') }}">
-            {{ $messages['home']['empty'] ?? '' }}
+            data-default-text="{{ $homeText('homeEmptyTitle', $messages['home']['empty'] ?? '') }}"
+            data-filter-text="{{ $homeText('homeFilterEmptyTitle', $messages['home']['filterEmpty'] ?? ($messages['home']['empty'] ?? '')) }}">
+            {{ $homeText('homeEmptyTitle', $messages['home']['empty'] ?? '') }}
         </h3>
-        <p data-empty-description
-           data-default-text="{{ $messages['home']['emptyDescription'] ?? '' }}"
-           data-filter-text="{{ $messages['home']['filterEmptyDescription'] ?? '' }}">
-            {{ $messages['home']['emptyDescription'] ?? '' }}
-        </p>
+        <div class="store-empty-description" data-empty-description
+             data-default-html="{{ $homeRich('homeEmptyDescription', $messages['home']['emptyDescription'] ?? '') }}"
+             data-filter-html="{{ $homeRich('homeFilterEmptyDescription', $messages['home']['filterEmptyDescription'] ?? '') }}">
+            {!! $homeRich('homeEmptyDescription', $messages['home']['emptyDescription'] ?? '') !!}
+        </div>
         <button type="button" data-empty-reset data-category-pick="" @if (! count($cards)) hidden @endif>
-            {{ $messages['home']['showAllProducts'] ?? ($messages['home']['allCategories'] ?? '') }}
+            {{ $homeText('homeShowAllProductsLabel', $messages['home']['showAllProducts'] ?? $allCategoriesLabel) }}
         </button>
     </div>
 </section>

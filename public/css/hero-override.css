@@ -1,20 +1,46 @@
 /* Hero — kaynak index.html ile birebir eşitlendi (Tailwind karşılıkları yorumda). */
 .hero{height:76vh;height:76svh;min-height:540px;background:#020618}
+.hero-slides,.hero-slide{position:absolute;inset:0}
+.hero-slide{z-index:0;opacity:0;pointer-events:none;transition:opacity .8s cubic-bezier(.4,0,.2,1)}
+.hero-slide.is-active{z-index:1;opacity:1;pointer-events:auto}
+.hero-slide .hero-media{transform:scale(1.025);transition:transform 7s ease-out}
+.hero-slide.is-active .hero-media{transform:scale(1)}
 /* img.opacity-70 + bg-slate-950 bileşkesi */
 .hero-overlay{background:rgba(2,6,24,.3)}
 /* flex ortalama, ekstra üst boşluk yok; px-4 yan pay */
 .hero-copy{padding:0 16px}
+.hero-slide .hero-copy>*{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
+.hero-slide.is-active .hero-copy>*{opacity:1;transform:none}
+.hero-slide.is-active .hero-copy>*:nth-child(2){transition-delay:.08s}
+.hero-slide.is-active .hero-copy>*:nth-child(3){transition-delay:.16s}
 .hero-eyebrow{margin:0 0 12px;color:rgba(255,255,255,.75);font-size:12px;font-weight:700;line-height:16px;letter-spacing:.35em;text-transform:uppercase}
 /* text-5xl / sm:text-7xl / md:text-8xl + max-w-5xl + font-black italic */
 /* Hero başlığı marka tipografisi: font-black italic (Tailwind font-black = 900). */
 .hero-copy h1{max-width:1024px;margin:0 0 32px;font-family:'Montserrat',sans-serif;font-size:48px;font-style:italic;font-weight:900;line-height:1;letter-spacing:-.025em;white-space:pre-line}
+/* Zengin editör başlığı: satır sonları artık <br>/<p> olarak geliyor, bu yüzden
+   pre-line kapalı; iç blok boşlukları başlık düzenini bozmasın. */
+.hero-copy h1.hero-title{white-space:normal}
+.hero-copy h1.hero-title p{margin:0}
+.hero-copy h1.hero-title p+p{margin-top:.08em}
+.hero-copy h1.hero-title strong,.hero-copy h1.hero-title b{font-weight:900}
+.hero-copy h1.hero-title em,.hero-copy h1.hero-title i{font-style:italic}
 /* border-2 border-white px-10 py-4 uppercase font-bold + transition (150ms) */
 .hero-copy a{padding:16px 36px;font-size:14px;font-weight:700;line-height:20px;text-transform:uppercase;transition:background-color .15s,color .15s}
 .hero-copy a:hover{background:#fff;color:#000}
+.hero-nav{position:absolute;z-index:4;top:50%;display:grid;width:48px;height:48px;padding:0;place-items:center;border:1px solid rgba(255,255,255,.45);border-radius:50%;background:rgba(2,6,24,.28);color:#fff;cursor:pointer;transform:translateY(-50%);transition:background-color .2s,border-color .2s}
+.hero-nav:hover{border-color:#fff;background:rgba(2,6,24,.65)}
+.hero-nav span{font-size:34px;font-weight:300;line-height:1;transform:translateY(-1px)}
+.hero-nav--previous{inset-inline-start:32px}
+.hero-nav--next{inset-inline-end:32px}
+.hero-dots{position:absolute;z-index:4;right:0;bottom:24px;left:0;display:flex;align-items:center;justify-content:center;gap:8px}
+.hero-dots button{width:28px;height:3px;padding:0;border:0;border-radius:99px;background:rgba(255,255,255,.42);cursor:pointer;transition:width .25s,background-color .25s}
+.hero-dots button.is-active{width:48px;background:#fff}
 /* nav: bg-gradient-to-b from-black/60 to-transparent (yalnız şeffaf header'da) */
 .site-header:not(.site-header--solid){background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent)}
 @media(min-width:640px){.hero-copy h1{font-size:72px}}
 @media(min-width:768px){.hero-copy h1{font-size:96px}}
+@media(max-width:767px){.hero-nav{width:40px;height:40px}.hero-nav--previous{inset-inline-start:12px}.hero-nav--next{inset-inline-end:12px}.hero-dots{bottom:18px}}
+@media(prefers-reduced-motion:reduce){.hero-slide,.hero-slide .hero-media,.hero-slide .hero-copy>*{transition:none}}
 /* Bölüm başlıkları — 900 fazla kalın duruyordu, 600'e çekildi. */
 .section-title h2{font-weight:600}
 
@@ -42,18 +68,28 @@ body{background:var(--surface)}                             /* bg-slate-50 */
 .catalog-heading{display:flex;width:min(100%,1280px);align-items:flex-end;justify-content:space-between;gap:32px;margin:0 auto 40px;padding-bottom:20px;border-bottom:1px solid #e4e4e7}
 .catalog-heading span{display:block;color:#a1a1aa;font-size:12px;font-weight:600;line-height:16px;letter-spacing:.1em;text-transform:uppercase}
 .catalog-heading h2{margin:4px 0 0;color:#09090b;font-size:30px;font-weight:400;line-height:1.2;letter-spacing:-.025em}
-.catalog-heading p{max-width:448px;margin:0;color:#71717a;font-size:12px;line-height:20px}
+.catalog-description{max-width:448px;color:#71717a;font-size:12px;line-height:20px}
+.catalog-description > *{margin:0 0 6px}
+.catalog-description > *:last-child{margin-bottom:0}
+.catalog-description ul,.catalog-description ol{padding-inline-start:18px}
+.catalog-description ul{list-style:disc}
+.catalog-description ol{list-style:decimal}
+.catalog-description h2,.catalog-description h3,.store-empty-description h2,.store-empty-description h3{margin:10px 0 4px;color:#27272a;font-weight:650;line-height:1.35}.catalog-description h2,.store-empty-description h2{font-size:16px}.catalog-description h3,.store-empty-description h3{font-size:14px}.catalog-description blockquote,.store-empty-description blockquote{margin:10px 0;padding:7px 10px;border-inline-start:3px solid #f97316;background:#fff7ed;text-align:start}.catalog-description a,.store-empty-description a{color:#c2410c;text-decoration:underline;text-underline-offset:2px}.catalog-description hr,.store-empty-description hr{margin:12px 0;border:0;border-top:1px solid #e4e4e7}.catalog-description u,.store-empty-description u{text-underline-offset:2px}
 .product-grid{width:min(100%,1280px);margin:0 auto;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
 .products .store-empty{display:flex;width:min(100%,1280px);min-height:260px;align-items:center;flex-direction:column;justify-content:center;margin:0 auto;padding:48px 24px;border:1px solid #e4e4e7;border-radius:14px;background:linear-gradient(145deg,#fff 0%,#fffaf7 100%);color:#71717a;text-align:center;box-shadow:0 10px 32px #18181b0a}
 .store-empty-icon{display:grid;width:64px;height:64px;place-items:center;margin-bottom:20px;border-radius:50%;background:#ffedd5;color:#ea580c;box-shadow:inset 0 0 0 1px #fed7aa}
 .store-empty-icon svg{width:30px;height:30px;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .products .store-empty h3{margin:0;color:#18181b;font-size:24px;font-weight:700;line-height:1.25;letter-spacing:-.025em}
-.products .store-empty p{max-width:520px;margin:10px 0 0;color:#71717a;font-size:14px;line-height:1.7}
+.products .store-empty-description{max-width:520px;margin:10px 0 0;color:#71717a;font-size:14px;line-height:1.7}
+.products .store-empty-description > *{margin:0 0 6px}
+.products .store-empty-description > *:last-child{margin-bottom:0}
+.products .store-empty-description ul,.products .store-empty-description ol{padding-inline-start:20px;text-align:start}
+.products .store-empty-description ul{list-style:disc}
+.products .store-empty-description ol{list-style:decimal}
 .products .store-empty button{margin-top:24px;padding:12px 20px;border:0;border-radius:8px;background:#18181b;color:#fff;font:700 12px/1.4 'Montserrat',sans-serif;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:background-color .15s ease,transform .15s ease}
 .products .store-empty button:hover{background:#ea580c;transform:translateY(-1px)}
 .products .store-empty button[hidden]{display:none}
-.product-card{position:relative;padding:0;border:1px solid var(--soft);border-radius:8px;background:#fff;box-shadow:0 1px 3px #0000001a,0 1px 2px -1px #0000001a;overflow:hidden;transition:box-shadow .3s cubic-bezier(.4,0,.2,1)}
-.product-card:hover{box-shadow:0 4px 6px -1px #0000001a,0 2px 4px -2px #0000001a}
+.product-card{position:relative;padding:0;border:1px solid var(--soft);border-radius:8px;background:#fff;box-shadow:0 1px 3px #0000001a,0 1px 2px -1px #0000001a;overflow:hidden}
 .product-card-link{position:absolute;inset:0;z-index:1;border-radius:inherit}
 .product-card-link:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
 .product-image{aspect-ratio:3/4;border-radius:0;background:var(--soft)}
@@ -134,9 +170,12 @@ body{background:var(--surface)}                             /* bg-slate-50 */
     .site-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:48px}
     .footer-contact-block{grid-column:1/-1}
   }
-  .product-card:hover .product-card-slide:first-child:nth-last-child(n+2){opacity:0}
-  .product-card:hover .product-card-slide:nth-child(2){opacity:1}
-  .product-card:hover .product-card-slide img{transform:scale(1.05)}
+  /* Alternatif görsel yalnızca fotoğraf alanına gelindiğinde açılsın.
+     Kartın butonları hover olduğunda lazy ikinci görsel henüz yüklenmemişse
+     ilk fotoğraf kaybolup beyaz alan görünüyordu. */
+  .product-image:hover .product-card-slide:first-child:nth-last-child(n+2){opacity:0}
+  .product-image:hover .product-card-slide:nth-child(2){opacity:1}
+  .product-image:hover .product-card-slide img{transform:scale(1.05)}
 }
 @media(min-width:768px) and (max-width:1023px){
   /* On dil tek satıra zorlandığında son seçenekler ekran dışında kalıyordu.
@@ -423,4 +462,40 @@ body{background:var(--surface)}                             /* bg-slate-50 */
     font-size: 24px;
     line-height: 32px;
   }
+}
+
+/* ============================================================
+   Dil şeridi UX rafinesi — yapı aynı (koyu bar + turuncu vurgu),
+   yalnızca etkileşim ve mobil kaydırma iyileştirildi.
+   ============================================================ */
+
+/* Klavye erişilebilirliği: görünür turuncu focus halkası. */
+.language-bar a:focus-visible { outline: 2px solid #f97316; outline-offset: 2px; }
+
+/* Hover'da daha belirgin dolgu. */
+.language-bar a:hover { background: #3f3f46; border-color: #71717a; color: #fff; }
+
+/* Aktif dil turuncu + hafif gölge ile öne çıkar. */
+.language-bar a.selected { box-shadow: 0 2px 10px -3px rgba(234, 88, 12, .7); }
+.language-bar a.selected:hover { background: #ea580c; border-color: #f97316; }
+
+@media (max-width: 767px) {
+  /* "DİL:" etiketi sabit kalır; yalnızca pill listesi yatay kayar.
+     Kenarlardaki yumuşak fade "devamı var" ipucu verir, scrollbar gizlenir,
+     snap ile pill'ler hizalanır. */
+  .language-bar { padding: 12px 18px 8px; }
+  .language-bar-inner { overflow: visible; white-space: normal; gap: 10px; }
+  .language-options {
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+  }
+  .language-options::-webkit-scrollbar { display: none; }
+  .language-bar a { scroll-snap-align: start; min-height: 34px; padding: 6px 12px; font-size: 12px; }
 }

@@ -17,7 +17,7 @@ class OrderCodeService
         } while (Order::query()->where('order_number', $orderNumber)->exists());
 
         do {
-            $trackingCode = strtoupper(Str::random(10));
+            $trackingCode = 'ORD-'.now()->format('Ymd').'-'.strtoupper(Str::random(6));
         } while (Order::query()->where('tracking_code', $trackingCode)->exists());
 
         return [

@@ -42,10 +42,13 @@ return [
         | Alwaysdata/Plesk benzeri sunucularda ürün ve site dosyaları.
         | public/storage sembolik bağlantısı bu diski doğrudan yayınlar.
         */
+        // Medya adresleri porta/domaine bağlı kalmasın diye varsayılan host-göreli
+        // ('/storage'); tarayıcı hangi origin'deyse ona göre çözer. Üretimde
+        // mutlak adres (CDN/OG için) gerekirse MEDIA_URL ile verilebilir.
         'public_media' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('MEDIA_URL', '/storage'),
             'visibility' => 'public',
             'throw' => true,
             'report' => false,
@@ -54,7 +57,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('MEDIA_URL', '/storage'),
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
@@ -105,7 +108,7 @@ return [
         'public_media_products' => [
             'driver' => 'local',
             'root' => storage_path('app/public/'.env('STOREFRONT_PRODUCTS_DIRECTORY', 'product-images')),
-            'url' => env('APP_URL').'/storage/'.env('STOREFRONT_PRODUCTS_DIRECTORY', 'product-images'),
+            'url' => env('MEDIA_URL', '/storage').'/'.env('STOREFRONT_PRODUCTS_DIRECTORY', 'product-images'),
             'visibility' => 'public',
             'throw' => true,
             'report' => false,
@@ -114,7 +117,7 @@ return [
         'public_media_site' => [
             'driver' => 'local',
             'root' => storage_path('app/public/'.env('STOREFRONT_SITE_DIRECTORY', 'site-media')),
-            'url' => env('APP_URL').'/storage/'.env('STOREFRONT_SITE_DIRECTORY', 'site-media'),
+            'url' => env('MEDIA_URL', '/storage').'/'.env('STOREFRONT_SITE_DIRECTORY', 'site-media'),
             'visibility' => 'public',
             'throw' => true,
             'report' => false,

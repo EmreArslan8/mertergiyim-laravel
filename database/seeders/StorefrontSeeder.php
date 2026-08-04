@@ -140,17 +140,16 @@ class StorefrontSeeder extends Seeder
         $description = $this->seedProductDescriptionTranslations();
         $translatedNames = $this->seedProductNameTranslations();
 
+        // Ürün adı benzersizdir; aynı adla ikinci satır eklenemez.
         $rows = [
             ['elbiseler', '01', 'kot-garnili-papertouch-kumas-elbise', 'Kot Garnili Papertouch Kumaş Elbise', 23],
             ['takimlar', '02', 'keten-kumas-sortlu-takim', 'Keten Kumaş Şortlu Takım', 23],
             ['takimlar', '03', 'keten-dantelli-bluz-etek-takim', 'Keten Dantelli Bluz&Etek Takım', 30],
             ['takimlar', '04', 'zimmerman-desen-keten-takim', 'Zimmerman Desen Keten Takım', 24],
             ['elbiseler', '05', 'zimmerman-model-keten-elbise', 'Zimmerman Model Keten Elbise', 21],
-            ['takimlar', '06', 'keten-kumas-sortlu-takim-2', 'Keten Kumaş Şortlu Takım', 23],
             ['elbiseler', '07', 'keten-kumas-cicek-desenli-elbise', 'Keten Kumaş Çiçek Desenli Elbise', 21],
             ['takimlar', '08', 'modal-kumas-salvar-takim', 'Modal Kumaş Şalvar Takım', 18],
             ['elbiseler', '09', 'zimmerman-elbise-keten-kumas-1', 'Zimmerman Elbise Keten Kumaş', 25],
-            ['elbiseler', '10', 'zimmerman-elbise-keten-kumas-2', 'Zimmerman Elbise Keten Kumaş', 25],
             ['elbiseler', '11', 'dugumlu-kalp-yaka-keten-elbise', 'Düğümlü Kalp Yaka Keten Elbise', 23],
             ['elbiseler', '12', 'ithal-brode-nakis-detayli-elbise', 'İthal Brode Nakış Detaylı Elbise', 30],
         ];
@@ -312,7 +311,7 @@ class StorefrontSeeder extends Seeder
                 'tr' => 'İNCELE', 'en' => 'EXPLORE', 'ar' => 'استكشف', 'ru' => 'СМОТРЕТЬ', 'fa' => 'مشاهده',
                 'uk' => 'ПЕРЕГЛЯНУТИ', 'fr' => 'DÉCOUVRIR', 'de' => 'ENTDECKEN', 'es' => 'DESCUBRIR', 'it' => 'SCOPRI',
             ],
-            'button_url' => '/tr#urunler',
+            'button_url' => '/#urunler',
             'sort_order' => 1,
             'active' => true,
         ]);
@@ -321,7 +320,7 @@ class StorefrontSeeder extends Seeder
             'title' => ['tr' => "Sezon\nİNDİRİMİ", 'en' => "Season\nSALE"],
             'image_path' => 'seed/hero-2.jpg',
             'button_text' => ['tr' => 'KEŞFET', 'en' => 'DISCOVER'],
-            'button_url' => '/tr#urunler',
+            'button_url' => '/#urunler',
             'sort_order' => 2,
             'active' => true,
         ]);
@@ -332,22 +331,22 @@ class StorefrontSeeder extends Seeder
         $headerTranslations = $this->headerLinkTranslations();
         $footerTranslations = $this->footerLinkTranslations();
         $links = [
-            ['header', 'home', 'Anasayfa', '/tr', 1],
-            ['header', 'new', 'Yeni Gelenler', '/tr#urunler', 2],
-            ['header', 'categories', 'Kategoriler', '/tr#urunler', 3],
-            ['header', 'tracking', 'Sipariş Takibi', '/tr/siparis-takibi', 4],
-            ['header', 'contact', 'İletişim', '/tr#iletisim', 5],
-            ['header', 'cart', 'Sepet', '/tr#sepet', 6],
-            ['footer', 'about', 'Hakkımızda', '/tr/hakkimizda', 1],
-            ['footer', 'distance_sale', 'Mesafeli Satış Sözleşmesi', '/tr/mesafeli-satis-sozlesmesi', 2],
-            ['footer', 'pre_information', 'Ön Bilgilendirme Formu', '/tr/on-bilgilendirme-formu', 3],
-            ['footer', 'privacy', 'Gizlilik Politikası', '/tr/gizlilik-politikasi', 4],
-            ['footer', 'delivery', 'Teslimat ve Kargo Politikası', '/tr/teslimat-kargo', 5],
-            ['footer', 'refund_policy', 'İptal ve Geri Ödeme Politikası', '/tr/iptal-iade-politikasi', 6],
-            ['footer', 'cookie_policy', 'Çerez Politikası', '/tr/cerez-politikasi', 7],
-            ['footer', 'terms', 'Kullanım Koşulları', '/tr/kullanim-kosullari', 8],
-            ['footer', 'return', 'İade ve Değişim Koşulları', '/tr/iade-degisim', 9],
-            ['footer', 'kvkk', 'KVKK Aydınlatma Metni', '/tr/kvkk', 10],
+            ['header', 'home', 'Anasayfa', '/', 1],
+            ['header', 'new', 'Yeni Gelenler', '/#urunler', 2],
+            ['header', 'categories', 'Kategoriler', '/#urunler', 3],
+            ['header', 'tracking', 'Sipariş Takibi', '/siparis-takibi', 4],
+            ['header', 'contact', 'İletişim', '/#iletisim', 5],
+            ['header', 'cart', 'Sepet', '/#sepet', 6],
+            ['footer', 'about', 'Hakkımızda', '/hakkimizda', 1],
+            ['footer', 'distance_sale', 'Mesafeli Satış Sözleşmesi', '/mesafeli-satis-sozlesmesi', 2],
+            ['footer', 'pre_information', 'Ön Bilgilendirme Formu', '/on-bilgilendirme-formu', 3],
+            ['footer', 'privacy', 'Gizlilik Politikası', '/gizlilik-politikasi', 4],
+            ['footer', 'delivery', 'Teslimat ve Kargo Politikası', '/teslimat-kargo', 5],
+            ['footer', 'refund_policy', 'İptal ve Geri Ödeme Politikası', '/iptal-iade-politikasi', 6],
+            ['footer', 'cookie_policy', 'Çerez Politikası', '/cerez-politikasi', 7],
+            ['footer', 'terms', 'Kullanım Koşulları', '/kullanim-kosullari', 8],
+            ['footer', 'return', 'İade ve Değişim Koşulları', '/iade-degisim', 9],
+            ['footer', 'kvkk', 'KVKK Aydınlatma Metni', '/kvkk', 10],
             ['footer', 'whatsapp', 'WhatsApp', 'https://wa.me/905555555555', 11],
             ['footer', 'instagram', 'Instagram', 'https://instagram.com', 12],
         ];
@@ -503,23 +502,23 @@ class StorefrontSeeder extends Seeder
             'tr' => [
                 'siteName' => 'Merter Giyim',
                 'footerBrand' => 'Merter Giyim',
-                'footerDescription' => 'Merter’den Türkiye’nin her noktasına toptan ve perakende kadın giyim.',
+                'footerDescription' => '<p>Merter’den Türkiye’nin her noktasına toptan ve perakende kadın giyim.</p>',
                 'footerInfoTitle' => 'Bilgilendirmeler',
                 'footerAddress' => 'MERTER / İSTANBUL',
                 'copyright' => '© '.date('Y').' Merter Giyim. Tüm hakları saklıdır.',
                 'contactTitle' => 'İletişim',
-                'contactDescription' => 'Merter Giyim showroom ve toptan sipariş süreçleri için bizimle iletişime geçebilirsin.',
+                'contactDescription' => '<p>Merter Giyim showroom ve toptan sipariş süreçleri için bizimle iletişime geçebilirsin.</p>',
                 'contactAddress' => 'Mehmet Nesih Özmen Mahallesi, Savaş Caddesi, Vardarlı Çarşı, No: 21, Kat: 2, Dükkan: 37, Merter, İstanbul',
             ],
             'en' => [
                 'siteName' => 'Merter Clothing',
                 'footerBrand' => 'Merter Clothing',
-                'footerDescription' => 'Wholesale and retail women’s clothing shipped worldwide from Merter, Istanbul.',
+                'footerDescription' => '<p>Wholesale and retail women’s clothing shipped worldwide from Merter, Istanbul.</p>',
                 'footerInfoTitle' => 'Information',
                 'footerAddress' => 'MERTER / ISTANBUL',
                 'copyright' => '© '.date('Y').' Merter Clothing. All rights reserved.',
                 'contactTitle' => 'Contact',
-                'contactDescription' => 'Contact us for the Merter Giyim showroom and wholesale ordering process.',
+                'contactDescription' => '<p>Contact us for the Merter Giyim showroom and wholesale ordering process.</p>',
                 'contactAddress' => 'Mehmet Nesih Özmen District, Savaş Avenue, Vardarlı Bazaar, No: 21, Floor: 2, Shop: 37, Merter, Istanbul',
             ],
         ];
@@ -539,13 +538,42 @@ class StorefrontSeeder extends Seeder
             $perLocale[$locale]['footerInfoTitle'] = $title;
         }
 
+        $homeFields = [
+            'homeCategoryTitle' => 'categories',
+            'homeAllCategoriesLabel' => 'allCategories',
+            'homeCollectionLabel' => 'collection',
+            'homeFeaturedTitle' => 'featuredProducts',
+            'homeOrderNotice' => 'orderNotice',
+            'homeEmptyTitle' => 'empty',
+            'homeEmptyDescription' => 'emptyDescription',
+            'homeFilterEmptyTitle' => 'filterEmpty',
+            'homeFilterEmptyDescription' => 'filterEmptyDescription',
+            'homeShowAllProductsLabel' => 'showAllProducts',
+        ];
+
+        foreach (config('storefront.locales') as $locale) {
+            $dictionary = json_decode((string) file_get_contents(lang_path('storefront/'.$locale.'.json')), true);
+
+            foreach ($homeFields as $settingKey => $dictionaryKey) {
+                $perLocale[$locale][$settingKey] = (string) data_get($dictionary, 'home.'.$dictionaryKey, '');
+            }
+
+            $perLocale[$locale]['homeSeoTitle'] = (string) data_get($dictionary, 'meta.title', '');
+            $perLocale[$locale]['homeSeoDescription'] = (string) data_get($dictionary, 'meta.description', '');
+            $perLocale[$locale]['homeSeoKeywords'] = (string) data_get($dictionary, 'meta.keywords', '');
+        }
+
         $perLocale['general'] = [
             'siteLogo' => null,
+            'homeProductLimit' => 12,
+            'homeSeoShareImage' => null,
             'whatsappNumber' => (string) config('storefront.whatsapp_number'),
             'contactPhone' => '0532 325 97 88',
             'contactEmail' => 'info@mertertextile.com',
-            'instagramUrl' => 'https://www.instagram.com/',
-            'facebookUrl' => 'https://www.facebook.com/',
+            'socialLinks' => [
+                ['platform' => 'instagram', 'label' => null, 'url' => 'https://www.instagram.com/'],
+                ['platform' => 'facebook', 'label' => null, 'url' => 'https://www.facebook.com/'],
+            ],
             'googleMapsIframe' => '',
         ];
 

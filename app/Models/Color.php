@@ -18,5 +18,14 @@ class Color extends Model
         static::saving(function (Color $color): void {
             $color->name = $color->name_i18n['tr'] ?? $color->name;
         });
+
+        // Sıra alanı formdan kaldırıldı (listeden sürükleyerek yönetiliyor).
+        // Verilmezse hepsi 0'a yığılıp rastgele sıralanıyordu; yeni renk
+        // listenin sonuna eklenir.
+        static::creating(function (Color $color): void {
+            if (blank($color->sort_order)) {
+                $color->sort_order = ((int) static::query()->max('sort_order')) + 1;
+            }
+        });
     }
 }

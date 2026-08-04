@@ -9,8 +9,7 @@
     $email = trim((string) ($siteSettings['contactEmail'] ?? ''));
     $whatsappNumber = preg_replace('/\D+/', '', $siteSettings['whatsappNumber'] ?? config('storefront.whatsapp_number'));
     $phoneHref = preg_replace('/[^0-9+]/', '', $phone);
-    $instagramUrl = trim((string) ($siteSettings['instagramUrl'] ?? '')) ?: 'https://www.instagram.com/';
-    $facebookUrl = trim((string) ($siteSettings['facebookUrl'] ?? '')) ?: 'https://www.facebook.com/';
+    $socialLinks = \App\Support\Storefront::socialLinks($siteSettings);
     $mapIframe = $siteSettings['googleMapsIframe'] ?? '';
     preg_match('/src=["\']([^"\']+)["\']/', $mapIframe, $mapMatch);
     $mapUrl = $mapMatch[1]
@@ -21,7 +20,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/commerce.css?v=20260731-7">
+    <link rel="stylesheet" href="/css/commerce.css?v=20260801-1">
     <link rel="stylesheet" href="/css/contact.css">
 @endpush
 
@@ -32,7 +31,7 @@
                 'class' => 'page-heading--embedded',
                 'eyebrow' => data_get($messages, 'contact.eyebrow'),
                 'title' => $contactTitle,
-                'description' => $contactDescription,
+                'descriptionHtml' => \App\Support\Storefront::richText($contactDescription, $locale),
             ])
         </div>
 
@@ -97,25 +96,19 @@
                     </a>
                 </div>
 
-                <div class="contact-social">
-                    <span>{{ data_get($messages, 'contact.social') }}</span>
-                    <nav aria-label="{{ data_get($messages, 'contact.social') }}">
-                        <a href="{{ $instagramUrl }}" target="_blank" rel="noreferrer" aria-label="Instagram">
-                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <rect x="3.5" y="3.5" width="17" height="17" rx="5.2" stroke="currentColor" stroke-width="1.8"/>
-                                <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
-                                <circle cx="17.3" cy="6.9" r="1.1" fill="currentColor"/>
-                            </svg>
-                            <span>Instagram</span>
-                        </a>
-                        <a href="{{ $facebookUrl }}" target="_blank" rel="noreferrer" aria-label="Facebook">
-                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                <path d="M14.2 8.2V6.9c0-.7.5-.9.9-.9h2.1V2.6L14.3 2.5c-3.2 0-4 2.4-4 3.9v1.8H7.8V12h2.5v9.5h3.9V12h2.9l.4-3.8h-3.3Z"/>
-                            </svg>
-                            <span>Facebook</span>
-                        </a>
-                    </nav>
-                </div>
+                @if ($socialLinks)
+                    <div class="contact-social">
+                        <span>{{ data_get($messages, 'contact.social') }}</span>
+                        <nav aria-label="{{ data_get($messages, 'contact.social') }}">
+                            @foreach ($socialLinks as $social)
+                                <a href="{{ $social['url'] }}" target="_blank" rel="noreferrer" aria-label="{{ $social['label'] }}">
+                                    @include('storefront.partials.social-icon', ['platform' => $social['platform']])
+                                    <span>{{ $social['label'] }}</span>
+                                </a>
+                            @endforeach
+                        </nav>
+                    </div>
+                @endif
             </aside>
         </section>
 

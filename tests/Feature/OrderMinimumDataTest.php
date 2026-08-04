@@ -193,7 +193,7 @@ class OrderMinimumDataTest extends TestCase
         $before = $this->orderCount();
 
         foreach (['customer_name', 'phone', 'address'] as $field) {
-            $this->post('/tr/siparisler', $this->checkoutPayload($product, [$field => '']))
+            $this->post('/siparisler', $this->checkoutPayload($product, [$field => '']))
                 ->assertSessionHasErrors($field);
         }
 
@@ -205,7 +205,7 @@ class OrderMinimumDataTest extends TestCase
         $product = $this->pricedProduct();
         $before = $this->orderCount();
 
-        $this->post('/tr/siparisler', $this->checkoutPayload($product, ['phone' => 'telefon yok']))
+        $this->post('/siparisler', $this->checkoutPayload($product, ['phone' => 'telefon yok']))
             ->assertSessionHasErrors('phone');
 
         $this->assertSame($before, $this->orderCount());
@@ -216,7 +216,7 @@ class OrderMinimumDataTest extends TestCase
         $product = $this->pricedProduct();
         $before = $this->orderCount();
 
-        $this->post('/tr/siparisler', $this->checkoutPayload($product, ['cart' => '[]']))
+        $this->post('/siparisler', $this->checkoutPayload($product, ['cart' => '[]']))
             ->assertSessionHasErrors('items');
 
         $this->assertSame($before, $this->orderCount());

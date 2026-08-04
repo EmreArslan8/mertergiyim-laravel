@@ -400,7 +400,7 @@ nav.fi-topbar {
 }
 
 @media (min-width: 64rem) {
-    .fi-topbar-start > :not(.merter-topbar-section) {
+    .fi-topbar-start > :not(.merter-topbar-section, .merter-topbar-brand) {
         display: none;
     }
 }
@@ -606,14 +606,15 @@ nav.fi-topbar {
 /* Kaynak panelde tablo aksiyonları ikon değil metin butonudur. */
 .fi-ta-actions > .fi-btn,
 .fi-ta-actions > .fi-link {
-    min-height: 1.875rem;
+    min-height: 2.25rem;
     border: 1px solid #9aa2a9;
     border-radius: 0.25rem;
     background: #fff;
-    padding: 0.3125rem 0.5625rem;
+    /* Düzenle/Sil biraz daha belirgin: dikey padding artırıldı. */
+    padding: 0.5rem 0.75rem;
     color: #3f4851;
     box-shadow: none;
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     font-weight: 400;
 }
 
@@ -814,7 +815,7 @@ textarea.fi-input {
    Scroll kuralı yalnızca mobilde ve ürün modalında vardı; uzun formlar
    (bilgilendirme sayfası, blog) ekranın altından taşıp kesiliyordu. */
 @media (min-width: 48rem) {
-    .fi-modal-window:has(.fi-fo-field-wrp) {
+    .fi-modal-window:has(.fi-fo-field-wrp):not(.merter-bank-account-modal) {
         display: flex;
         flex-direction: column;
         width: min(56rem, calc(100vw - 3rem));
@@ -939,6 +940,27 @@ textarea.fi-input {
         grid-column: 1 / -1 !important;
     }
 
+    /* Gizlenen filtre alanının grid hücresi de kapansın; yoksa satırda
+       boşluk bırakıp kalan selectleri sağa itiyor. */
+    .fi-ta-filters .fi-grid-col:has(.merter-hide-on-mobile) {
+        display: none !important;
+    }
+
+    /* Kalan selectler hücrenin tamamını kaplasın. */
+    .fi-ta-filters .fi-fo-field-content-col,
+    .fi-ta-filters .fi-input-wrp,
+    .fi-ta-filters .fi-fo-select {
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    .fi-ta-filters .fi-fo-field-label-content {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .fi-fo-field-wrp,
     .fi-input-wrp,
     .fi-select-input,
@@ -962,7 +984,8 @@ textarea.fi-input {
         min-width: 0;
     }
 
-    /* Tablo araçları: arama bir satır, filtre/kolon butonları alt satır. */
+    /* Tablo araçları tek satır: arama 8 birim, aksiyon butonu 4 birim.
+       DOM sırası aksiyon → arama olduğu için row-reverse ile arama sola alınır. */
     .fi-ta-ctn .fi-ta-header,
     .fi-ta-ctn .fi-ta-header-toolbar {
         min-width: 0;
@@ -971,19 +994,34 @@ textarea.fi-input {
 
     .fi-ta-ctn .fi-ta-header-toolbar {
         display: flex;
-        flex-direction: column-reverse;
-        align-items: stretch;
-        gap: 0.625rem;
+        flex-direction: row-reverse;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
     }
 
     .fi-ta-ctn .fi-ta-header-toolbar > * {
-        width: 100%;
+        min-width: 0;
         min-height: 0;
         margin-inline-start: 0 !important;
     }
 
     .fi-ta-ctn .fi-ta-header-toolbar > :first-child {
+        flex: 4 1 0%;
         flex-wrap: wrap;
+    }
+
+    /* Aksiyon butonu dar alanı doldursun; etiket tek satır kalsın. */
+    .fi-ta-ctn .fi-ta-header-toolbar > :first-child .fi-btn {
+        width: 100%;
+        min-height: 2.75rem;
+        justify-content: center;
+        padding-inline: 0.5rem;
+    }
+
+    .fi-ta-ctn .fi-ta-header-toolbar > :first-child .fi-btn-label {
+        overflow: visible;
+        white-space: nowrap;
     }
 
     .fi-ta-ctn .fi-ta-header-toolbar > :first-child:not(:has(.fi-btn, .fi-link, .fi-dropdown)) {
@@ -998,10 +1036,15 @@ textarea.fi-input {
 
     .fi-ta-ctn .fi-ta-header-toolbar > div:has(.fi-ta-search-field) {
         display: flex !important;
-        width: 100%;
+        flex: 8 1 0%;
         flex-wrap: nowrap;
         align-items: center;
         gap: 0.5rem;
+    }
+
+    /* Mobilde gizlenen filtre alanları (ör. ürünlerde "Yayın durumu"). */
+    .merter-hide-on-mobile {
+        display: none !important;
     }
 
     .fi-ta-ctn .fi-ta-header-toolbar > div:has(.fi-ta-search-field) .fi-ta-search-field {
@@ -1263,7 +1306,7 @@ textarea.fi-input {
         gap: 0.625rem;
     }
 
-    .fi-modal-window:has(.fi-fo-field-wrp) .fi-modal-footer-actions > .fi-btn {
+.fi-modal-window:has(.fi-fo-field-wrp) .fi-modal-footer-actions > .fi-btn {
         width: 100%;
         min-height: 2.875rem;
         justify-content: center;
@@ -1294,6 +1337,38 @@ textarea.fi-input {
 
 .fi-modal-window:has(.merter-product-fields) .fi-sc {
     gap: 0.75rem;
+}
+
+/* Banka hesabı: geniş modalın içinde sade, finans paneli hissinde form. */
+.merter-bank-account-modal .fi-modal-content {
+    padding: 1.5rem;
+    background: #f7f8fa;
+}
+
+.merter-bank-account-modal .fi-section {
+    border-color: #e2e7ec;
+    border-radius: 0.875rem;
+    box-shadow: 0 0.75rem 2rem rgb(15 23 42 / 4%);
+}
+
+.merter-bank-account-modal .fi-section-header {
+    padding: 1.125rem 1.25rem;
+    background: linear-gradient(135deg, #fff, #fafbfc);
+}
+
+.merter-bank-account-modal .fi-section-content {
+    padding: 1.25rem;
+}
+
+.merter-bank-account-modal .fi-fo-file-upload .filepond--drop-label {
+    min-height: 7.5rem;
+}
+
+@media (max-width: 47.999rem) {
+    .merter-bank-account-modal .fi-modal-content,
+    .merter-bank-account-modal .fi-section-content {
+        padding: 1rem;
+    }
 }
 
 .fi-modal-window:has(.merter-product-fields) .fi-fo-field-wrp {
@@ -1342,11 +1417,6 @@ textarea.fi-input {
     border-color: var(--merter-border);
     border-radius: 0.625rem;
     box-shadow: none;
-}
-
-/* Silme penceresi */
-.fi-modal:has(.fi-btn.fi-color-danger) .fi-modal-window {
-    max-width: 26.875rem;
 }
 
 .fi-modal:has(.fi-btn.fi-color-danger) .fi-modal-footer {
@@ -1449,6 +1519,15 @@ textarea.fi-input {
 
     .merter-topbar-section {
         display: none;
+    }
+
+    /* Bölüm başlığı gizliyken ayırıcı çizgiye gerek yok. */
+    .merter-topbar-brand {
+        height: auto;
+        margin-inline-end: 0;
+        padding-inline-end: 0;
+        border-inline-end: 0;
+        font-size: 0.9rem;
     }
 }
 
@@ -1756,6 +1835,26 @@ nav.fi-topbar {
     backdrop-filter: blur(18px);
 }
 
+/* Marka: sidebar'daki kare+alt yazı bloğunun yerine üst şeritte düz yazı. */
+.merter-topbar-brand {
+    display: flex;
+    align-items: center;
+    height: 4.25rem;
+    margin-inline-end: 0.25rem;
+    padding-inline-end: 0.875rem;
+    border-inline-end: 1px solid var(--merter-border);
+    color: var(--merter-ink);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.merter-topbar-brand:hover {
+    color: var(--merter-orange);
+}
+
 .merter-topbar-section {
     height: 4.25rem;
     gap: 0.75rem;
@@ -1861,10 +1960,14 @@ nav.fi-topbar {
 }
 
 .merter-topbar-logout {
-    display: grid;
-    place-items: center;
-    width: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: auto;
+    min-width: 2rem;
     height: 2rem;
+    padding: 0 0.65rem;
     border: 0;
     border-radius: 0.5rem;
     background: transparent;
@@ -1878,7 +1981,180 @@ nav.fi-topbar {
 }
 
 .merter-topbar-logout svg {
+    flex: none;
     width: 1rem;
+}
+
+.merter-topbar-logout .merter-topbar-logout-label {
+    display: block;
+    color: inherit;
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.merter-duplicate-card {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: 100%;
+    margin-top: 0.25rem;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid #fecaca;
+    border-left: 3px solid #dc2626;
+    border-radius: 0.55rem;
+    background: #fef2f2;
+    box-shadow: 0 3px 10px rgba(185, 28, 28, 0.06);
+    color: #991b1b;
+}
+
+.merter-typo-card {
+    border-color: #efd18a;
+    border-left-color: #d97706;
+    background: #fffbeb;
+    box-shadow: 0 3px 10px rgba(146, 64, 14, 0.05);
+    color: #78350f;
+}
+
+.merter-typo-card .merter-duplicate-icon {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.merter-typo-card .merter-duplicate-title,
+.merter-typo-card .merter-duplicate-product {
+    color: #92400e;
+}
+
+.merter-typo-card .merter-duplicate-link {
+    border-color: #b45309;
+    background: #b45309;
+}
+
+.merter-typo-card .merter-duplicate-link:hover {
+    border-color: #92400e;
+    background: #92400e;
+}
+
+.merter-typo-card .merter-duplicate-link:focus-visible {
+    outline-color: #d97706;
+}
+
+.merter-duplicate-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 999px;
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.merter-duplicate-icon svg {
+    width: 0.95rem;
+    height: 0.95rem;
+}
+
+.merter-duplicate-content {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.merter-duplicate-title {
+    flex: none;
+    color: #991b1b;
+    font-size: 0.75rem;
+    font-weight: 750;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.merter-duplicate-product {
+    min-width: 0;
+    overflow: hidden;
+    color: #991b1b;
+    font-size: 0.72rem;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.merter-duplicate-product strong {
+    font-weight: 650;
+}
+
+.merter-duplicate-status {
+    display: inline-flex;
+    margin-left: 0.45rem;
+    padding: 0.08rem 0.38rem;
+    border: 1px solid #e5c16c;
+    border-radius: 999px;
+    background: #fff7d6;
+    font-size: 0.64rem;
+    font-weight: 650;
+    line-height: 1.35;
+    vertical-align: 0.05rem;
+}
+
+.merter-duplicate-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.38rem;
+    flex: none;
+    min-height: 1.75rem;
+    margin-left: auto;
+    padding: 0.3rem 0.58rem;
+    border: 1px solid #dc2626;
+    border-radius: 0.48rem;
+    background: #dc2626;
+    color: #fff;
+    font-size: 0.71rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.merter-duplicate-link:hover {
+    border-color: #b91c1c;
+    background: #b91c1c;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.merter-duplicate-link:focus-visible {
+    outline: 2px solid #dc2626;
+    outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+    .merter-duplicate-card {
+        gap: 0.45rem;
+        padding: 0.45rem 0.5rem;
+    }
+
+    .merter-duplicate-content {
+        gap: 0.4rem;
+    }
+
+    .merter-duplicate-title {
+        display: none;
+    }
+
+    .merter-duplicate-link span:first-child {
+        font-size: 0;
+    }
+
+    .merter-duplicate-link span:first-child::after {
+        content: 'Ürünü aç';
+        font-size: 0.71rem;
+    }
 }
 
 /* Main workspace */
@@ -1955,6 +2231,38 @@ nav.fi-topbar {
     letter-spacing: 0.06em;
 }
 
+/* Sıralanabilir sütunlarda ok tek başına belirsiz kalmasın. Aria-sort
+   değerinden mevcut yönü okuyup açık bir yardımcı etiket gösterir. */
+.fi-ta-header-cell[aria-sort] .fi-ta-header-cell-sort-btn::after {
+    content: "Sıralayın";
+    flex: none;
+    margin-inline-start: 0.25rem;
+    padding: 0.18rem 0.4rem;
+    border: 1px solid #d6d1c7;
+    border-radius: 999px;
+    background: #fff;
+    color: #77736b;
+    font-size: 0.58rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.fi-ta-header-cell[aria-sort="ascending"] .fi-ta-header-cell-sort-btn::after {
+    content: "Artan";
+}
+
+.fi-ta-header-cell[aria-sort="descending"] .fi-ta-header-cell-sort-btn::after {
+    content: "Azalan";
+}
+
+.fi-ta-header-cell[aria-sort]:not([aria-sort="none"]) .fi-ta-header-cell-sort-btn::after {
+    border-color: #fdba74;
+    background: #fff7ed;
+    color: #c2410c;
+}
+
 .fi-ta-table > tbody > tr {
     border-bottom-color: #ece9e2;
 }
@@ -2002,6 +2310,24 @@ nav.fi-topbar {
     font-weight: 600;
     padding-inline: 0.625rem;
     padding-block: 0.1875rem;
+}
+
+/* Aktif filtre rozetleri: sitenin marka turuncusu (--accent #f54a00),
+   metin ve silme (x) ikonu beyaz. */
+.fi-ta-filter-indicators-badges-ctn .fi-badge {
+    background-color: #f54a00;
+    color: #fff;
+}
+
+.fi-ta-filter-indicators-badges-ctn .fi-badge,
+.fi-ta-filter-indicators-badges-ctn .fi-badge .fi-icon,
+.fi-ta-filter-indicators-badges-ctn .fi-badge-delete-button,
+.fi-ta-filter-indicators-badges-ctn .fi-badge-delete-button .fi-icon {
+    color: #fff;
+}
+
+.fi-ta-filter-indicators-badges-ctn .fi-badge-delete-button:hover {
+    background-color: rgba(255, 255, 255, 0.25);
 }
 
 /* Buttons and fields */
@@ -2366,7 +2692,7 @@ nav.fi-topbar {
 
 .merter-brand {
     gap: 0.65rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0;
     padding: 0.1rem 0.45rem 1rem;
     border-bottom-color: #ededed;
 }
@@ -3772,6 +4098,31 @@ nav.fi-topbar {
     list-style: decimal;
 }
 
+.fi-fo-rich-editor:fullscreen {
+    padding: 18px;
+    background: #f8fafc;
+    overflow: auto;
+}
+
+.fi-fo-rich-editor:fullscreen .fi-fo-rich-editor-toolbar {
+    position: sticky;
+    z-index: 2;
+    top: 0;
+}
+
+.fi-fo-rich-editor:fullscreen .tiptap {
+    min-height: calc(100vh - 130px);
+    background: #fff;
+}
+
+.merter-html-source-input {
+    min-height: min(62vh, 680px);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    tab-size: 2;
+}
+
 /* Kayıt sayfalarında başlığın üstündeki "listeye dön" bağlantısı (solda, çerçevesiz) */
 .merter-back-link {
     display: inline-flex;
@@ -3868,6 +4219,353 @@ nav.fi-topbar {
     .fi-tabs-item[aria-selected="true"]:hover {
         background-color: var(--merter-blue-dark);
         color: #fff;
+    }
+}
+
+/* Site Linkleri: menü sekmeleri ve liste tek bir bağlı kart gibi görünür. */
+.fi-resource-site-links .merter-menu-tabs {
+    position: relative;
+    z-index: 1;
+    margin-bottom: -1.5rem;
+}
+
+.fi-resource-site-links .merter-menu-tabs-row {
+    width: 100%;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: -1.5rem;
+    padding: 0.625rem 0.75rem;
+    position: relative;
+    z-index: 1;
+    border: 1px solid #edf0f2;
+    border-bottom: 0;
+    border-radius: 0.75rem 0.75rem 0 0;
+    background: #fff;
+}
+
+.fi-resource-site-links .merter-menu-tabs-row > :first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.fi-resource-site-links .merter-menu-tabs-row > :last-child {
+    flex: 0 0 auto;
+    padding-inline-end: 0.75rem;
+}
+
+.fi-resource-site-links .merter-menu-reorder-button {
+    background: #fff !important;
+    color: #263238 !important;
+    border: 1px solid #d7dde3 !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.fi-resource-site-links .merter-menu-reorder-button:hover {
+    background: #f8fafc !important;
+}
+
+.fi-resource-site-links .merter-menu-tabs-row .merter-menu-tabs {
+    margin-bottom: 0;
+}
+
+.fi-resource-site-links .merter-menu-tabs-row .merter-menu-tabs > .fi-tabs {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+/* Sıralama düğmesi sekme satırına taşındı; tablonun altındaki varsayılan
+   ikonlu tetikleyici ikinci kez görünmesin. */
+.fi-resource-site-links .fi-ta-header-toolbar .fi-ta-actions {
+    display: none !important;
+}
+
+.fi-resource-site-links .merter-menu-tabs > .fi-tabs {
+    width: 100%;
+    margin-inline: 0;
+    padding: 0.625rem 0.75rem;
+    border-bottom-color: #edf0f2;
+    border-radius: 0.75rem 0.75rem 0 0;
+    background: #fff;
+}
+
+.fi-resource-site-links .fi-ta-ctn {
+    border-top: 0;
+    border-radius: 0 0 0.75rem 0.75rem;
+}
+
+@media (max-width: 47.999rem) {
+    .fi-resource-site-links .merter-menu-tabs > .fi-tabs {
+        padding: 0.5rem;
+    }
+}
+
+/* Ana Sayfa Yönetimi: singleton form dar bir ayar kartına sıkışmasın. */
+.fi-resource-homepage .fi-main,
+.fi-resource-homepage .fi-page,
+.fi-resource-homepage .fi-page-content,
+.fi-resource-homepage .fi-fo-form,
+.fi-resource-homepage .merter-homepage-tabs,
+.fi-resource-homepage .merter-homepage-tabs > .fi-sc-tabs-tab {
+    width: 100%;
+    max-width: none !important;
+}
+
+.fi-resource-homepage .merter-homepage-tabs > .fi-tabs {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    width: 100%;
+}
+
+.fi-resource-homepage .merter-homepage-tabs > .fi-tabs .fi-tabs-item {
+    justify-content: center;
+    min-width: 0;
+}
+
+@media (max-width: 79.999rem) {
+    .fi-resource-homepage .merter-homepage-tabs > .fi-tabs {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 47.999rem) {
+    .fi-resource-homepage .merter-homepage-tabs > .fi-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* ---------------------------------------------------------------
+   Renk ekleme / düzenleme — büyük HEX seçici + hızlı palet
+   --------------------------------------------------------------- */
+.merter-color-modal .fi-modal-content {
+    overflow: visible;
+}
+
+.merter-color-picker .fi-input-wrp {
+    overflow: visible;
+    border-radius: 0.8rem;
+}
+
+.merter-color-picker .fi-input-wrp-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 4.25rem;
+    padding: 0.5rem;
+}
+
+.merter-color-picker .fi-fo-color-picker-preview {
+    order: -1;
+    flex: 0 0 auto;
+    aspect-ratio: 1;
+    width: 3.25rem !important;
+    height: 3.25rem !important;
+    margin: 0 !important;
+    border: 0.3rem solid #fff;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 0 0 1px #cbd2da, 0 2px 7px rgba(17, 24, 39, 0.12);
+    cursor: pointer;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.merter-color-picker .fi-fo-color-picker-preview:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 2px var(--merter-blue), 0 5px 13px rgba(17, 24, 39, 0.16);
+}
+
+.merter-color-picker .merter-color-picker__hex {
+    min-width: 0;
+    padding-inline: 0.45rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
+    font-weight: 700;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+}
+
+/* Seçici paneli (Coloris) mutlak konumlu parçalardan oluşuyor: iç öğelerine
+   genişlik/görüntüleme dayatmak düzenini bozuyor, tutamak köşeye kaçıp alan
+   boş kalıyordu. Bu yüzden yalnızca dış çerçeve biçimlendiriliyor, ölçüler
+   kütüphaneye bırakılıyor. */
+.merter-color-picker .fi-fo-color-picker-panel {
+    padding: 0.6rem;
+    border: 1px solid #cbd2da;
+    border-radius: 0.9rem;
+    background: #fff;
+    box-shadow: 0 20px 45px rgba(17, 24, 39, 0.22);
+    /* Sürükleme tutamakları kenardan taşıyor; kırpılmamalı. */
+    overflow: visible;
+}
+
+/* Yalnızca köşe yuvarlama ve aralık veriliyor. Genişlik/görüntüleme
+   dayatmak seçicinin iç düzenini bozuyor (mutlak konumlu parçalar). */
+.merter-color-picker .fi-fo-color-picker-panel > * {
+    border-radius: 0.55rem;
+}
+
+.merter-color-picker .fi-fo-color-picker-panel > * + * {
+    margin-top: 0.55rem;
+}
+
+.merter-color-palette > .fi-sc-actions-label {
+    margin-bottom: 0.55rem;
+}
+
+.merter-color-palette .fi-ac {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+/* Tek katman: dairenin kendisi rengi taşıyor. Önceden dış düğme + ::before
+   kaplama + gizlenmiş etiket üst üste biniyordu ve kenarlarda beyaz kırıntı
+   bırakıyordu. */
+.merter-color-palette .merter-color-preset.fi-btn {
+    position: relative;
+    /* flex kapsayıcı düğmeleri esnetip daireleri elipse çeviriyordu;
+       esneme kapalı ve en-boy oranı sabit. */
+    flex: 0 0 auto;
+    aspect-ratio: 1;
+    width: 2.5rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 !important;
+    overflow: hidden;
+    border: 0 !important;
+    border-radius: 999px;
+    background: var(--merter-preset) !important;
+    /* İnce dış hat: beyaz ve krem tonları arka planda kaybolmasın. */
+    box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.12) !important;
+    outline: none !important;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.merter-color-palette .merter-color-preset.fi-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        inset 0 0 0 1px rgba(17, 24, 39, 0.12),
+        0 5px 12px rgba(17, 24, 39, 0.18) !important;
+}
+
+.merter-color-palette .merter-color-preset.fi-btn:focus-visible {
+    box-shadow:
+        inset 0 0 0 1px rgba(17, 24, 39, 0.12),
+        0 0 0 3px var(--merter-blue) !important;
+}
+
+/* Seçili renk: dairenin içinde beyaz halka + dışında mavi çember. */
+.merter-color-palette .merter-color-preset.fi-btn.is-selected {
+    box-shadow:
+        inset 0 0 0 3px #fff,
+        inset 0 0 0 4px rgba(17, 24, 39, 0.12),
+        0 0 0 2px var(--merter-blue) !important;
+}
+
+/* Etiket yalnızca ekran okuyucu için; ölçü almamalı. */
+.merter-color-palette .merter-color-preset .fi-btn-label {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+@media (max-width: 47.999rem) {
+    .merter-color-picker .fi-input-wrp-content {
+        gap: 0.65rem;
+        min-height: 4.25rem;
+        padding: 0.4rem;
+    }
+
+    .merter-color-picker .fi-fo-color-picker-preview {
+        width: 3.4rem !important;
+        height: 3.4rem !important;
+    }
+
+    .merter-color-palette .fi-ac {
+        gap: 0.58rem;
+    }
+
+    .merter-color-palette .merter-color-preset.fi-btn {
+        flex: 0 0 auto;
+        aspect-ratio: 1;
+        width: 2.5rem;
+        min-width: 2.5rem;
+        height: 2.5rem;
+    }
+}
+
+/* Ürün kodu input değildir; fiyatın yanında belirgin bilgi olarak görünür. */
+.merter-product-code {
+    display: flex;
+    min-height: 2.625rem;
+    align-items: center;
+    color: #18181b;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: 0.055em;
+    line-height: 1.35;
+}
+
+/* Beden ve renk zorunlu seçimleri form akışında kaybolmasın. */
+.merter-variant-choice {
+    position: relative;
+    padding: 1.25rem 1.35rem 1.35rem;
+    overflow: hidden;
+    border: 1px solid #d6dae1;
+    border-inline-start-width: 0.3rem;
+    border-radius: 0.875rem;
+    box-shadow: 0 0.25rem 1rem rgba(24, 24, 27, 0.055);
+}
+
+.merter-variant-choice--sizes {
+    border-inline-start-color: #2563eb;
+    background: linear-gradient(105deg, #eff6ff 0%, #fff 42%);
+}
+
+.merter-variant-choice--colors {
+    border-inline-start-color: #ea580c;
+    background: linear-gradient(105deg, #fff7ed 0%, #fff 42%);
+}
+
+.merter-variant-choice .fi-fo-field-label-content {
+    color: #18181b;
+    font-size: 1rem;
+    font-weight: 750;
+}
+
+.merter-variant-choice .fi-fo-checkbox-list-options {
+    gap: 0.65rem 1rem;
+    margin-top: 0.4rem;
+}
+
+.merter-variant-choice .fi-fo-checkbox-list-option-ctn {
+    min-height: 2.4rem;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid #dfe3e8;
+    border-radius: 0.55rem;
+    background: rgba(255, 255, 255, 0.92);
+    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.merter-variant-choice .fi-fo-checkbox-list-option-ctn:has(input:checked) {
+    border-color: #18181b;
+    box-shadow: 0 0 0 1px #18181b;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 39.999rem) {
+    .merter-variant-choice {
+        padding: 1rem;
     }
 }
 
@@ -4073,6 +4771,30 @@ nav.fi-topbar {
     width: auto;
     min-width: 0;
     max-width: 12.5rem;
+}
+
+/* Aramanın kendisi filtre satırında olan tablolarda (Telegram ürünleri)
+   üst şeritte ayrı bir arama kutusu yok; şerit boş kalıp filtreleri sağa
+   itmesin, alanlar da Filament'in kolon paylarını (6/2/2/2) kullansın. */
+.fi-ta-header-ctn:has(.merter-filter-search) {
+    grid-template-columns: 1fr;
+}
+
+.fi-ta-header-ctn:has(.merter-filter-search) > .fi-ta-filters-above-content-ctn {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: stretch;
+    width: 100%;
+}
+
+.fi-ta-filters-above-content-ctn .fi-ta-filters > .fi-grid:has(.merter-filter-search) {
+    display: grid;
+    width: 100%;
+}
+
+.fi-ta-filters-above-content-ctn .fi-ta-filters > .fi-grid:has(.merter-filter-search) > .fi-grid-col {
+    width: auto;
+    max-width: none;
 }
 
 /* Tablet ve altı: arama üstte tam genişlik, altında 3 filtre yan yana.
@@ -5157,4 +5879,1472 @@ input[type='radio'].fi-radio-input:disabled:checked {
     border-radius: 0.625rem;
     background: #f7f9fc;
     object-fit: contain;
+}
+
+/* ── Telegram ürün çekme modülü ─────────────────────────────────────────── */
+
+.merter-tg {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.merter-tg-card {
+    padding: 1.5rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.875rem;
+    background: #fff;
+}
+
+.merter-tg-card h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.merter-tg-card > p {
+    margin: 0 0 1.25rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.merter-tg-channels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.merter-tg-channel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.625rem;
+    cursor: pointer;
+    font-size: 0.9375rem;
+}
+
+.merter-tg-channel input {
+    width: 1.125rem;
+    height: 1.125rem;
+    accent-color: #171717;
+}
+
+.merter-tg-field {
+    display: block;
+    margin-bottom: 1.25rem;
+}
+
+.merter-tg-field span {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.merter-tg-field input {
+    width: 100%;
+    max-width: 20rem;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.625rem;
+    font-size: 0.9375rem;
+}
+
+.merter-tg-submit {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 0;
+    border-radius: 0.625rem;
+    background: #171717;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.merter-tg-submit:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+.merter-tg-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.merter-tg-table th {
+    padding: 0 0 0.75rem;
+    text-align: left;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.merter-tg-table td {
+    padding: 0.875rem 0.75rem 0.875rem 0;
+    border-top: 1px solid #eef1f4;
+    vertical-align: middle;
+}
+
+.merter-tg-number {
+    font-weight: 600;
+}
+
+.merter-tg-actions a {
+    padding: 0.4rem 0.85rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.merter-tg-status {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.merter-tg-status--completed,
+.merter-tg-status--imported { color: #15803d; }
+.merter-tg-status--failed { color: #b91c1c; }
+.merter-tg-status--running,
+.merter-tg-status--queued,
+.merter-tg-status--new { color: #b45309; }
+
+.merter-tg-empty {
+    padding: 1.5rem 0;
+    text-align: center;
+    color: #6b7280;
+}
+
+/* Tarama detayı */
+
+.merter-tg-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.merter-tg-eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #b91c1c;
+}
+
+.merter-tg-head h1 {
+    margin: 0.35rem 0 0.25rem;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.merter-tg-head p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.merter-tg-back {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.merter-tg-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1rem;
+}
+
+.merter-tg-stat {
+    padding: 1.25rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.875rem;
+    background: #fff;
+}
+
+.merter-tg-stat span {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.merter-tg-stat strong {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.merter-tg-product {
+    display: grid;
+    grid-template-columns: minmax(10rem, 18rem) 1fr;
+    gap: 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.875rem;
+    background: #fff;
+}
+
+.merter-tg-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.25rem;
+    align-content: start;
+}
+
+.merter-tg-gallery img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 0.375rem;
+    object-fit: cover;
+}
+
+.merter-tg-gallery-empty {
+    grid-column: 1 / -1;
+    padding: 2.5rem 1rem;
+    border: 1px dashed #e5e9ed;
+    border-radius: 0.5rem;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.8125rem;
+}
+
+.merter-tg-product-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.merter-tg-product-head h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.merter-tg-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+}
+
+.merter-tg-badges span {
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: #f3f4f6;
+    font-size: 0.75rem;
+    color: #374151;
+}
+
+/* Kaydın bu taramada mı çıktığı; durum rozetinden ayrı bir bilgi. */
+.merter-tg-badges span.merter-tg-origin {
+    background: #f3f4f6;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.merter-tg-badges span.merter-tg-origin--fresh {
+    background: #ecfdf3;
+    color: #067647;
+}
+
+/* Ürünün geldiği Telegram grubu; tıklanınca gruba gider. */
+.merter-tg-badges a.merter-tg-source {
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.merter-tg-badges a.merter-tg-source:hover {
+    background: #dbeafe;
+}
+
+.merter-tg-missing {
+    margin: 0 0 0.75rem;
+    color: #b91c1c;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* Kataloğa aktarıldıktan sonra kaynağı değişen ürün için uyarı. */
+.merter-tg-stale {
+    margin: 0 0 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #fed7aa;
+    border-radius: 0.5rem;
+    background: #fff7ed;
+    color: #c2410c;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.merter-tg-stale a {
+    color: #9a3412;
+    text-decoration: underline;
+}
+
+.merter-tg-raw {
+    margin: 0 0 1rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    white-space: pre-line;
+}
+
+.merter-tg-product-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.merter-tg-quick {
+    padding: 0.7rem 1.4rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: #171717;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.merter-tg-quick:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* Kataloğa eklendi: yeşil onay durumu, tam opak (soluk "disabled" değil). */
+.merter-tg-quick--done {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #16a34a;
+    color: #fff;
+}
+
+.merter-tg-quick--done:disabled {
+    opacity: 1;
+}
+
+.merter-tg-check {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+/* "Mesaja git" / "Telegram konuşması": düz link yerine çerçeveli buton. */
+.merter-tg-product-actions a.merter-tg-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.7rem 1.1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    background: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #374151;
+    text-decoration: none;
+}
+
+.merter-tg-product-actions a.merter-tg-btn:hover {
+    border-color: #171717;
+    color: #171717;
+}
+
+@media (max-width: 768px) {
+    .merter-tg-product {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Telegram: tarama ilerlemesi --- */
+
+.merter-tg-progress {
+    padding: 1.25rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.875rem;
+    background: #fff;
+}
+
+.merter-tg-progress-bar {
+    position: relative;
+    height: 0.5rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #eef1f4;
+}
+
+/* Biten kanallar: gerçek ilerleme. */
+.merter-tg-progress-done {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: 999px;
+    background: #171717;
+    /* Kanal bittiğinde zıplamasın, kayarak gitsin. */
+    transition: width 0.6s ease;
+}
+
+/* İşlenmekte olan kanal: yüzdesi bilinmiyor, o yüzden akan çizgi.
+   Duran bir çubuk "takıldı mı?" hissi veriyordu. */
+.merter-tg-progress-active {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-radius: 999px;
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(23, 23, 23, 0.55) 0,
+        rgba(23, 23, 23, 0.55) 6px,
+        rgba(23, 23, 23, 0.18) 6px,
+        rgba(23, 23, 23, 0.18) 12px
+    );
+    background-size: 17px 100%;
+    animation: merter-tg-stripes 0.7s linear infinite;
+    transition: left 0.6s ease, width 0.6s ease;
+}
+
+@keyframes merter-tg-stripes {
+    from { background-position: 0 0; }
+    to { background-position: 17px 0; }
+}
+
+/* Etiketin yanındaki dönen halka: sayfa canlı, istek sürüyor. */
+.merter-tg-spinner {
+    display: inline-block;
+    width: 0.875rem;
+    height: 0.875rem;
+    margin-right: 0.45rem;
+    vertical-align: -2px;
+    border: 2px solid #d5dae0;
+    border-top-color: #171717;
+    border-radius: 50%;
+    animation: merter-tg-spin 0.7s linear infinite;
+}
+
+@keyframes merter-tg-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Hareketi kapatmış kullanıcıya dayatma. */
+@media (prefers-reduced-motion: reduce) {
+    .merter-tg-progress-active,
+    .merter-tg-spinner {
+        animation: none;
+    }
+
+    .merter-tg-progress-done {
+        transition: none;
+    }
+}
+
+.merter-tg-progress-label {
+    margin: 0.75rem 0 0.2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #171717;
+}
+
+.merter-tg-progress-counts {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: #6b7280;
+}
+
+.merter-tg-progress-counts strong {
+    color: #171717;
+}
+
+/* --- Telegram: yeniler / hepsi sekmeleri --- */
+
+.merter-tg-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.merter-tg-tabs button {
+    padding: 0.5rem 0.875rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+}
+
+.merter-tg-tabs button.is-active {
+    border-color: #171717;
+    background: #171717;
+    color: #fff;
+}
+
+.merter-tg-muted {
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+/* --- Telegram: arama + filtre çubuğu --- */
+
+.merter-tg-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Arama ve açılır kutular aynı yükseklikte: native input/select farklı
+   render edildiği için ortak height + box-sizing veriliyor. */
+.merter-tg-filter-search,
+.merter-tg-filter-select {
+    height: 2.5rem;
+    box-sizing: border-box;
+    padding: 0 0.75rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.5rem;
+    background: #fff;
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+}
+
+.merter-tg-filter-search {
+    flex: 1 1 16rem;
+    min-width: 12rem;
+    color: #171717;
+}
+
+.merter-tg-filter-select {
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+}
+
+.merter-tg-filter-search:focus,
+.merter-tg-filter-select:focus {
+    outline: none;
+    border-color: #171717;
+}
+
+.merter-tg-filter-count {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.merter-tg-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #171717;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* --- Telegram: galeri küçük resimleri --- */
+
+.merter-tg-thumb {
+    position: relative;
+    display: block;
+    padding: 0;
+    border: 0;
+    border-radius: 0.625rem;
+    overflow: hidden;
+    background: #f3f4f6;
+    cursor: zoom-in;
+    line-height: 0;
+}
+
+.merter-tg-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.merter-tg-thumb:hover img {
+    opacity: 0.9;
+}
+
+/* Video küçük resminde oynat üçgeni. */
+.merter-tg-thumb-play {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.merter-tg-thumb-play::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0.375rem 0 0.375rem 0.625rem;
+    border-color: transparent transparent transparent #fff;
+}
+
+.merter-tg-thumb-duration {
+    position: absolute;
+    right: 0.35rem;
+    bottom: 0.35rem;
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.25rem;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    font-size: 0.6875rem;
+    line-height: 1.4;
+}
+
+/* Dördüncü karede "+3" gibi kalan sayısı. */
+.merter-tg-thumb-more {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+/* --- Telegram: büyütücü --- */
+
+[x-cloak] {
+    display: none !important;
+}
+
+.merter-tg-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem 4rem;
+    background: rgba(9, 9, 11, 0.92);
+}
+
+.merter-tg-lb-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: min(1100px, 92vw);
+    max-height: 84vh;
+}
+
+.merter-tg-lb-stage img,
+.merter-tg-lb-stage video {
+    max-width: min(1100px, 92vw);
+    max-height: 84vh;
+    border-radius: 0.5rem;
+    /* Toptancı fotoğrafları dikey; kırpmadan sığdır. */
+    object-fit: contain;
+    background: #000;
+}
+
+.merter-tg-lb-unavailable {
+    max-width: 32rem;
+    text-align: center;
+    color: #e5e7eb;
+}
+
+.merter-tg-lb-unavailable img {
+    margin-bottom: 1rem;
+    max-height: 60vh;
+}
+
+.merter-tg-lb-unavailable a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.merter-tg-lb-close,
+.merter-tg-lb-nav {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.merter-tg-lb-close {
+    top: 1rem;
+    right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.5rem;
+}
+
+.merter-tg-lb-nav {
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3rem;
+    height: 3rem;
+    font-size: 2rem;
+}
+
+.merter-tg-lb-prev { left: 1rem; }
+.merter-tg-lb-next { right: 1rem; }
+
+.merter-tg-lb-close:hover,
+.merter-tg-lb-nav:hover {
+    background: rgba(255, 255, 255, 0.24);
+}
+
+.merter-tg-lb-counter {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 0;
+    right: 0;
+    margin: 0;
+    text-align: center;
+    color: #d4d4d8;
+    font-size: 0.8125rem;
+}
+
+@media (max-width: 640px) {
+    .merter-tg-lb-nav {
+        width: 2.25rem;
+        height: 2.25rem;
+        font-size: 1.5rem;
+    }
+}
+
+/* --- Hızlı Ekle penceresi --- */
+
+.merter-qa-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2.5rem 1rem;
+    overflow-y: auto;
+    background: rgba(9, 9, 11, 0.55);
+}
+
+.merter-qa {
+    position: relative;
+    width: min(1080px, 100%);
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.28);
+}
+
+.merter-qa-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem 1.75rem 1rem;
+    border-bottom: 1px solid #eef1f4;
+}
+
+.merter-qa-eyebrow {
+    display: block;
+    color: #dc2626;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.merter-qa-head h2 {
+    margin: 0.2rem 0 0;
+    font-size: 1.375rem;
+    font-weight: 700;
+}
+
+.merter-qa-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 1px solid #e5e9ed;
+    border-radius: 999px;
+    background: #fff;
+    color: #6b7280;
+    cursor: pointer;
+    transition: background 150ms ease, color 150ms ease;
+}
+
+.merter-qa-close:hover {
+    background: #f3f4f6;
+    color: #171717;
+}
+
+.merter-qa-body {
+    display: grid;
+    gap: 1.5rem;
+    padding: 1.5rem 1.75rem;
+}
+
+.merter-qa-grid {
+    display: grid;
+    gap: 1rem 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.merter-qa-field {
+    display: block;
+}
+
+.merter-qa-field > span {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.merter-qa-field input,
+.merter-qa-field select,
+.merter-qa-field textarea {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.5rem;
+    background: #fff;
+    font-size: 0.9375rem;
+}
+
+.merter-qa-field small {
+    display: block;
+    margin-top: 0.3rem;
+    color: #9ca3af;
+    font-size: 0.75rem;
+}
+
+.merter-qa-cols {
+    display: grid;
+    gap: 1.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.merter-qa h3 {
+    margin: 0 0 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #374151;
+}
+
+.merter-qa h3 small {
+    margin-left: 0.5rem;
+    color: #9ca3af;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.merter-qa-sizes {
+    display: grid;
+    gap: 0.6rem;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.merter-qa-sizes label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.5rem;
+}
+
+.merter-qa-sizes span {
+    font-weight: 700;
+    font-size: 0.8125rem;
+}
+
+.merter-qa-sizes input {
+    width: 100%;
+    min-width: 0;
+    padding: 0.3rem 0.45rem;
+    border: 1px solid #eef1f4;
+    border-radius: 999px;
+    text-align: center;
+}
+
+.merter-qa-colors {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.merter-qa-color {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.5rem;
+    background: #fff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.merter-qa-color.is-selected {
+    border-color: #171717;
+    box-shadow: inset 0 0 0 1px #171717;
+}
+
+.merter-qa-dot {
+    width: 0.875rem;
+    height: 0.875rem;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.merter-qa-media {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+}
+
+.merter-qa-pick {
+    position: relative;
+    padding: 0;
+    border: 2px solid #e5e9ed;
+    border-radius: 0.625rem;
+    overflow: hidden;
+    background: #f3f4f6;
+    cursor: grab;
+    line-height: 0;
+    aspect-ratio: 3 / 4;
+    touch-action: manipulation;
+}
+
+.merter-qa-pick:active {
+    cursor: grabbing;
+}
+
+/* Sürüklenen karenin bıraktığı yer tutucu. */
+.merter-qa-pick--ghost {
+    opacity: 0.4;
+}
+
+.merter-qa-pick img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Seçilmeyenler soluk VE renksiz: yalnızca solukluk, dolu bir görsel
+       ızgarasında yeterince ayırt edici olmuyor. */
+    opacity: 0.4;
+    filter: grayscale(1);
+    transition: opacity 0.15s ease, filter 0.15s ease;
+}
+
+.merter-qa-pick.is-picked {
+    border-color: #ea580c;
+    box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.25);
+}
+
+.merter-qa-pick.is-picked img {
+    opacity: 1;
+    filter: none;
+}
+
+.merter-qa-pick:hover img {
+    opacity: 0.8;
+    filter: grayscale(0.3);
+}
+
+/* Sıra numarası: seçiliyse dolu daire + numara, değilse boş halka.
+   Renk körlüğünde de okunur çünkü bilgi renge değil şekle bağlı. */
+.merter-qa-badge {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.merter-qa-pick.is-picked .merter-qa-badge {
+    background: #ea580c;
+}
+
+/* Kapak, ilk seçili FOTOĞRAF: ürün listelerinde bu görsel çıkacak. */
+.merter-qa-cover {
+    position: absolute;
+    top: 0.35rem;
+    left: 0.35rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+    background: #171717;
+    color: #fff;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+    text-transform: uppercase;
+}
+
+.merter-qa-warn {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.15rem;
+    background: rgba(220, 38, 38, 0.85);
+    color: #fff;
+    font-size: 0.625rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.merter-qa-foot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1rem 1.75rem 1.5rem;
+    border-top: 1px solid #eef1f4;
+    color: #6b7280;
+    font-size: 0.8125rem;
+}
+
+.merter-qa-submit {
+    padding: 0.75rem 1.5rem;
+    border: 0;
+    border-radius: 0.625rem;
+    background: #171717;
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.merter-qa-submit:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+.merter-qa-note {
+    margin: 0;
+    padding: 0.6rem 0.75rem;
+    border: 1px dashed #e5e9ed;
+    border-radius: 0.5rem;
+    color: #6b7280;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+}
+
+.merter-qa-missing {
+    margin-right: auto;
+    color: #b45309;
+    font-weight: 600;
+}
+
+/* --- Hızlı Ekle: onay kutulu seçim kutucukları --- */
+
+.merter-qa-choices {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.merter-qa-choice {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.5rem;
+    background: #fff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.merter-qa-choice.is-selected {
+    border-color: #171717;
+    box-shadow: inset 0 0 0 1px #171717;
+}
+
+/* Gerçek input değil; tıklama butonun kendisinde. */
+.merter-qa-box {
+    position: relative;
+    width: 0.9rem;
+    height: 0.9rem;
+    flex-shrink: 0;
+    border: 1px solid #c7ccd3;
+    border-radius: 0.2rem;
+    background: #fff;
+}
+
+.merter-qa-choice.is-selected .merter-qa-box,
+.merter-qa-color.is-selected .merter-qa-box {
+    border-color: #171717;
+    background: #171717;
+}
+
+.merter-qa-choice.is-selected .merter-qa-box::after,
+.merter-qa-color.is-selected .merter-qa-box::after {
+    content: '';
+    position: absolute;
+    left: 0.28rem;
+    top: 0.06rem;
+    width: 0.22rem;
+    height: 0.45rem;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Kategori kutuları satırın tamamını kullansın. */
+.merter-qa-grid > .merter-qa-field:has(.merter-qa-choices) {
+    grid-column: 1 / -1;
+}
+
+.merter-qa-inline {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.merter-qa-inline input {
+    flex: 1;
+    min-width: 0;
+}
+
+.merter-qa-ai {
+    flex-shrink: 0;
+    padding: 0 0.85rem;
+    border: 1px solid #171717;
+    border-radius: 0.5rem;
+    background: #fff;
+    color: #171717;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.merter-qa-ai:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+/* Modal içi bildirim: gövdenin üstünde yapışık kalır. */
+.merter-qa-flash {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid;
+    border-radius: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.merter-qa-flash button {
+    flex-shrink: 0;
+    border: 0;
+    background: none;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: inherit;
+    opacity: 0.65;
+    cursor: pointer;
+}
+
+.merter-qa-flash button:hover {
+    opacity: 1;
+}
+
+.merter-qa-flash.is-success {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.merter-qa-flash.is-warning {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.merter-qa-flash.is-danger {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.merter-qa-newcolor {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.merter-qa-newcolor input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.5rem;
+}
+
+.merter-qa-newcolor input[type="color"] {
+    width: 2.75rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    padding: 0.15rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.5rem;
+    background: #fff;
+    cursor: pointer;
+}
+
+.merter-qa-newcolor button {
+    flex-shrink: 0;
+    align-self: stretch;
+    min-height: 2.5rem;
+    padding: 0 0.9rem;
+    border: 1px solid #171717;
+    border-radius: 0.5rem;
+    background: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.merter-qa-hint {
+    margin: 0 0 0.75rem;
+    font-size: 0.8125rem;
+    color: #6b7280;
+}
+
+.merter-qa-hint small {
+    display: block;
+    margin-top: 0.35rem;
+    color: #9ca3af;
+}
+
+.merter-qa-tag {
+    display: inline-block;
+    margin: 0.15rem 0.2rem 0.15rem 0;
+    padding: 0.2rem 0.55rem;
+    border: 1px dashed #c7ccd3;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+}
+
+/* Sistemde karşılığı olan renk: eklenecek bir şey yok. */
+.merter-qa-tag.is-known {
+    border-style: solid;
+    border-color: #86efac;
+    background: #f0fdf4;
+    color: #166534;
+    cursor: default;
+}
+
+.merter-qa-home {
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.merter-qa-home small {
+    flex-basis: 100%;
+    margin-left: 1.4rem;
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+/* --- Ürün görselleri: "Görsel ekle" düğmesi --- */
+
+/* Varsayılan bağlantı görünümü çok siliktı, düğme olduğu anlaşılmıyordu.
+   Kesikli çerçeveli tam genişlik alan: belirgin ama sayfayı bastırmıyor. */
+.merter-product-media .fi-fo-repeater-actions {
+    margin-top: 0.75rem;
+}
+
+.merter-product-media .fi-fo-repeater-add .fi-btn,
+.merter-product-media .fi-fo-repeater-add button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    border: 2px dashed var(--merter-blue);
+    border-radius: 0.625rem;
+    background: #f5f9ff;
+    color: var(--merter-blue);
+    font-weight: 700;
+}
+
+.merter-product-media .fi-fo-repeater-add .fi-btn:hover,
+.merter-product-media .fi-fo-repeater-add button:hover {
+    border-style: solid;
+    background: var(--merter-blue);
+    color: #fff;
+}
+
+.merter-product-media .fi-fo-repeater-add .fi-btn-icon,
+.merter-product-media .fi-fo-repeater-add svg {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+/* Araya ekleme düğmeleri de görünür olsun ama ana düğmeyle yarışmasın. */
+.merter-product-media .fi-fo-repeater-add-between-items button {
+    border: 1px dashed #c7d2e0;
+    border-radius: 999px;
+    color: var(--merter-blue);
+}
+
+/* --- Renk penceresi --- */
+
+/* Yardım metni iki satır yer kaplıyordu. */
+.merter-color-picker .fi-fo-field-wrp-hint,
+.merter-color-picker .fi-fo-field-wrp-helper-text {
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+/* Tarama ekranı: bağlı hesap yokken çıkan uyarı. */
+.merter-tg-note {
+    margin: 0 0 1rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid #fde68a;
+    border-radius: 0.625rem;
+    background: #fffbeb;
+    color: #78350f;
+    font-size: 0.8125rem;
+    line-height: 1.55;
+}
+
+.merter-tg-note a {
+    margin-left: 0.25rem;
+    color: #78350f;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+/* Hızlı Ekle penceresi açıkken arkadaki sayfa kaymasın. */
+body:has(.merter-qa-backdrop) {
+    overflow: hidden;
+}
+
+/* Kaydetme sırasında pencerenin üstünü kaplayan bekleme katmanı. */
+.merter-qa-busy {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.85rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(2px);
+}
+
+.merter-qa-busy p {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #171717;
+}
+
+.merter-qa-busy small {
+    display: block;
+    margin-top: 0.15rem;
+    font-weight: 400;
+    color: #6b7280;
+}
+
+.merter-qa-busy-spinner {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 3px solid #e5e9ed;
+    border-top-color: #171717;
+    border-radius: 50%;
+    animation: merter-tg-spin 0.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .merter-qa-busy-spinner {
+        animation: none;
+    }
 }

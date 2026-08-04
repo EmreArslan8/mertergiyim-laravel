@@ -6,7 +6,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/commerce.css?v=20260731-7">
+    <link rel="stylesheet" href="/css/commerce.css?v=20260801-1">
 @endpush
 
 @section('content')

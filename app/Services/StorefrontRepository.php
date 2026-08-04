@@ -58,7 +58,8 @@ class StorefrontRepository
                 $byCode[$row->code] = Storefront::currencyDisplay($row);
             }
 
-            $fallback = $rows->firstWhere('is_default', true) ?? $rows->first();
+            // is_default kaldırıldı; fallback sıradaki ilk para birimi.
+            $fallback = $rows->first();
 
             return [
                 'byCode' => $byCode,
@@ -76,7 +77,7 @@ class StorefrontRepository
             'languages' => Language::query()->where('active', true)->orderBy('sort_order')->get(['code', 'name'])->all(),
             'settingValue' => SiteSetting::query()->find('storefront')?->value ?? [],
             'links' => SiteLink::query()->where('active', true)->orderBy('sort_order')->get()->all(),
-            'categories' => Category::query()->where('active', true)->orderBy('name')->get(['id', 'name', 'name_i18n', 'slug'])->all(),
+            'categories' => Category::query()->where('active', true)->orderBy('sort_order')->orderBy('name')->get(['id', 'name', 'name_i18n', 'slug'])->all(),
         ]);
     }
 
@@ -85,10 +86,26 @@ class StorefrontRepository
      */
     public function home(): array
     {
-        return $this->remember('home', fn () => [
-            'products' => Product::query()->active()->with(['images', 'category'])->orderBy('created_at')->get()->all(),
-            'slides' => HeroSlide::query()->where('active', true)->orderBy('sort_order')->get()->all(),
-        ]);
+        return $this->remember('home', function (): array {
+            $settings = SiteSetting::query()->find('storefront')?->value ?? [];
+            $productLimit = max(1, min(100, (int) data_get($settings, 'general.homeProductLimit', 12)));
+
+            return [
+                'settings' => $settings,
+                'products' => Product::query()
+                    ->active()
+                    // Ana sayfada hangi ürünlerin çıkacağı panelden seçiliyor;
+                    // eskiden en yeniler otomatik listeleniyordu.
+                    ->where('show_on_home', true)
+                    ->with(['images', 'category'])
+                    ->orderByDesc('created_at')
+                    ->orderByDesc('id')
+                    ->limit($productLimit)
+                    ->get()
+                    ->all(),
+                'slides' => HeroSlide::query()->where('active', true)->orderBy('sort_order')->get()->all(),
+            ];
+        });
     }
 
     /**

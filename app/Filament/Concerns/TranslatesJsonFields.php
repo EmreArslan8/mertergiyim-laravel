@@ -7,6 +7,7 @@ use App\Services\TranslateService;
 use App\Support\Storefront;
 use App\Support\TranslationStatus;
 use Filament\Notifications\Notification;
+use Filament\Support\Exceptions\Halt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
@@ -20,7 +21,7 @@ use Throwable;
  * - Türkçe metin değişmediyse ve tüm diller doluysa çeviri çağrısı yapılmaz.
  * - Eksik dil varsa Türkçe değişmemiş olsa bile çeviriler otomatik tamamlanır.
  * - Değişen tüm alanlar TEK Gemini isteğinde çevrilir.
- * - Gemini hatası kaydı bozmaz: tr yazılır, eski çeviriler kalır, kullanıcı uyarılır.
+ * - Gemini hatası veya eksik dil kaydı durdurur ve işlemi geri alır.
  *
  * Varsayılan davranış "kolon -> { locale: metin }" yapısı içindir
  * (products.name, hero_slides.title ...). Farklı jsonb şekli olan kaynaklar
@@ -28,6 +29,15 @@ use Throwable;
  */
 trait TranslatesJsonFields
 {
+    /** Aynı Livewire isteğinde başarısız dış servise tekrar tekrar gitme. */
+    protected bool $automaticTranslationUnavailable = false;
+
+    /** Çok alanlı/repeater kayıtlarında toplam HTTP süresini PHP sınırının altında tutar. */
+    protected ?float $automaticTranslationStartedAt = null;
+
+    /** @var array<string, array<string, string>>|null Türkçe alt metin => çeviriler */
+    protected ?array $automaticImageAltTranslationBatch = null;
+
     /**
      * Otomatik çevrilecek alanlar.
      *
@@ -72,8 +82,11 @@ trait TranslatesJsonFields
      * @param  array<string, string>  $fields
      * @return array<string, mixed>
      */
-    public function fillAutomaticTranslationsForFields(array $data, ?Model $record, array $fields): array
-    {
+    public function fillAutomaticTranslationsForFields(
+        array $data,
+        ?Model $record,
+        array $fields,
+    ): array {
         $this->translationRecordOverride = $record;
         $this->translationFieldsOverride = $fields;
 
@@ -83,6 +96,93 @@ trait TranslatesJsonFields
             $this->translationRecordOverride = null;
             $this->translationFieldsOverride = null;
         }
+    }
+
+    /**
+     * Ürün repeater'ındaki bütün görsel alt metinlerini tek Gemini isteğinde
+     * çevirir. Her satırın ayrı HTTP isteği açması PHP zaman aşımına yol açıyordu.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function fillAutomaticImageAltTranslations(array $data, ?Model $record): array
+    {
+        $turkish = trim((string) Arr::get($data, 'alt.tr', ''));
+
+        if ($turkish === '') {
+            Arr::set($data, 'alt', array_merge(
+                $this->modelJsonValue($record, 'alt'),
+                ['tr' => ''],
+            ));
+
+            return $data;
+        }
+
+        if ($this->automaticImageAltTranslationBatch === null) {
+            $this->automaticImageAltTranslationBatch = [];
+            $texts = [];
+            $textKeys = [];
+
+            // Değişmeyen ve 9 dili zaten tamam olan mevcut görsellerin
+            // çevirilerini yeniden kullan; yalnızca yeni/değişmiş/eksik
+            // alternatif metinler toplu isteğe girsin.
+            $pageRecord = $this->translationRecord();
+
+            if ($pageRecord && method_exists($pageRecord, 'images')) {
+                foreach ($pageRecord->images()->get() as $existingImage) {
+                    $existing = $this->modelJsonValue($existingImage, 'alt');
+                    $existingTr = trim((string) ($existing['tr'] ?? ''));
+
+                    if ($existingTr !== '' && TranslationStatus::missingLocales($existing) === []) {
+                        unset($existing['tr']);
+                        $this->automaticImageAltTranslationBatch[$existingTr] = $existing;
+                    }
+                }
+            }
+
+            foreach ((array) data_get($this, 'data.images', []) as $image) {
+                $text = trim((string) data_get($image, 'alt.tr', ''));
+
+                if ($text === ''
+                    || isset($textKeys[$text])
+                    || isset($this->automaticImageAltTranslationBatch[$text])) {
+                    continue;
+                }
+
+                $key = $texts === [] ? 'alt' : 'alt_'.(count($texts) + 1);
+                $texts[$key] = $text;
+                $textKeys[$text] = $key;
+            }
+
+            if ($texts !== []) {
+                try {
+                    $translated = app(TranslateService::class)->translateFields($texts);
+                } catch (Throwable $exception) {
+                    // Görsel alt metni yardımcı içeriktir. Çeviri servisi geçici
+                    // olarak çalışmazsa ürün kaydını engelleme; Türkçe alt metni
+                    // kaydet ve diğer dilleri daha sonra tamamlamaya bırak.
+                    Log::warning('Görsel alt metinleri çevrilemedi; kayıt Türkçe alt metinle sürdürüldü.', [
+                        'record' => $this->translationRecord()?->getKey(),
+                        'error' => $exception->getMessage(),
+                    ]);
+
+                    $translated = [];
+                }
+
+                foreach ($textKeys as $text => $key) {
+                    $values = $translated[$key] ?? [];
+                    $this->automaticImageAltTranslationBatch[$text] = is_array($values) ? $values : [];
+                }
+            }
+        }
+
+        Arr::set($data, 'alt', array_merge(
+            $this->modelJsonValue($record, 'alt'),
+            $this->automaticImageAltTranslationBatch[$turkish] ?? [],
+            ['tr' => $turkish],
+        ));
+
+        return $data;
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array
@@ -138,8 +238,7 @@ trait TranslatesJsonFields
     }
 
     /**
-     * Gemini istek başarılı olsa bile bazı dilleri eksik döndürebiliyor.
-     * Kayıt engellenmez ama hangi dillerin eksik kaldığı panelde bildirilir.
+     * Gemini başarılı yanıt verse bile bütün diller tamamlanmadan kayıt yapılmaz.
      *
      * @param  array<string, mixed>  $data
      * @param  array<int, string>  $fields
@@ -163,11 +262,13 @@ trait TranslatesJsonFields
         }
 
         Notification::make()
-            ->title('Bazı diller çevrilemedi, kayıt tamamlandı.')
-            ->body(implode(' • ', $missing).' — Kaydı tekrar kaydederek ya da "php artisan translations:check --fix" ile tamamlayabilirsiniz.')
-            ->warning()
+            ->title('Kayıt yapılmadı: çeviriler eksik.')
+            ->body(implode(' • ', $missing).' — Lütfen tekrar deneyin.')
+            ->danger()
             ->persistent()
             ->send();
+
+        throw (new Halt)->rollBackDatabaseTransaction();
     }
 
     /**
@@ -186,9 +287,27 @@ trait TranslatesJsonFields
      */
     protected function translate(array $changed): array
     {
+        $this->automaticTranslationStartedAt ??= microtime(true);
+
+        // Tek istek timeout 20 sn + 1 retry (~40 sn) olabildiği için toplam
+        // bütçe buna göre; aksi hâlde retry tamamlanmadan kayıt kesilirdi.
+        if ($this->automaticTranslationUnavailable
+            || (microtime(true) - $this->automaticTranslationStartedAt) >= 45) {
+            Notification::make()
+                ->title('Kayıt yapılmadı: çeviri servisi zaman aşımına uğradı.')
+                ->body('Hiçbir içerik eksik çeviriyle kaydedilmedi. Lütfen tekrar deneyin.')
+                ->danger()
+                ->persistent()
+                ->send();
+
+            throw (new Halt)->rollBackDatabaseTransaction();
+        }
+
         try {
             return app(TranslateService::class)->translateFields($changed);
         } catch (Throwable $exception) {
+            $this->automaticTranslationUnavailable = true;
+
             Log::warning('Otomatik çeviri yapılamadı.', [
                 'fields' => array_keys($changed),
                 'record' => $this->translationRecord()?->getKey(),
@@ -196,13 +315,13 @@ trait TranslatesJsonFields
             ]);
 
             Notification::make()
-                ->title('Otomatik çeviri yapılamadı, metinler Türkçe kaydedildi.')
-                ->body($exception->getMessage())
-                ->warning()
+                ->title('Kayıt yapılmadı: otomatik çeviri başarısız.')
+                ->body($exception->getMessage().' — Lütfen tekrar deneyin.')
+                ->danger()
                 ->persistent()
                 ->send();
 
-            return [];
+            throw (new Halt)->rollBackDatabaseTransaction();
         }
     }
 
@@ -276,7 +395,12 @@ trait TranslatesJsonFields
      */
     protected function originalJsonValue(string $field): array
     {
-        $record = $this->translationRecord();
+        return $this->modelJsonValue($this->translationRecord(), $field);
+    }
+
+    /** @return array<string, mixed> */
+    protected function modelJsonValue(?Model $record, string $field): array
+    {
 
         if (! $record) {
             return [];

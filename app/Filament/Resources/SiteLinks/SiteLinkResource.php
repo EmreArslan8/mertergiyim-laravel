@@ -20,7 +20,7 @@ class SiteLinkResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Site Linkleri';
 
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 130;
 
     protected static ?string $modelLabel = 'bağlantı';
 

@@ -76,7 +76,8 @@
     "gallery": {
         "zoomHint": "Pasa el cursor o toca para ampliar",
         "galleryNote": "Toca una miniatura para cambiar la imagen.",
-        "showImage": "mostrar imagen"
+        "showImage": "mostrar imagen",
+        "video": "Vídeo"
     },
     "meta": {
         "title": "Merter Giyim | Ropa al por mayor y al detalle de Merter",
@@ -89,7 +90,7 @@
         "heading": "Seguimiento de pedido",
         "subheading": "Busca por número de pedido o código de seguimiento.",
         "inputLabel": "N.º de pedido / Código de seguimiento",
-        "placeholder": "Ej.: MG-20260723-8H4K2P9X",
+        "placeholder": "Ej.: ORD-20260723-8H4K2P9X",
         "submit": "Rastrear pedido",
         "loading": "Buscando…",
         "errorEmpty": "Introduce tu número de pedido o código de seguimiento.",
@@ -169,6 +170,16 @@
             "phone": "Introduce un número de teléfono válido con el código de país.",
             "minimumOrder": "El pedido mínimo es de {amount} {currency}."
         }
+    },
+    "bankAccounts": {
+        "eyebrow": "Información",
+        "subtitle": "Nuestros datos bancarios actuales que puede usar para confirmar el pago tras su pedido.",
+        "owner": "Titular de la cuenta",
+        "iban": "IBAN",
+        "branch": "Sucursal",
+        "copy": "Copiar IBAN",
+        "copied": "Copiado",
+        "empty": "No hay cuentas bancarias para mostrar en este momento."
     },
     "orderSuccess": {
         "eyebrow": "PEDIDO CREADO",

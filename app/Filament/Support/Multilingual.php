@@ -2,9 +2,13 @@
 
 namespace App\Filament\Support;
 
+use App\Filament\Actions\EditRichTextHtmlAction;
+use App\Support\Storefront;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\RichEditor\RichEditorTool;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Support\Icons\Heroicon;
 
 /**
  * jsonb çok dilli alanlar (products.name, hero_slides.title ...) için panel
@@ -49,31 +53,34 @@ class Multilingual
         bool $required = true,
         ?string $legacyFallback = null,
         bool $rich = false,
-    ): TextInput|Textarea|RichEditor
-    {
-        $input = self::input($field.'.tr', $label, $long, $rich)
+        bool $richInline = false,
+    ): TextInput|Textarea|RichEditor {
+        // Satır-içi editör de zengin bir editördür; sadece araç seti sadedir.
+        $isRich = $rich || $richInline;
+
+        $input = self::input($field.'.tr', $label, $long, $rich, $richInline)
             ->required($required)
             ->columnSpanFull();
 
         // Not: afterStateHydrated tek closure tutar; zengin editörün eski düz metin
         // dönüşümü de burada yapılır ki iki kanca birbirini ezmesin.
-        if ($legacyFallback || $rich) {
-            $input->afterStateHydrated(function ($component, $state, $record) use ($legacyFallback, $rich): void {
+        if ($legacyFallback || $isRich) {
+            $input->afterStateHydrated(function ($component, $state, $record) use ($legacyFallback, $isRich): void {
                 if ($legacyFallback && blank($state) && filled($record?->{$legacyFallback})) {
                     $state = $record->{$legacyFallback};
                 }
 
-                $component->state($rich ? self::toEditorHtml($state) : $state);
+                $component->state($isRich ? self::toEditorHtml($state) : $state);
             });
         }
 
         return $input;
     }
 
-    private static function input(string $name, string $label, bool $long, bool $rich = false): TextInput|Textarea|RichEditor
+    private static function input(string $name, string $label, bool $long, bool $rich = false, bool $richInline = false): TextInput|Textarea|RichEditor
     {
-        if ($rich) {
-            return self::richEditor($name, $label);
+        if ($rich || $richInline) {
+            return self::richEditor($name, $label, inline: $richInline);
         }
 
         return $long
@@ -82,22 +89,65 @@ class Multilingual
     }
 
     /**
-     * Panel kullanıcısı için sadeleştirilmiş editör: kalın/italik, madde
-     * işaretli/numaralı liste ve geri/ileri. Başlık, tablo, kod, renk, hizalama
-     * ve dosya ekleme kapalı; böylece vitrin tasarımını bozacak içerik üretilemez
-     * ve otomatik çeviri basit HTML üzerinde güvenle çalışır.
+     * Panel kullanıcısı için güvenli ve kapsamlı içerik editörü. Sayfanın tek
+     * H1 başlığı şablondan geldiği için içerikte H2-H4 sunulur.
      */
-    public static function richEditor(string $name, string $label): RichEditor
+    public static function richEditor(string $name, string $label, bool $inline = false): RichEditor
     {
-        return RichEditor::make($name)
+        $editor = RichEditor::make($name)
             ->label($label)
-            ->toolbarButtons([
-                ['bold', 'italic'],
-                ['bulletList', 'orderedList'],
-                ['undo', 'redo'],
+            // Editör öncesi kaydedilmiş düz metinler paragraf olarak açılsın.
+            ->afterStateHydrated(fn ($component, $state) => $component->state(self::toEditorHtml($state)))
+            // Boş editör "<p></p>" üretir; bu dolu metin sayılıp gereksiz çeviri
+            // tetiklemesin diye boş kaydedilir.
+            ->dehydrateStateUsing(fn ($state) => Storefront::plainText($state, 'tr') === '' ? null : $state)
+            ->fileAttachments(false);
+
+        // Hero başlığı gibi tek satırlık alanlar: yalnızca satır-içi biçimlendirme.
+        // Başlık/liste/tablo/hizalama gibi blok araçlar kapalı; içerik <h1> içine
+        // basıldığı için blok öğeler semantik olarak yanlış olurdu.
+        if ($inline) {
+            return $editor
+                ->toolbarButtons([
+                    ['bold', 'italic', 'underline', 'strike', 'link'],
+                    ['undo', 'redo', 'clearFormatting'],
+                ])
+                ->helperText('Başlık, sayfanın ana başlığıdır (H1); bu yüzden yalnızca satır-içi biçimlendirme sunulur. Kalın, italik, altı çizili, üstü çizili ve bağlantı desteklenir.');
+        }
+
+        return $editor
+            ->tools([
+                RichEditorTool::make('editHtml')
+                    ->label('HTML kaynağı')
+                    ->action(
+                        action: 'editRichTextHtml',
+                        arguments: '{ html: $getEditor()?.getHTML() ?? \'\' }',
+                    )
+                    ->icon(Heroicon::CodeBracket),
+                RichEditorTool::make('fullscreen')
+                    ->label('Tam ekran')
+                    ->jsHandler(<<<'JS'
+                        (() => {
+                            const editor = $el.closest('.fi-fo-rich-editor')
+                            if (! editor) return
+                            if (document.fullscreenElement) document.exitFullscreen()
+                            else editor.requestFullscreen()
+                        })()
+                        JS)
+                    ->icon(Heroicon::ArrowsPointingOut),
             ])
-            ->fileAttachments(false)
-            ->helperText('Metni kalın/italik yapabilir, madde listesi ekleyebilirsiniz. Biçim vitrinde aynı görünür.');
+            ->registerActions([
+                EditRichTextHtmlAction::make(),
+            ])
+            ->toolbarButtons([
+                ['paragraph', 'h2', 'h3', 'h4'],
+                ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link'],
+                ['alignStart', 'alignCenter', 'alignEnd', 'alignJustify'],
+                ['blockquote', 'bulletList', 'orderedList', 'table', 'horizontalRule'],
+                ['undo', 'redo', 'clearFormatting'],
+                ['editHtml', 'fullscreen'],
+            ])
+            ->helperText('Başlık, hizalama, tablo, bağlantı, liste ve HTML kaynağı desteklenir. Güvenli olmayan HTML kayıtta temizlenir.');
     }
 
     /**

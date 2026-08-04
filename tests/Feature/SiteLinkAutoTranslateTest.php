@@ -7,6 +7,7 @@ use App\Models\SiteLink;
 use App\Models\User;
 use App\Services\TranslateService;
 use App\Support\TranslationStatus;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -65,5 +66,23 @@ class SiteLinkAutoTranslateTest extends TestCase
         $this->assertCount(10, $link->label);
 
         $link->delete();
+    }
+
+    public function test_reordering_links_clears_the_storefront_menu_cache(): void
+    {
+        $this->actingAs(User::query()->firstOrFail());
+        $ids = SiteLink::query()
+            ->where('location', 'header')
+            ->orderBy('sort_order')
+            ->pluck('id')
+            ->all();
+
+        Cache::put('storefront:chrome', ['stale' => true], 600);
+
+        Livewire::test(ListSiteLinks::class)
+            ->set('activeTab', 'header')
+            ->call('reorderTable', array_reverse($ids));
+
+        $this->assertFalse(Cache::has('storefront:chrome'));
     }
 }

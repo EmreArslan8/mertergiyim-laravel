@@ -2,7 +2,11 @@
 
 namespace App\Filament\Resources\Categories\Tables;
 
+use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Support\Multilingual;
+use App\Filament\Support\Reorderable;
+use App\Models\Category;
+use App\Support\StorefrontCache;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -16,7 +20,14 @@ class CategoriesTable
     {
         return $table
             ->stackedOnMobile()
-            ->defaultSort('name')
+            // Sıra vitrindeki kategori sekmelerini belirler; sürükle-bırak
+            // sort_order'a yazar, bu yüzden liste de sort_order'a göre dizilir.
+            ->defaultSort('sort_order')
+            // Arama aktifken alt küme görünür; sürüklemek global sırayı bozar.
+            ->reorderable('sort_order', fn ($livewire): bool => CategoryResource::canManage()
+                && blank($livewire->getTableSearch()))
+            ->reorderRecordsTriggerAction(Reorderable::triggerAction())
+            ->afterReordering(fn () => StorefrontCache::flushFor(new Category))
             ->columns([
                 TextColumn::make('name_i18n')
                     ->label('Kategori')

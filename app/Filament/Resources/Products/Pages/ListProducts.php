@@ -8,7 +8,6 @@ use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Icons\Heroicon;
 
-
 class ListProducts extends ListRecords
 {
     use TranslatesJsonFields;
@@ -25,6 +24,7 @@ class ListProducts extends ListRecords
             Action::make('create')
                 ->label('Yeni ürün ekle')
                 ->icon(Heroicon::Plus)
+                ->visible(fn (): bool => ProductResource::canCreate())
                 ->url(fn (): string => ProductResource::getUrl('create')),
         ];
     }

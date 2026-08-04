@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\Languages\Schemas;
 
-use App\Filament\Support\Multilingual;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
@@ -14,18 +12,18 @@ class LanguageForm
     {
         return $schema
             ->components([
-                Select::make('code')
+                TextInput::make('code')
                     ->label('Dil kodu')
-                    ->options(collect(Multilingual::locales())
-                        ->mapWithKeys(fn ($locale) => [$locale => $locale.' — '.Multilingual::localeLabel($locale)])
-                        ->all())
                     ->required()
+                    ->maxLength(10)
+                    ->helperText('ISO dil kodu; ör. tr, en, ar.')
                     ->unique(ignoreRecord: true),
                 TextInput::make('name')
                     ->label('Görünen ad')
                     ->required()
                     ->helperText('Dil çubuğunda görünen etiket.'),
-                TextInput::make('sort_order')->label('Sıra')->numeric()->default(0),
+                // Sıra otomatik: yeni dil sona eklenir, tabloda sürükle-bırakla
+                // düzenlenir. Elle input gerekmiyor.
                 Toggle::make('active')->label('Aktif')->default(true),
             ]);
     }

@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ContentPage;
+use App\Support\Storefront;
+
+use App\Models\BankAccount;
 use Illuminate\View\View;
 
 class CartController extends Controller
 {
-    public function __invoke(string $locale): View
+    public function __invoke(): View
     {
+        $locale = app()->getLocale();
         return view('storefront.cart', [
-            'bankAccountsPage' => ContentPage::query()
-                ->where('slug', 'banka-hesaplarimiz')
-                ->where('active', true)
-                ->exists(),
-            'canonicalPath' => '/'.$locale.'/sepet',
-            'alternatePath' => fn (string $code) => '/'.$code.'/sepet',
+            'hasBankAccounts' => BankAccount::query()->where('active', true)->exists(),
+            'canonicalPath' => Storefront::localePath($locale, '/sepet'),
+            'alternatePath' => fn (string $code) => Storefront::localePath($code, '/sepet'),
         ]);
     }
 }

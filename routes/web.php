@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BankAccountsController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
@@ -13,31 +14,55 @@ use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Middleware\SetStorefrontLocale;
-use App\Support\BrandSettings;
+use App\Support\Storefront;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', fn () => redirect('/'.BrandSettings::defaultLocale()));
 
 Route::get('/sitemap.xml', SitemapController::class)->name('storefront.sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('storefront.robots');
 
-Route::middleware(SetStorefrontLocale::class)->group(function () {
-    Route::get('/{locale}', HomeController::class)->name('storefront.home');
-    Route::get('/{locale}/kategori', [CategoryController::class, 'index'])->name('storefront.categories');
-    Route::get('/{locale}/kategori/{slug}', CategoryController::class)->name('storefront.category');
-    Route::get('/{locale}/sepet', CartController::class)->name('storefront.cart');
-    Route::post('/{locale}/siparisler', [CheckoutController::class, 'store'])->name('storefront.order.store');
-    Route::get('/{locale}/siparis-basarili/{trackingCode}', [CheckoutController::class, 'success'])->name('storefront.order.success');
-    Route::get('/{locale}/siparis-takibi', TrackingController::class)->name('storefront.tracking');
-    Route::get('/{locale}/multimedya', MultimediaController::class)->name('storefront.multimedia');
-    Route::get('/{locale}/iletisim', [ContactController::class, 'show'])->name('storefront.contact');
-    Route::post('/{locale}/iletisim', [ContactController::class, 'store'])->name('storefront.contact.store');
-    Route::get('/{locale}/blog', [BlogController::class, 'index'])->name('storefront.blog.index');
-    Route::get('/{locale}/blog/{slug}', [BlogController::class, 'show'])->name('storefront.blog.show');
-    Route::get('/{locale}/product/{slug}', ProductController::class)->name('storefront.product');
+/**
+ * Vitrin rotaları iki kez tanımlanır:
+ *
+ * - Varsayılan dil ön eksiz kökte yaşar: /iletisim
+ * - Diğer diller ön ekli: /en/iletisim
+ *
+ * Hangi dilin ön eksiz olduğu panelden gelir; rota tanımı sabit kalsın diye
+ * ayrımı SetStorefrontLocale yapar (varsayılan dil ön ekiyle gelen istek kök
+ * adrese 301 döner).
+ */
+$storefront = function (bool $localized) {
+    $prefix = $localized ? '/{locale}' : '';
+    $name = fn (string $route): string => 'storefront.'.$route.($localized ? '.localized' : '');
 
-    // Bilgilendirme sayfaları dil kökünün hemen altında yaşar (/tr/kvkk).
+    Route::get($prefix ?: '/', HomeController::class)->name($name('home'));
+    Route::get($prefix.'/kategori', [CategoryController::class, 'index'])->name($name('categories'));
+    Route::get($prefix.'/kategori/{slug}', CategoryController::class)->name($name('category'));
+    Route::get($prefix.'/sepet', CartController::class)->name($name('cart'));
+    Route::post($prefix.'/siparisler', [CheckoutController::class, 'store'])->name($name('order.store'));
+    Route::get($prefix.'/siparis-basarili/{trackingCode}', [CheckoutController::class, 'success'])->name($name('order.success'));
+    Route::get($prefix.'/siparis-takibi', TrackingController::class)->name($name('tracking'));
+    Route::get($prefix.'/multimedya', MultimediaController::class)->name($name('multimedia'));
+    Route::get($prefix.'/iletisim', [ContactController::class, 'show'])->name($name('contact'));
+    Route::post($prefix.'/iletisim', [ContactController::class, 'store'])->name($name('contact.store'));
+    Route::get($prefix.'/blog', [BlogController::class, 'index'])->name($name('blog.index'));
+    Route::get($prefix.'/blog/{slug}', [BlogController::class, 'show'])->name($name('blog.show'));
+    Route::get($prefix.'/product/{slug}', ProductController::class)->name($name('product'));
+    Route::get($prefix.'/banka-hesaplarimiz', BankAccountsController::class)->name($name('bank-accounts'));
+
+    // Bilgilendirme sayfaları dil kökünün hemen altında yaşar (/kvkk).
     // Sabit storefront rotaları yukarıda tanımlı olduğu için onlar önce eşleşir;
-    // bu satır en sonda kalmalı.
-    Route::get('/{locale}/{slug}', ContentPageController::class)->name('storefront.page');
+    // bu satır en sonda kalmalı. Ön eksiz sürümde panel ve sistem yolları
+    // sayfa slug'ı sanılmasın diye dışarıda bırakılır.
+    $page = Route::get($prefix.'/{slug}', ContentPageController::class)->name($name('page'));
+
+    if (! $localized) {
+        $page->where('slug', '^(?!admin|storage|livewire|api|build|up$)[^/]+$');
+    }
+};
+
+Route::middleware(SetStorefrontLocale::class)->group(function () use ($storefront) {
+    // Dil ön ekli rotalar önce gelir: /en isteği "en adlı sayfa" sanılmasın.
+    Route::whereIn('locale', Storefront::locales())->group(fn () => $storefront(true));
+
+    $storefront(false);
 });

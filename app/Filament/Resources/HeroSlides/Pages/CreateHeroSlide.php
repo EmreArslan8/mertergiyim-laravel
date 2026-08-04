@@ -10,7 +10,6 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateHeroSlide extends CreateRecord
 {
     use HasBackToListAction;
-
     use TranslatesJsonFields;
 
     protected static string $resource = HeroSlideResource::class;
@@ -23,6 +22,7 @@ class CreateHeroSlide extends CreateRecord
     protected function translatableJsonFields(): array
     {
         return [
+            'eyebrow' => 'Üst yazı',
             'title' => 'Başlık',
             'button_text' => 'Buton Metni',
         ];

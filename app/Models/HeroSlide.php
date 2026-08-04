@@ -12,6 +12,7 @@ class HeroSlide extends Model
     protected $guarded = [];
 
     protected $casts = [
+        'eyebrow' => 'array',
         'title' => 'array',
         'button_text' => 'array',
         'active' => 'boolean',

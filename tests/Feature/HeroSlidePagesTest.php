@@ -29,10 +29,11 @@ class HeroSlidePagesTest extends TestCase
         // FileUpload kaydı açarken dosyanın diskte olup olmadığına bakıyor;
         // yoksa alanı boşaltıp `required` doğrulamasını düşürüyor.
         Storage::disk(UploadTarget::disk('site'))->put('hero/test.webp', 'x');
+        $locales = config('storefront.locales');
 
         return HeroSlide::query()->create([
-            'title' => ['tr' => 'Test başlık'],
-            'button_text' => ['tr' => 'İncele'],
+            'title' => array_fill_keys($locales, 'Test başlık'),
+            'button_text' => array_fill_keys($locales, 'İncele'),
             'button_url' => '/#urunler',
             'image_path' => 'hero/test.webp',
             'sort_order' => 0,
@@ -56,14 +57,14 @@ class HeroSlidePagesTest extends TestCase
         Livewire::test(EditHeroSlide::class, ['record' => $slide->getKey()])
             ->assertOk()
             ->assertSee('Görsel')
-            ->assertSee('Yayın')
-            ->fillForm(['sort_order' => 5, 'active' => false])
+            ->assertSee('Metinler')
+            // Sıralama artık formda değil; yayın anahtarı üstte tek alan.
+            ->fillForm(['active' => false])
             ->call('save')
             ->assertHasNoFormErrors();
 
         $slide->refresh();
 
-        $this->assertSame(5, (int) $slide->sort_order);
         $this->assertFalse((bool) $slide->active);
     }
 }

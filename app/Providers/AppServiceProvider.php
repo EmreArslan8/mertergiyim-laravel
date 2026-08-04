@@ -65,15 +65,20 @@ class AppServiceProvider extends ServiceProvider
 
         ProductImage::observe(ProductImageObserver::class);
 
-        // Kaynak Next.js panelindeki CRUD akışı sayfa değiştirmez:
-        // yeni/düzenle/sil işlemleri listenin üzerinde modal olarak açılır.
+        // Panelin varsayılan CRUD akışı modaldir: yeni/düzenle/sil işlemleri
+        // listenin üzerinde açılır. Burada YALNIZCA modalın görünümünü ayarlıyoruz.
+        //
+        // ->modal() ÇAĞIRMIYORUZ bilerek: Create/Edit action'ları form şeması
+        // olduğu için zaten varsayılan olarak modal açar. ->modal() ise hasModal'ı
+        // zorla true yapıp Filament'in "->url() varsa tam sayfaya git" kararını
+        // ezer (CanOpenUrl::getUrl, hasModal true iken url'i yok sayıp null döner).
+        // Böylece bir kaynak ->url() ile tam sayfa düzenlemeyi seçtiğinde sistem
+        // kendiliğinden doğru davranır; modal isteyen kaynak url vermez, o kadar.
         CreateAction::configureUsing(fn (CreateAction $action) => $action
-            ->modal()
             ->modalWidth(Width::FourExtraLarge)
             ->createAnother(false));
 
         EditAction::configureUsing(fn (EditAction $action) => $action
-            ->modal()
             ->modalWidth(Width::FourExtraLarge)
             ->button()
             ->label('Düzenle'));

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Product;
 use App\Services\ExchangeRateService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -9,6 +10,23 @@ use Tests\TestCase;
 
 class ExchangeRateServiceTest extends TestCase
 {
+    public function test_usd_base_price_is_converted_for_each_locale_group(): void
+    {
+        $product = new Product([
+            'currency' => 'USD',
+            'price_usd' => 25,
+        ]);
+        $rates = ['USD' => 0.025, 'EUR' => 0.023];
+
+        $this->assertSame(1000.0, $product->priceForLocale('tr', $rates));
+        $this->assertSame(25.0, $product->priceForLocale('ar', $rates));
+        $this->assertSame(25.0, $product->priceForLocale('fa', $rates));
+        $this->assertSame(23.0, $product->priceForLocale('en', $rates));
+        $this->assertSame('TRY', $product->currencyForLocale('tr'));
+        $this->assertSame('USD', $product->currencyForLocale('ar'));
+        $this->assertSame('EUR', $product->currencyForLocale('de'));
+    }
+
     public function test_it_fetches_and_caches_try_exchange_rates(): void
     {
         Cache::forget('exchange:try:usd-eur:fresh');

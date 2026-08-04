@@ -6,6 +6,7 @@ use App\Filament\Support\Multilingual;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Services\ExchangeRateService;
 use App\Support\OrderStatus;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -114,15 +115,21 @@ class OrderItems
         ];
     }
 
-    /**
-     * Ürünün TL fiyatı. Eski kayıtlarda fiyat `price` sütununda; `price_try`
-     * sonradan eklendi ve modelde ikisi birbirine yazılıyor.
-     */
+    /** Ürünün yönetim panelindeki siparişler için TL karşılığı. */
     private static function catalogPrice(?Product $product): ?float
     {
-        $price = $product?->price_try ?? $product?->price;
+        if ($product && filled($product->price_usd)) {
+            try {
+                return (float) $product->priceForLocale(
+                    'tr',
+                    app(ExchangeRateService::class)->ratesFromTry(),
+                );
+            } catch (\Throwable) {
+                return null;
+            }
+        }
 
-        return $price === null ? null : (float) $price;
+        return null;
     }
 
     /**

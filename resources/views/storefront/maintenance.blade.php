@@ -31,7 +31,7 @@
             @endif
             <span>{{ data_get($messages, 'maintenance.kicker') }}</span>
             <h1>{{ $title }}</h1>
-            <p>{{ $description }}</p>
+            <div>{!! Storefront::richText($description, $locale) !!}</div>
             @if (! empty($siteSettings['contactEmail']))
                 <a href="mailto:{{ $siteSettings['contactEmail'] }}">{{ $siteSettings['contactEmail'] }}</a>
             @endif

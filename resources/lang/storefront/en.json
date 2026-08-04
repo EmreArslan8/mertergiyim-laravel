@@ -76,7 +76,8 @@
     "gallery": {
         "zoomHint": "Hover or tap to zoom",
         "galleryNote": "Tap a thumbnail to change the image.",
-        "showImage": "show image"
+        "showImage": "show image",
+        "video": "Video"
     },
     "meta": {
         "title": "Merter Giyim | Merter Wholesale and Retail Clothing",
@@ -89,7 +90,7 @@
         "heading": "Order Tracking",
         "subheading": "Search by order number or tracking code.",
         "inputLabel": "Order No / Tracking Code",
-        "placeholder": "e.g. MG-20260723-8H4K2P9X",
+        "placeholder": "e.g. ORD-20260723-8H4K2P9X",
         "submit": "Track Order",
         "loading": "Searching…",
         "errorEmpty": "Please enter your order number or tracking code.",
@@ -169,6 +170,16 @@
             "phone": "Enter a valid phone number including the country code.",
             "minimumOrder": "The minimum order amount is {amount} {currency}."
         }
+    },
+    "bankAccounts": {
+        "eyebrow": "Information",
+        "subtitle": "Our current bank account details you can use to confirm payment after your order.",
+        "owner": "Account Holder",
+        "iban": "IBAN",
+        "branch": "Branch",
+        "copy": "Copy IBAN",
+        "copied": "Copied",
+        "empty": "There are no bank accounts to display at the moment."
     },
     "orderSuccess": {
         "eyebrow": "ORDER CREATED",

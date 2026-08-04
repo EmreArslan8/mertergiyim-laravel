@@ -22,7 +22,7 @@ class ProductResource extends ManagedResource
 
     protected static ?string $navigationLabel = 'Ürünler';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 20;
 
     protected static ?string $modelLabel = 'ürün';
 

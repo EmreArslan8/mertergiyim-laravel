@@ -11,7 +11,6 @@ use Filament\Resources\Pages\EditRecord;
 class EditHeroSlide extends EditRecord
 {
     use HasBackToListAction;
-
     use TranslatesJsonFields;
 
     protected static string $resource = HeroSlideResource::class;
@@ -43,6 +42,7 @@ class EditHeroSlide extends EditRecord
     protected function translatableJsonFields(): array
     {
         return [
+            'eyebrow' => 'Üst yazı',
             'title' => 'Başlık',
             'button_text' => 'Buton Metni',
         ];

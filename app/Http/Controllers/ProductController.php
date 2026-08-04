@@ -18,21 +18,22 @@ class ProductController extends Controller
         private ProductCardService $cards,
     ) {}
 
-    public function __invoke(string $locale, string $slug): View
+    public function __invoke(string $slug): View
     {
+        $locale = app()->getLocale();
         $data = $this->repository->product($slug);
 
         abort_if($data === null, 404);
 
         $product = $data['product'];
         $currencies = $this->repository->currencies();
-        $rates = $locale === 'tr' ? null : rescue(
+        $rates = rescue(
             fn () => app(ExchangeRateService::class)->ratesFromTry(),
             report: true,
         );
         $currency = Storefront::resolveCurrency($currencies, $product->currencyForLocale($locale));
         $numericPrice = $product->priceForLocale($locale, $rates);
-        $productName = Storefront::text($product->name, $locale);
+        $productName = Storefront::titleCase(Storefront::text($product->name, $locale), $locale);
 
         // Galeri görseli detay sayfasında büyük gösteriliyor; 1000px retina dahil yeter.
         $galleryItems = collect(Storefront::sortedImages($product->images))
@@ -93,6 +94,7 @@ class ProductController extends Controller
             'primaryImage' => $gallery[0] ?? '',
             'recommendations' => $recommendations,
             'videoEmbedUrl' => Storefront::youtubeEmbedUrl($product->video_url),
+            'videoUrl' => Storefront::storageUrl('products', $product->video_url),
             'canonicalPath' => Storefront::productHref($locale, $product->slug),
             'alternatePath' => fn (string $code) => Storefront::productHref($code, $product->slug),
         ]);

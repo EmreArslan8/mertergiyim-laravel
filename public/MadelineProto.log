@@ -1,0 +1,42 @@
+Logger:         	MadelineProto 8.7.0
+Logger:         	Copyright (C) 2016-2026 Daniil Gentili
+Logger:         	Licensed under AGPLv3
+Logger:         	https://github.com/danog/MadelineProto
+Serialization:  	Got exclusive session lock!
+Logger:         	MadelineProto 8.7.0
+Logger:         	Copyright (C) 2016-2026 Daniil Gentili
+Logger:         	Licensed under AGPLv3
+Logger:         	https://github.com/danog/MadelineProto
+Serialization:  	Got exclusive session lock!
+Logger:         	MadelineProto 8.7.0
+Logger:         	MadelineProto 8.7.0
+Logger:         	Copyright (C) 2016-2026 Daniil Gentili
+Logger:         	Licensed under AGPLv3
+Logger:         	Copyright (C) 2016-2026 Daniil Gentili
+Logger:         	https://github.com/danog/MadelineProto
+Logger:         	Licensed under AGPLv3
+Logger:         	https://github.com/danog/MadelineProto
+Serialization:  	Got exclusive session lock!
+Serialization:  	It seems like the session is busy.
+Serialization:  	Telegram does not support starting multiple instances of the same session, make sure no other instance of the session is running.
+Serialization:  	Still waiting for exclusive session lock...
+Serialization:  	Still waiting for exclusive session lock...
+Serialization:  	Still waiting for exclusive session lock...
+Serialization:  	Still waiting for exclusive session lock...
+Serialization:  	Still waiting for exclusive session lock...
+Exception:      	Could not connect to MadelineProto, please enable proc_open and remove open_basedir restrictions or disable webserver path rewrites to fix! If you already did that, make sure the CLI version of PHP is exactly the same as the web version (same version, extensions, et cetera) and check out the MadelineProto.log file for more info about the error that prevented the IPC server from starting. in API.php:324
+Logger:         	MadelineProto 8.7.0
+Logger:         	Copyright (C) 2016-2026 Daniil Gentili
+Logger:         	Licensed under AGPLv3
+Logger:         	https://github.com/danog/MadelineProto
+Serialization:  	Got exclusive session lock!
+Logger:         	MadelineProto 8.7.0
+Logger:         	Copyright (C) 2016-2026 Daniil Gentili
+Logger:         	Licensed under AGPLv3
+Logger:         	https://github.com/danog/MadelineProto
+Serialization:  	Got exclusive session lock!
+Logger:         	MadelineProto 8.7.0
+Logger:         	Copyright (C) 2016-2026 Daniil Gentili
+Logger:         	Licensed under AGPLv3
+Logger:         	https://github.com/danog/MadelineProto
+Serialization:  	Got exclusive session lock!

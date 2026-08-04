@@ -76,7 +76,8 @@
     "gallery": {
         "zoomHint": "Passa il mouse o tocca per ingrandire",
         "galleryNote": "Tocca una miniatura per cambiare immagine.",
-        "showImage": "mostra immagine"
+        "showImage": "mostra immagine",
+        "video": "Video"
     },
     "meta": {
         "title": "Merter Giyim | Abbigliamento all’ingrosso e al dettaglio di Merter",
@@ -89,7 +90,7 @@
         "heading": "Tracciamento ordine",
         "subheading": "Cerca per numero ordine o codice di tracciamento.",
         "inputLabel": "N. ordine / Codice di tracciamento",
-        "placeholder": "Es.: MG-20260723-8H4K2P9X",
+        "placeholder": "Es.: ORD-20260723-8H4K2P9X",
         "submit": "Traccia ordine",
         "loading": "Ricerca…",
         "errorEmpty": "Inserisci il numero d’ordine o il codice di tracciamento.",
@@ -169,6 +170,16 @@
             "phone": "Inserisci un numero di telefono valido con il prefisso internazionale.",
             "minimumOrder": "L’importo minimo dell’ordine è {amount} {currency}."
         }
+    },
+    "bankAccounts": {
+        "eyebrow": "Informazioni",
+        "subtitle": "I nostri dati bancari aggiornati che puoi usare per confermare il pagamento dopo l'ordine.",
+        "owner": "Intestatario del conto",
+        "iban": "IBAN",
+        "branch": "Filiale",
+        "copy": "Copia IBAN",
+        "copied": "Copiato",
+        "empty": "Al momento non ci sono conti bancari da mostrare."
     },
     "orderSuccess": {
         "eyebrow": "ORDINE CREATO",

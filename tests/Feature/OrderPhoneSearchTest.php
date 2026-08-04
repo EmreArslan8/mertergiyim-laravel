@@ -6,6 +6,7 @@ use App\Filament\Resources\Orders\Pages\ListOrders;
 use App\Models\Order;
 use App\Models\User;
 use Livewire\Livewire;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -47,9 +48,7 @@ class OrderPhoneSearchTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider searchProvider
-     */
+    #[DataProvider('searchProvider')]
     public function test_orders_are_found_by_phone_number(string $search): void
     {
         $match = $this->order('Ayşe Demir', '0535 123 45 67');

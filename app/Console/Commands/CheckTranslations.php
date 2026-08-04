@@ -11,8 +11,8 @@ use App\Models\MediaFile;
 use App\Models\MediaPost;
 use App\Models\Product;
 use App\Models\SiteLink;
-use App\Models\Size;
 use App\Models\SiteSetting;
+use App\Models\Size;
 use App\Services\TranslateService;
 use App\Support\Storefront;
 use App\Support\TranslationStatus;
@@ -79,6 +79,19 @@ class CheckTranslations extends Command
         'maintenanceTitle',
         'maintenanceMessage',
         'orderSuccessText',
+        'homeCategoryTitle',
+        'homeAllCategoriesLabel',
+        'homeCollectionLabel',
+        'homeFeaturedTitle',
+        'homeOrderNotice',
+        'homeEmptyTitle',
+        'homeEmptyDescription',
+        'homeFilterEmptyTitle',
+        'homeFilterEmptyDescription',
+        'homeShowAllProductsLabel',
+        'homeSeoTitle',
+        'homeSeoDescription',
+        'homeSeoKeywords',
     ];
 
     public function handle(TranslateService $translator): int

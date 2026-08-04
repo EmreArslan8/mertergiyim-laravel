@@ -169,6 +169,7 @@
 }
 
 .detail-gallery {
+  --detail-image-ratio: .75;
   position: relative;
   height: fit-content;
   max-height: none;
@@ -176,7 +177,7 @@
 }
 
 .product-image-wrap {
-  width: min(100%, calc((100dvh - 15rem) * .75));
+  width: min(100%, calc((100dvh - 15rem) * var(--detail-image-ratio)));
   margin: 0 auto;
 }
 
@@ -185,18 +186,37 @@
   display: block;
   width: 100%;
   overflow: hidden;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: var(--detail-image-ratio);
+  /* Telegram gibi farklı oranlı kaynaklarda fotoğraf kırpılmadan çerçeveye
+     sığar. İç çizgi, görsele ayrı bir zemin rengi eklemeden 3:4 çerçevenin
+     gerçek sınırını gösterir. */
   background: transparent;
+  box-shadow: inset 0 0 0 1px #e4e4e7;
   cursor: zoom-in;
 }
 
-.zoom-main-image,
-.detail-thumb img {
+.zoom-main-image {
   display: block;
   width: 100%;
   height: 100%;
+  /* Kırpma yok: giyimde eteğin/kolun kesilmemesi önemli. Çerçeve 3:4 sabit
+     olduğu için yatay ya da kare görsellerde boşluk kalıyor; sol üste
+     yaslamak yerine ortalanıyor ki boşluk iki yana dengeli dağılsın. */
   object-fit: contain;
-  object-position: left top;
+  object-position: center;
+}
+
+.detail-thumb img {
+  display: block;
+  /* Büyük görselle aynı: contain ile kırpmadan tam görünür. Mutlak konum +
+     inset:0, img'deki sabit width/height oranı (96×112) yüzünden görselin
+     kutudan kısa kalmasını (üstte bant) engeller; kutuyu tam referans alır. */
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
 }
 
 .detail-image-empty {
@@ -258,39 +278,169 @@
   transform: translate(-50%, 0);
 }
 
+.zoom-wrap.is-video {
+  cursor: default;
+}
+
+.zoom-wrap.is-video .magnifier-lens,
+.zoom-wrap.is-video .zoom-hint {
+  display: none;
+}
+
+.detail-gallery-video {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.detail-gallery-video[hidden] {
+  display: none;
+}
+
+.detail-gallery-video iframe,
+.detail-gallery-video video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+  object-fit: contain;
+}
+
 .zoom-icon {
   font-size: 16px;
   line-height: 1;
 }
 
-.detail-thumbs {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 16px;
-  width: min(100%, calc((100dvh - 15rem) * .75));
+.detail-thumbs-shell {
+  position: relative;
+  width: min(100%, calc((100dvh - 15rem) * var(--detail-image-ratio)));
   margin-top: 16px;
   margin-right: auto;
   margin-left: auto;
-  overflow: hidden;
+}
+
+.detail-thumbs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+}
+
+.detail-thumbs::-webkit-scrollbar {
+  display: none;
 }
 
 .detail-thumb {
   position: relative;
-  width: 100%;
+  flex: 0 0 calc((100% - 64px) / 5);
+  width: auto;
   padding: 0;
   overflow: hidden;
   aspect-ratio: 3 / 4;
   border: 0;
   border-radius: 0;
-  background: transparent;
+  background: #f4f4f5;
   cursor: pointer;
   opacity: .7;
-  transition: opacity .2s ease;
+  outline: 0 solid transparent;
+  outline-offset: -2px;
+  scroll-snap-align: start;
+  transition: opacity .2s ease, outline-color .2s ease;
 }
 
-.detail-thumb:hover,
+.detail-video-thumb-shade {
+  position: absolute;
+  inset: 0;
+  background: #18181b73;
+}
+
+.detail-video-thumb-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  padding-left: 2px;
+  border: 1px solid #ffffffcc;
+  border-radius: 50%;
+  background: #18181bcc;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+}
+
+.detail-video-thumb-label {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  left: 6px;
+  overflow: hidden;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.detail-thumbs-nav {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid #e4e4e7;
+  border-radius: 50%;
+  background: #fffffff2;
+  box-shadow: 0 6px 18px #18181b24;
+  color: #18181b;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.detail-thumbs-nav span {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.detail-thumbs-nav--previous { inset-inline-start: 6px; }
+.detail-thumbs-nav--next { inset-inline-end: 6px; }
+.detail-thumbs-nav:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.detail-thumbs-shell:not(.is-overflowing) .detail-thumbs-nav {
+  display: none;
+}
+
+.detail-thumb:hover {
+  opacity: 1;
+  outline: 1px solid #a1a1aa;
+}
+
 .detail-thumb.active {
   opacity: 1;
+  outline: 2px solid #18181b;
 }
 
 .detail-info {
@@ -385,7 +535,7 @@
   line-height: 28px;
 }
 
-/* Panelde editörle girilen açıklama: sadece basit biçimler render edilir. */
+/* Panelde editörle girilen açıklamanın güvenli zengin metin biçimleri. */
 .detail-description .rich-text > *:first-child {
   margin-top: 0;
 }
@@ -417,6 +567,36 @@
   color: #27272a;
   font-weight: 600;
 }
+
+.detail-description .rich-text h2,
+.detail-description .rich-text h3 {
+  margin: 20px 0 8px;
+  color: #27272a;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.detail-description .rich-text h2 { font-size: 20px; }
+.detail-description .rich-text h3 { font-size: 17px; }
+.detail-description .rich-text blockquote {
+  margin: 16px 0;
+  padding: 10px 14px;
+  border-inline-start: 3px solid #ea580c;
+  background: #fff7ed;
+}
+.detail-description .rich-text a {
+  color: #c2410c;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.detail-description .rich-text hr {
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid #e4e4e7;
+}
+.detail-description .rich-text u { text-underline-offset: 3px; }
+.detail-description .rich-text s,
+.detail-description .rich-text del { color: #a1a1aa; }
 
 .detail-order-form {
   margin-top: 0;
@@ -639,6 +819,12 @@
   background: #27272a;
 }
 
+.whatsapp-order.is-added,
+.whatsapp-order.is-added:not(:disabled):hover {
+  background: #16a34a;
+  box-shadow: 0 10px 24px #16a34a35;
+}
+
 .whatsapp-order:disabled {
   background: #d4d4d8;
   cursor: not-allowed;
@@ -707,38 +893,16 @@
   }
 }
 
-.detail-video {
-  margin-top: 24px;
-}
-
-.detail-video hr,
 .recommended-products hr {
   margin: 0 0 18px;
   border: 0;
   border-top: 1px solid var(--detail-line);
 }
 
-.detail-video .section-title,
 .recommended-products .section-title {
   margin-bottom: 14px;
   font-size: 20px;
   font-weight: 800;
-}
-
-.detail-video-frame {
-  display: block;
-  width: 100%;
-  overflow: hidden;
-  aspect-ratio: 16 / 9;
-  border: 0;
-  border-radius: 8px;
-  background: #000;
-}
-
-.detail-video-frame iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
 }
 
 .recommended-products {
@@ -809,11 +973,25 @@
     overflow: visible;
   }
   .product-image-wrap {
-    width: min(100%, calc((100dvh - 15rem) * .75));
+    width: min(100%, calc((100dvh - 15rem) * var(--detail-image-ratio)));
+  }
+
+  .detail-thumb {
+    flex-basis: calc((100% - 48px) / 4);
   }
 
   .detail-thumbs {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+  }
+
+  .detail-thumbs-nav {
+    display: grid;
   }
 
   .zoom-hint,
@@ -968,6 +1146,11 @@
     background: var(--detail-orange);
   }
 
+  .detail-mobile-add.is-added,
+  .detail-mobile-add.is-added:not(:disabled):hover {
+    background: #16a34a;
+  }
+
   .detail-mobile-add:disabled {
     background: var(--detail-line);
     color: var(--detail-soft);
@@ -1013,6 +1196,12 @@
 
   .detail-mobile-cart .cart-count[hidden] {
     display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .detail-thumb {
+    flex-basis: calc((100% - 32px) / 3);
   }
 }
 

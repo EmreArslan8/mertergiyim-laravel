@@ -17,6 +17,88 @@
     if (element) element.style.display = visible ? (display || '') : 'none';
   }
 
+  /* ---------- Anasayfa hero slider ---------- */
+
+  function initHeroSlider() {
+    var slider = document.querySelector('[data-hero-slider]');
+    if (!slider) return;
+
+    var slides = all('[data-hero-slide]', slider);
+    if (slides.length < 2) return;
+
+    var dots = all('[data-hero-dot]', slider);
+    var previous = slider.querySelector('[data-hero-previous]');
+    var next = slider.querySelector('[data-hero-next]');
+    var interval = Math.max(3000, Number(slider.getAttribute('data-autoplay')) || 6000);
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var activeIndex = 0;
+    var timer = null;
+    var touchStartX = 0;
+
+    function render(index) {
+      activeIndex = (index + slides.length) % slides.length;
+
+      slides.forEach(function (slide, slideIndex) {
+        var active = slideIndex === activeIndex;
+        slide.classList.toggle('is-active', active);
+        slide.setAttribute('aria-hidden', active ? 'false' : 'true');
+      });
+
+      dots.forEach(function (dot, dotIndex) {
+        var active = dotIndex === activeIndex;
+        dot.classList.toggle('is-active', active);
+        dot.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+    }
+
+    function stop() {
+      if (timer) window.clearInterval(timer);
+      timer = null;
+    }
+
+    function start() {
+      stop();
+      if (reducedMotion || document.hidden) return;
+      timer = window.setInterval(function () { render(activeIndex + 1); }, interval);
+    }
+
+    function move(direction) {
+      render(activeIndex + direction);
+      start();
+    }
+
+    if (previous) previous.addEventListener('click', function () { move(-1); });
+    if (next) next.addEventListener('click', function () { move(1); });
+    dots.forEach(function (dot) {
+      dot.addEventListener('click', function () {
+        render(Number(dot.getAttribute('data-hero-dot')) || 0);
+        start();
+      });
+    });
+
+    slider.addEventListener('mouseenter', stop);
+    slider.addEventListener('mouseleave', start);
+    slider.addEventListener('focusin', stop);
+    slider.addEventListener('focusout', function (event) {
+      if (!slider.contains(event.relatedTarget)) start();
+    });
+    slider.addEventListener('touchstart', function (event) {
+      touchStartX = event.changedTouches[0].clientX;
+      stop();
+    }, { passive: true });
+    slider.addEventListener('touchend', function (event) {
+      var distance = event.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(distance) >= 48) move(distance > 0 ? -1 : 1);
+      else start();
+    }, { passive: true });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stop();
+      else start();
+    });
+
+    start();
+  }
+
   /* ---------- Kategori filtresi (CategoryFilterContext + CatalogSection) ---------- */
 
   function readSelectedCategory() {
@@ -64,7 +146,7 @@
         title.textContent = title.getAttribute(filtered ? 'data-filter-text' : 'data-default-text');
       }
       if (description) {
-        description.textContent = description.getAttribute(filtered ? 'data-filter-text' : 'data-default-text');
+        description.innerHTML = description.getAttribute(filtered ? 'data-filter-html' : 'data-default-html');
       }
       if (reset) reset.hidden = !filtered;
     }
@@ -449,9 +531,57 @@
     var wrap = document.querySelector('[data-zoom-wrap]');
     var main = document.querySelector('[data-zoom-main]');
     var lens = document.querySelector('[data-zoom-lens]');
-    if (!wrap || !main || !lens) return;
+    var galleryVideo = document.querySelector('[data-gallery-video]');
+    var galleryVideoElement = document.querySelector('[data-gallery-video-element]');
+    var galleryVideoIframe = document.querySelector('[data-gallery-video-iframe]');
+    if (!wrap) return;
 
     var lensVisible = false;
+
+    // Çerçeve oranı bilerek sabit (CSS: --detail-image-ratio, 3:4). Eskiden
+    // burada her görselin kendi oranı çerçeveye yazılıyordu; küçük resme
+    // tıklayınca çerçeve büyüyüp küçülüyor, sayfa zıplıyordu. Artık görsel
+    // çerçevenin içine ortalanarak sığdırılıyor (object-fit: contain).
+
+    var thumbs = document.querySelector('[data-thumbs]');
+    var thumbsShell = document.querySelector('[data-thumbs-shell]');
+    var previousThumbs = document.querySelector('[data-thumbs-previous]');
+    var nextThumbs = document.querySelector('[data-thumbs-next]');
+
+    function thumbScrollProgress() {
+      if (!thumbs) return 0;
+      return getComputedStyle(thumbs).direction === 'rtl'
+        ? Math.abs(thumbs.scrollLeft)
+        : thumbs.scrollLeft;
+    }
+
+    function updateThumbControls() {
+      if (!thumbs || !thumbsShell) return;
+
+      var maximum = Math.max(0, thumbs.scrollWidth - thumbs.clientWidth);
+      var progress = thumbScrollProgress();
+      thumbsShell.classList.toggle('is-overflowing', maximum > 2);
+      if (previousThumbs) previousThumbs.disabled = progress <= 2;
+      if (nextThumbs) nextThumbs.disabled = progress >= maximum - 2;
+    }
+
+    function scrollThumbs(direction) {
+      if (!thumbs) return;
+
+      var rtlMultiplier = getComputedStyle(thumbs).direction === 'rtl' ? -1 : 1;
+      thumbs.scrollBy({
+        left: direction * rtlMultiplier * Math.max(80, thumbs.clientWidth * .72),
+        behavior: 'smooth'
+      });
+    }
+
+    if (thumbs) {
+      thumbs.addEventListener('scroll', updateThumbControls, { passive: true });
+      window.addEventListener('resize', updateThumbControls);
+      requestAnimationFrame(updateThumbControls);
+    }
+    if (previousThumbs) previousThumbs.addEventListener('click', function () { scrollThumbs(-1); });
+    if (nextThumbs) nextThumbs.addEventListener('click', function () { scrollThumbs(1); });
 
     function moveLens(event) {
       var bounds = wrap.getBoundingClientRect();
@@ -473,30 +603,68 @@
       lens.classList.toggle('visible', lensVisible);
     }
 
-    wrap.addEventListener('pointerenter', moveLens);
-    wrap.addEventListener('pointermove', moveLens);
-    wrap.addEventListener('pointerdown', function (event) {
-      if (event.pointerType !== 'mouse') {
-        lensVisible = !lensVisible;
-        lens.classList.toggle('visible', lensVisible);
-      }
-    });
-    wrap.addEventListener('pointerleave', function () {
-      lensVisible = false;
-      lens.classList.remove('visible');
-    });
+    if (main && lens) {
+      wrap.addEventListener('pointerenter', moveLens);
+      wrap.addEventListener('pointermove', moveLens);
+      wrap.addEventListener('pointerdown', function (event) {
+        if (event.pointerType !== 'mouse' && !wrap.classList.contains('is-video')) {
+          lensVisible = !lensVisible;
+          lens.classList.toggle('visible', lensVisible);
+        }
+      });
+      wrap.addEventListener('pointerleave', function () {
+        lensVisible = false;
+        lens.classList.remove('visible');
+      });
+    }
+
+    function setActiveThumb(activeThumb) {
+      all('.detail-thumb', thumbs).forEach(function (thumb) {
+        var active = thumb === activeThumb;
+        thumb.classList.toggle('active', active);
+        thumb.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+      activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    }
+
+    function stopGalleryVideo() {
+      if (galleryVideoElement) galleryVideoElement.pause();
+      if (galleryVideoIframe) galleryVideoIframe.src = 'about:blank';
+    }
+
+    function showPhoto() {
+      stopGalleryVideo();
+      if (galleryVideo) galleryVideo.hidden = true;
+      if (main) main.hidden = false;
+      wrap.classList.remove('is-video');
+    }
 
     all('[data-thumb]').forEach(function (thumb) {
       thumb.addEventListener('click', function () {
         var source = thumb.getAttribute('data-thumb');
+        showPhoto();
         main.src = source;
         main.alt = thumb.getAttribute('data-thumb-alt') || main.alt;
         lens.style.backgroundImage = 'url(' + source + ')';
         lensVisible = false;
         lens.classList.remove('visible');
-        all('[data-thumb]').forEach(function (other) {
-          other.classList.toggle('active', other === thumb);
-        });
+        setActiveThumb(thumb);
+      });
+    });
+
+    all('[data-video-thumb]').forEach(function (thumb) {
+      thumb.addEventListener('click', function () {
+        if (!galleryVideo) return;
+
+        lensVisible = false;
+        if (lens) lens.classList.remove('visible');
+        if (main) main.hidden = true;
+        galleryVideo.hidden = false;
+        wrap.classList.add('is-video');
+        if (galleryVideoIframe) {
+          galleryVideoIframe.src = galleryVideoIframe.getAttribute('data-video-src') || 'about:blank';
+        }
+        setActiveThumb(thumb);
       });
     });
   }
@@ -602,7 +770,14 @@
     var previousValues = all('[data-quantity-previous]', form);
     var nextValues = all('[data-quantity-next]', form);
 
+    function clearAddedState() {
+      submits.forEach(function (button) {
+        button.classList.remove('is-added');
+      });
+    }
+
     function setQuantity(value) {
+      clearAddedState();
       var quantity = Math.min(99, Math.max(1, Number(value) || 1));
       if (quantityInput) quantityInput.value = String(quantity);
       quantityValues.forEach(function (element) {
@@ -626,6 +801,7 @@
 
     colorButtons.forEach(function (button) {
       button.addEventListener('click', function () {
+        clearAddedState();
         var color = {
           name: button.getAttribute('data-color') || '',
           id: button.getAttribute('data-color-id') || '',
@@ -634,14 +810,32 @@
         var index = selectedColors.findIndex(function (item) {
           return (item.id || item.name) === (color.id || color.name);
         });
-        var active = index === -1;
+        // Tek renkli ürünlerde renk her zaman seçili kalmalı; aynı renge
+        // tekrar tıklamak seçimi kaldırmamalı.
+        var active = colorButtons.length === 1 || index === -1;
 
-        if (active) selectedColors.push(color);
-        else selectedColors.splice(index, 1);
+        if (active) {
+          if (index === -1) selectedColors.push(color);
+        } else {
+          selectedColors.splice(index, 1);
+        }
 
         button.classList.toggle('selected', active);
         button.setAttribute('aria-pressed', String(active));
         refresh();
+      });
+    });
+
+    // Sunucu tarafından tek renkli ürünlerde seçili gelen rengi başlangıç
+    // durumuna dahil et. Böylece ilk açılışta seçim korunur; aynı butona
+    // tekrar basıldığında mevcut toggle davranışı seçimi kaldırır.
+    colorButtons.forEach(function (button) {
+      if (!button.classList.contains('selected')) return;
+
+      selectedColors.push({
+        name: button.getAttribute('data-color') || '',
+        id: button.getAttribute('data-color-id') || '',
+        hex: button.getAttribute('data-color-hex') || ''
       });
     });
 
@@ -656,8 +850,7 @@
       });
     });
 
-    /* Tek renkli ürünlerde gereksiz bir seçim adımı bırakma. */
-    if (colorButtons.length === 1) colorButtons[0].click();
+    refresh();
 
     form.addEventListener('submit', function (event) {
       event.preventDefault();
@@ -692,6 +885,9 @@
       });
 
       writeCart(items);
+      submits.forEach(function (button) {
+        button.classList.add('is-added');
+      });
       cartToast(
         config.added || '',
         form.getAttribute('data-product-name') || '',
@@ -900,7 +1096,7 @@
 
       asset.replaceChildren(makeAsset(file, post));
       title.textContent = post.title || '';
-      description.textContent = post.description || '';
+      description.innerHTML = post.description || '';
       counter.textContent = String(fileIndex + 1).padStart(2, '0') + ' / ' + String(post.files.length).padStart(2, '0');
 
       var multiple = post.files.length > 1;
@@ -1051,6 +1247,7 @@
   }
 
   function init() {
+    initHeroSlider();
     initCategoryFilter();
     initCategoryOverflow();
     initProductCardGalleries();

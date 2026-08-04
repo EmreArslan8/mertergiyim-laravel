@@ -6,14 +6,15 @@ use App\Jobs\NotifyStoreOfOrder;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Services\DictionaryService;
 use App\Services\ExchangeRateService;
 use App\Services\OrderCodeService;
 use App\Support\BrandSettings;
 use App\Support\PhoneNumber;
 use App\Support\Storefront;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -25,8 +26,9 @@ class CheckoutController extends Controller
         private ExchangeRateService $exchangeRates,
     ) {}
 
-    public function store(Request $request, string $locale): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
+        $locale = app()->getLocale();
         $items = json_decode((string) $request->input('cart'), true);
         $request->merge(['items' => is_array($items) ? $items : []]);
 
@@ -69,12 +71,11 @@ class CheckoutController extends Controller
             'ar', 'fa' => 'USD',
             default => 'EUR',
         };
-        $rates = $locale === 'tr' ? null : rescue(
+        $rates = rescue(
             fn () => $this->exchangeRates->ratesFromTry(),
             report: true,
         );
         $minimumOrderAmount = max(0, (float) BrandSettings::general('minimumOrderAmount', 0));
-        $allowOutOfStockOrders = (bool) BrandSettings::general('allowOutOfStockOrders', false);
 
         try {
             $order = $this->createOrder(
@@ -84,7 +85,6 @@ class CheckoutController extends Controller
                 $rates,
                 $orderKey,
                 $minimumOrderAmount,
-                $allowOutOfStockOrders,
             );
         } catch (UniqueConstraintViolationException $exception) {
             if ($existing = $this->existingOrderFor($orderKey)) {
@@ -112,9 +112,7 @@ class CheckoutController extends Controller
         ?array $rates,
         ?string $orderKey,
         float $minimumOrderAmount,
-        bool $allowOutOfStockOrders,
-    ): Order
-    {
+    ): Order {
         return DB::transaction(function () use (
             $data,
             $locale,
@@ -122,7 +120,6 @@ class CheckoutController extends Controller
             $rates,
             $orderKey,
             $minimumOrderAmount,
-            $allowOutOfStockOrders,
         ): Order {
             $productIds = collect($data['items'])->pluck('product_id')->unique()->values();
             $products = Product::query()
@@ -146,7 +143,7 @@ class CheckoutController extends Controller
                 /** @var Product $product */
                 $product = $products->get($item['product_id']);
 
-                if ($product->stock_status === 'out_of_stock' && ! $allowOutOfStockOrders) {
+                if ($product->stock_status === 'out_of_stock') {
                     throw ValidationException::withMessages([
                         'cart' => $this->copy($locale, 'cart.errors.outOfStock'),
                     ]);
@@ -154,7 +151,7 @@ class CheckoutController extends Controller
 
                 $variant = null;
                 if ($product->variants->isNotEmpty()) {
-                    $variant = $this->consumeVariantStock($product, $item, $locale, $allowOutOfStockOrders);
+                    $variant = $this->resolveVariant($product, $item);
 
                     if (! $variant) {
                         throw ValidationException::withMessages([
@@ -234,14 +231,13 @@ class CheckoutController extends Controller
 
     private function toSuccess(string $locale, Order $order): RedirectResponse
     {
-        return redirect()->route('storefront.order.success', [
-            'locale' => $locale,
-            'trackingCode' => $order->tracking_code,
-        ]);
+        // Rota adı yerine dil ön ekine göre üretilir: varsayılan dil kökte yaşar.
+        return redirect(Storefront::localePath($locale, '/siparis-basarili/'.$order->tracking_code));
     }
 
-    public function success(string $locale, string $trackingCode): View
+    public function success(string $trackingCode): View
     {
+        $locale = app()->getLocale();
         $order = Order::query()
             ->with('items')
             ->where('tracking_code', $trackingCode)
@@ -249,99 +245,37 @@ class CheckoutController extends Controller
 
         return view('storefront.order-success', [
             'order' => $order,
-            'canonicalPath' => '/'.$locale.'/siparis-basarili/'.$trackingCode,
-            'alternatePath' => fn (string $code) => '/'.$code.'/siparis-basarili/'.$trackingCode,
+            'canonicalPath' => Storefront::localePath($locale, '/siparis-basarili/'.$trackingCode),
+            'alternatePath' => fn (string $code) => Storefront::localePath($code, '/siparis-basarili/'.$trackingCode),
         ]);
     }
 
     /**
-     * Toptan satışta müşteri beden seçmez. Seçilen rengin paket içeriğindeki
-     * tüm beden stokları birlikte kontrol edilir ve paket sayısı kadar düşülür.
-     * Paket içeriği henüz girilmemiş eski kayıtlarda önceki tek-varyant
-     * davranışı korunur.
+     * Sipariş satırını gerçek varyanta bağlar.
+     *
+     * Toptan satışta parça stoğu tutulmuyor: panelde beden/renk bazında stok
+     * girişi yok (Varyantlar sekmesindeki matris yalnızca paket dağılımını
+     * sorar), bu yüzden adet kontrolü ve stok düşme yapılmaz. Ürünün satışa
+     * kapatılması "Stok durumu: Tükendi" ile yapılır.
      *
      * @param  array<string, mixed>  $item
      */
-    private function consumeVariantStock(
-        Product $product,
-        array $item,
-        string $locale,
-        bool $allowOutOfStockOrders = false,
-    ): ?ProductVariant
+    private function resolveVariant(Product $product, array $item): ?ProductVariant
     {
         $colorId = $item['color_id'] ?? null;
         $colorName = (string) ($item['color'] ?? '');
-        $packageQuantity = max(1, (int) ($item['quantity'] ?? 1));
 
-        $matchingLoadedVariants = $product->variants->filter(function ($candidate) use ($colorId, $colorName): bool {
+        return $product->variants->first(function ($candidate) use ($colorId, $colorName): bool {
             if ($colorId !== null) {
                 return $candidate->color_id === $colorId;
             }
 
             return ($candidate->color?->name ?? '') === $colorName;
         });
-
-        if ($matchingLoadedVariants->isEmpty()) {
-            return null;
-        }
-
-        $lockedVariants = ProductVariant::query()
-            ->whereIn('id', $matchingLoadedVariants->pluck('id'))
-            ->lockForUpdate()
-            ->get();
-
-        $packageContents = collect($product->pack_contents ?? [])
-            ->filter(fn (array $item): bool => filled($item['size_id'] ?? null) && (int) ($item['quantity'] ?? 0) > 0);
-
-        if ((int) ($product->pack_size ?? 1) > 1 && $packageContents->isNotEmpty()) {
-            $variantsBySize = $lockedVariants->keyBy(fn (ProductVariant $variant): string => (string) $variant->size_id);
-            $stockChanges = [];
-
-            foreach ($packageContents as $content) {
-                $variant = $variantsBySize->get((string) $content['size_id']);
-                $required = (int) $content['quantity'] * $packageQuantity;
-
-                if (! $variant || $variant->stock_quantity < $required) {
-                    if ($allowOutOfStockOrders) {
-                        return $lockedVariants->first();
-                    }
-
-                    throw ValidationException::withMessages([
-                        'cart' => $this->copy($locale, 'cart.errors.stock'),
-                    ]);
-                }
-
-                $stockChanges[] = [$variant, $required];
-            }
-
-            foreach ($stockChanges as [$variant, $required]) {
-                $variant->decrement('stock_quantity', $required);
-            }
-
-            return $lockedVariants->first();
-        }
-
-        $variant = $lockedVariants->first(
-            fn (ProductVariant $candidate): bool => $candidate->stock_quantity >= $packageQuantity
-        ) ?? $lockedVariants->first();
-
-        if (! $variant || $variant->stock_quantity < $packageQuantity) {
-            if ($allowOutOfStockOrders) {
-                return $variant;
-            }
-
-            throw ValidationException::withMessages([
-                'cart' => $this->copy($locale, 'cart.errors.stock'),
-            ]);
-        }
-
-        $variant->decrement('stock_quantity', $packageQuantity);
-
-        return $variant;
     }
 
     private function copy(string $locale, string $key, string $fallback = ''): string
     {
-        return (string) app(\App\Services\DictionaryService::class)->get($locale, $key, $fallback);
+        return (string) app(DictionaryService::class)->get($locale, $key, $fallback);
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\SiteLinks\Tables;
 
 use App\Filament\Support\Multilingual;
+use App\Support\StorefrontCache;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -17,12 +19,12 @@ class SiteLinksTable
         return $table
             ->stackedOnMobile()
             ->defaultSort('sort_order')
+            // Üst ve alt menü ListSiteLinks üzerindeki yatay sekmelerde ayrılır.
             ->reorderable('sort_order')
+            // Sıralama düğmesi sekmelerin bulunduğu üst satırda gösterilir.
+            ->reorderRecordsTriggerAction(fn (Action $action): Action => $action->hidden())
+            ->afterReordering(fn () => StorefrontCache::flushChrome())
             ->columns([
-                TextColumn::make('location')
-                    ->label('Konum')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => $state === 'footer' ? 'Alt menü' : 'Üst menü'),
                 TextColumn::make('label')
                     ->label('Etiket')
                     ->getStateUsing(fn ($record) => Multilingual::tr($record->label)),
@@ -30,7 +32,6 @@ class SiteLinksTable
                 TextColumn::make('sort_order')->label('Sıra'),
                 ToggleColumn::make('active')->label('Aktif / Pasif'),
             ])
-            ->filters([])
             ->recordActions([
                 EditAction::make()
                     ->mutateDataUsing(fn (array $data, $livewire, ?Model $record): array => $livewire->fillAutomaticTranslationsFor($data, $record)),

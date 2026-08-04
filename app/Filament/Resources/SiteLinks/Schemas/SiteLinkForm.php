@@ -15,6 +15,8 @@ class SiteLinkForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            // Bölümler yan yana değil tek kolonda alt alta.
+            ->columns(1)
             ->components([
                 Section::make('Bağlantı')
                     ->columns(2)
@@ -32,16 +34,19 @@ class SiteLinkForm
                             ->label('URL')
                             ->required()
                             ->placeholder('/hakkimizda')
-                            ->helperText('Dil ön eki yazmayın. /hakkimizda girin; ziyaretçinin diline göre /tr/hakkimizda, /en/hakkimizda olarak açılır. Dış bağlantılar https:// ile.')
+                            ->helperText('Dil ön eki yazmayın. /hakkimizda girin; Türkçede /hakkimizda, diğer dillerde /en/hakkimizda olarak açılır. Dış bağlantılar https:// ile.')
                             // Kullanıcı yine de /tr/... yazarsa veriyi ön eksiz kaydet.
                             ->dehydrateStateUsing(fn (?string $state): ?string => self::stripLocalePrefix($state)),
                         TextInput::make('sort_order')->label('Sıra')->numeric()->default(0),
                         Toggle::make('active')->label('Aktif')->default(true),
                     ]),
-                Section::make('Etiket')
-                    ->description('Sadece Türkçe girin; kaydettiğinizde diğer 9 dil otomatik çevrilir.')
+                Section::make('Etiket (menüde görünen yazı)')
+                    ->description('Ziyaretçinin menüde gördüğü tıklanabilir metin. Sadece Türkçe girin; kaydettiğinizde diğer 9 dil otomatik çevrilir.')
                     ->schema([
-                        Multilingual::turkish('label', 'Etiket'),
+                        // Bölüm başlığı zaten "Etiket"; alan etiketini tekrar
+                        // göstermeyip yalnızca kutuyu bırak.
+                        Multilingual::turkish('label', 'Etiket')
+                            ->hiddenLabel(),
                     ]),
             ]);
     }

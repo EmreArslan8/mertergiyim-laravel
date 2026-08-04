@@ -135,7 +135,7 @@ class OrdersTable
             // veritabanında her ek sorgu sayfa açılışını uzatıyor.
             ->paginationMode(PaginationMode::Simple)
             ->filtersLayout(FiltersLayout::AboveContent)
-            ->filtersFormColumns(2)
+            ->filtersFormColumns(['default' => 1, 'sm' => 2])
             ->deferFilters(false)
             ->searchPlaceholder('Sipariş no, müşteri veya takip kodunda ara')
             ->filters([
@@ -172,9 +172,6 @@ class OrdersTable
                     ->label('Düzenle')
                     ->button()
                     ->outlined()
-                    // Global EditAction ayarı modal açıyor; sipariş düzenleme
-                    // tam sayfa olduğu için modal kapatılır.
-                    ->modal(false)
                     ->url(fn ($record): string => OrderResource::getUrl('edit', ['record' => $record])),
                 DeleteAction::make()
                     ->button()

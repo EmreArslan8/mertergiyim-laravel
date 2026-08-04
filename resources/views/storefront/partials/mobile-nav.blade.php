@@ -13,7 +13,7 @@
         <div class="mobile-language-menu" id="mobile-language-menu" data-language-menu style="display:none">
             @foreach ($languages as $language)
                 <a class="{{ $language->code === $locale ? 'selected' : '' }}"
-                   href="{{ isset($alternatePath) ? $alternatePath($language->code) : '/'.$language->code }}">
+                   href="{{ isset($alternatePath) ? $alternatePath($language->code) : Storefront::localePath($language->code) }}">
                     {{ $language->name }}
                 </a>
             @endforeach
@@ -40,9 +40,9 @@
                             @include('storefront.partials.icon', ['name' => 'chevron-left', 'size' => 20])
                             {{ $label }}
                         </button>
-                        <a class="selected" href="/{{ $locale }}/kategori">{{ data_get($messages, 'home.allCategories') }}</a>
+                        <a class="selected" href="{{ Storefront::localePath($locale, '/kategori') }}">{{ data_get($messages, 'home.allCategories') }}</a>
                         @foreach ($categories as $category)
-                            <a href="/{{ $locale }}/kategori/{{ $category->slug }}">{{ Storefront::text($category->name_i18n, $locale) ?: $category->name }}</a>
+                            <a href="{{ Storefront::localePath($locale, '/kategori/'.$category->slug) }}">{{ Storefront::text($category->name_i18n, $locale) ?: $category->name }}</a>
                         @endforeach
                     </div>
                 </div>
