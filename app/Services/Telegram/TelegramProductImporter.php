@@ -8,6 +8,8 @@ use App\Models\ProductVariant;
 use App\Models\TelegramChannelProduct;
 use App\Models\TelegramChannelProductImage;
 use App\Services\ImageUploader;
+use App\Services\TranslateService;
+use App\Support\ProductName;
 use App\Support\UploadTarget;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\UploadedFile;
@@ -45,11 +47,34 @@ class TelegramProductImporter
      */
     public function import(TelegramChannelProduct $record, array $data): Product
     {
+        // Çoklu görsel indirme PHP max_execution_time'ı (30 sn) aşabilir;
+        // fatal yerine görsel başına timeout'la (aşağıda 15 sn) zarifçe atlansın.
+        @set_time_limit(120);
+
         $name = trim((string) ($data['name'] ?? ''));
 
         if ($name === '') {
             throw new RuntimeException('Ürün adı zorunlu.');
         }
+
+        // Katalog adı yalnızca Türkçe gelir; ana sayfa, kategori ve detay
+        // sayfaları diğer dilleri de gösterdiği için ad ve açıklama kayıt
+        // anında çevrilir. Çeviri çökerse Türkçe ile devam edilir (kategori
+        // eklemedeki davranışla aynı).
+        $nameI18n = rescue(
+            fn (): array => ['tr' => $name] + app(TranslateService::class)->translateText($name),
+            ['tr' => $name],
+            report: false,
+        );
+
+        $description = trim((string) ($data['description'] ?? ''));
+        $descriptionI18n = $description === ''
+            ? ['tr' => '']
+            : rescue(
+                fn (): array => ['tr' => $description] + app(TranslateService::class)->translateText($description),
+                ['tr' => $description],
+                report: false,
+            );
 
         // Yalnızca adedi girilmiş bedenler pakete girer.
         $pack = collect($data['pack'] ?? [])
@@ -71,26 +96,60 @@ class TelegramProductImporter
             ->sortBy(fn ($image): int => $position[$image->getKey()] ?? PHP_INT_MAX)
             ->values();
 
-        $product = DB::transaction(function () use ($record, $data, $name, $pack, $colorIds): Product {
-            $product = Product::create([
-                'name' => ['tr' => $name],
-                // description NOT NULL: boş bırakılsa da dizi yazılmalı.
-                'description' => ['tr' => trim((string) ($data['description'] ?? ''))],
-                'category_id' => $data['category_id'] ?? null,
-                // Boş bırakılırsa Product modeli sıradaki kodu kendi atıyor.
-                'code' => filled($data['code'] ?? null) ? trim((string) $data['code']) : null,
-                'price_usd' => $data['price_usd'] !== null ? (float) $data['price_usd'] : 0,
-                'pack_size' => max(1, (int) $pack->sum()),
-                'pack_contents' => $pack
-                    ->map(fn (int $quantity, string $sizeId): array => ['size_id' => $sizeId, 'quantity' => $quantity])
-                    ->values()
-                    ->all(),
-                'stock_status' => 'in_stock',
-                'active' => true,
-                'show_on_home' => (bool) ($data['show_on_home'] ?? true),
-            ]);
+        $product = DB::transaction(function () use ($record, $data, $name, $nameI18n, $descriptionI18n, $pack, $colorIds): Product {
+            // Aynı ürünü ikinci kez aktarma: kayıt zaten bir ürüne bağlıysa ya
+            // da aynı adla ürün varsa (name_key/slug benzersiz) yeni kayıt
+            // yerine mevcut ürün güncellenir. Kod MG-1002 → MG-1008 gibi
+            // değişebildiği için eşleşme koda değil isme dayanır.
+            $product = $record->product ?? ProductName::duplicate($name);
 
-            $this->createVariants($product, $pack->keys()->all(), $colorIds);
+            if ($product) {
+                // Mevcut kod korunur: kod sistemi atar, katalog kodu yalnızca
+                // boşsa yazılır. Üzerine yazmak kod ikizleri üretebilirdi.
+                $attributes = [
+                    'name' => $nameI18n,
+                    'description' => $descriptionI18n,
+                    'category_id' => $data['category_id'] ?? null,
+                    'price_usd' => $data['price_usd'] !== null ? (float) $data['price_usd'] : 0,
+                    'pack_size' => max(1, (int) $pack->sum()),
+                    'pack_contents' => $pack
+                        ->map(fn (int $quantity, string $sizeId): array => ['size_id' => $sizeId, 'quantity' => $quantity])
+                        ->values()
+                        ->all(),
+                    'active' => true,
+                    'show_on_home' => (bool) ($data['show_on_home'] ?? true),
+                ];
+
+                if (blank($product->code) && filled($data['code'] ?? null)) {
+                    $attributes['code'] = trim((string) $data['code']);
+                }
+
+                $product->fill($attributes)->save();
+
+                // Beden × renk paketi değişmiş olabilir; varyantlar yeniden kurulur.
+                $product->variants()->delete();
+                $this->createVariants($product, $pack->keys()->all(), $colorIds);
+            } else {
+                $product = Product::create([
+                    'name' => $nameI18n,
+                    // description NOT NULL: boş bırakılsa da dizi yazılmalı.
+                    'description' => $descriptionI18n,
+                    'category_id' => $data['category_id'] ?? null,
+                    // Boş bırakılırsa Product modeli sıradaki kodu kendi atıyor.
+                    'code' => filled($data['code'] ?? null) ? trim((string) $data['code']) : null,
+                    'price_usd' => $data['price_usd'] !== null ? (float) $data['price_usd'] : 0,
+                    'pack_size' => max(1, (int) $pack->sum()),
+                    'pack_contents' => $pack
+                        ->map(fn (int $quantity, string $sizeId): array => ['size_id' => $sizeId, 'quantity' => $quantity])
+                        ->values()
+                        ->all(),
+                    'stock_status' => 'in_stock',
+                    'active' => true,
+                    'show_on_home' => (bool) ($data['show_on_home'] ?? true),
+                ]);
+
+                $this->createVariants($product, $pack->keys()->all(), $colorIds);
+            }
 
             $record->forceFill([
                 'status' => 'imported',
@@ -138,6 +197,15 @@ class TelegramProductImporter
     {
         $sort = 0;
 
+        // Aynı kaynak görsel ürüne yeniden bağlanmaz (tekrar aktarımda
+        // çoğaltmaya karşı); videoda da tek alan olduğu için zaten bağlı
+        // video yeniden indirilmez.
+        $attachedSourceIds = $product->images()
+            ->whereNotNull('telegram_image_id')
+            ->pluck('telegram_image_id')
+            ->map(fn (string $id): string => (string) $id)
+            ->all();
+
         foreach ($selected as $image) {
             if ($image->type === 'video') {
                 // products tablosunda tek video alanı var; ilk seçilen kazanır.
@@ -152,6 +220,10 @@ class TelegramProductImporter
                 continue;
             }
 
+            if (in_array((string) $image->getKey(), $attachedSourceIds, true)) {
+                continue;
+            }
+
             $path = $this->storePhoto($product, $image);
 
             if ($path === null) {
@@ -161,6 +233,7 @@ class TelegramProductImporter
             ProductImage::create([
                 'product_id' => $product->getKey(),
                 'storage_path' => $path,
+                'telegram_image_id' => $image->getKey(),
                 // alt NOT NULL; çok dilli alan olduğu için dizi yazılır.
                 // Metin girilmiyor: alt yazısı panelden düzenlenebiliyor.
                 'alt' => ['tr' => ''],
@@ -238,7 +311,7 @@ class TelegramProductImporter
         }
 
         try {
-            $response = Http::timeout(30)->connectTimeout(10)->get($url);
+            $response = Http::timeout(15)->connectTimeout(10)->get($url);
         } catch (ConnectionException) {
             return null;
         }

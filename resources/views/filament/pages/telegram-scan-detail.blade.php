@@ -365,6 +365,15 @@
                                         </button>
                                     @endforeach
                                 </div>
+                                {{-- Kategoriler de renkler gibi: listede yoksa
+                                     buraya yazılıp tanımlanır ve seçili gelir. --}}
+                                <div class="merter-qa-newcat">
+                                    <button type="button" wire:click="addCategory">Kategori ekle ve seç</button>
+                                    <input type="text"
+                                           wire:model.blur="newCategoryName"
+                                           wire:keydown.enter="addCategory"
+                                           placeholder="Yeni kategori adı (ör. Kaban)">
+                                </div>
                             </div>
 
                             <label class="merter-qa-field">
@@ -388,7 +397,12 @@
 
                         <label class="merter-qa-field">
                             <span>Açıklama</span>
-                            <textarea rows="4" wire:model="form.description"></textarea>
+                            {{-- Panelin kendi zengin editörü (TipTap) ayrı
+                                 bileşende koşar; değer her değişiklikte
+                                 form.description'a olayla iletilir. --}}
+                            @livewire('quick-add-description-editor',
+                                ['description' => (string) ($form['description'] ?? '')],
+                                key('qa-desc-'.$quickAddId))
                         </label>
 
                         <div class="merter-qa-cols">

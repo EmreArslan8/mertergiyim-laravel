@@ -188,10 +188,10 @@
   overflow: hidden;
   aspect-ratio: var(--detail-image-ratio);
   /* Telegram gibi farklı oranlı kaynaklarda fotoğraf kırpılmadan çerçeveye
-     sığar. İç çizgi, görsele ayrı bir zemin rengi eklemeden 3:4 çerçevenin
-     gerçek sınırını gösterir. */
-  background: transparent;
+     sığar. Çerçeve sınırı iç hat ile çizilir: fotoğraf çerçeveyi doldurmadığında
+     boşluk görselden ayrışsın. */
   box-shadow: inset 0 0 0 1px #e4e4e7;
+  background: transparent;
   cursor: zoom-in;
 }
 
@@ -287,27 +287,93 @@
   display: none;
 }
 
-.detail-gallery-video {
+.detail-video-launch {
   position: absolute;
-  z-index: 4;
   inset: 0;
+  z-index: 3;
   display: grid;
   place-items: center;
-  overflow: hidden;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: #000;
+  cursor: pointer;
 }
 
-.detail-gallery-video[hidden] {
+.detail-video-launch video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.detail-video-launch-play {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(17, 17, 17, 0.55);
+  color: #fff;
+  font-size: 22px;
+  pointer-events: none;
+}
+
+/* Video modalı: kendi doğal oranında tam görünür, sabit çerçeve bozulmaz. */
+.video-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.82);
+}
+
+.video-modal[hidden] {
   display: none;
 }
 
-.detail-gallery-video iframe,
-.detail-gallery-video video {
-  display: block;
-  width: 100%;
-  height: 100%;
+.video-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
   border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.video-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.video-modal video {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(92vw, 1400px);
+  max-height: 88dvh;
+  border-radius: 8px;
   background: #000;
-  object-fit: contain;
+}
+
+.video-modal iframe {
+  width: min(92vw, 1400px);
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: 8px;
+  background: #000;
+}
+
+body.has-video-modal {
+  overflow: hidden;
 }
 
 .zoom-icon {

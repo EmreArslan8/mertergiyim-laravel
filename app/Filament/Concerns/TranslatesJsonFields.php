@@ -289,10 +289,11 @@ trait TranslatesJsonFields
     {
         $this->automaticTranslationStartedAt ??= microtime(true);
 
-        // Tek istek timeout 20 sn + 1 retry (~40 sn) olabildiği için toplam
-        // bütçe buna göre; aksi hâlde retry tamamlanmadan kayıt kesilirdi.
+        // Tek istek 120 sn + 5 sn connect timeout olabildiği için toplam
+        // bütçe 130 sn; TranslateService set_time_limit(150) ile PHP'yi bu
+        // bütçenin üstüne çeker ki aşım hep yönetimli yakalansın, fatal değil.
         if ($this->automaticTranslationUnavailable
-            || (microtime(true) - $this->automaticTranslationStartedAt) >= 45) {
+            || (microtime(true) - $this->automaticTranslationStartedAt) >= 130) {
             Notification::make()
                 ->title('Kayıt yapılmadı: çeviri servisi zaman aşımına uğradı.')
                 ->body('Hiçbir içerik eksik çeviriyle kaydedilmedi. Lütfen tekrar deneyin.')

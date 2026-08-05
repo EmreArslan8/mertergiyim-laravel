@@ -78,6 +78,23 @@
     const bound = new WeakSet();
     let scheduled = false;
 
+    // Sürükle-bırak bittiğinde gerçek bir sıralama olduysa (öğe yer değiştirdi)
+    // fare bırakılınca öğe üzerinde bir click olayı tetiklenir. Öğeler button +
+    // wire:click="toggleImage" olduğu için bu click görseli seçer/seçimden
+    // çıkarır — yani sıralamayla birlikte seçim de bozulur. Sıralamadan sonraki
+    // ilk click bu bayrakla bastırılıyor; sonraki tıklar normal çalışır.
+    let suppressClick = false;
+
+    document.addEventListener('click', (e) => {
+        if (!suppressClick) {
+            return;
+        }
+
+        suppressClick = false;
+        e.preventDefault();
+        e.stopPropagation();
+    }, true);
+
     const bindSortableGrids = () => {
         scheduled = false;
 
@@ -96,15 +113,31 @@
                 animation: 150,
                 draggable: '.merter-qa-pick',
                 ghostClass: 'merter-qa-pick--ghost',
+                // HTML5 native drag yerine Sortable'ın kendi sürüklemesi:
+                // native drag touch cihazlarda hiç çalışmaz (dokunmatikte
+                // dragstart olayı yok), button öğelerinde de tutarsızdır.
+                // Fallback hem farede hem dokunmatikte aynı davranır.
+                forceFallback: true,
+                // Sürüklenen kare modaldan dışarı taşsa bile modalın
+                // kaydırma kutusu tarafından kırpılmasın.
+                fallbackOnBody: true,
+                // Tık ile sürüklemeyi ayırır: 8px'den az hareket
+                // "sürükleme" sayılmaz, düz tık seçim aynen çalışır.
+                fallbackTolerance: 8,
                 // Dokunmatikte önce basılı tut: sayfa kaydırmayla karışmasın.
                 // Fareyle anında sürüklenir, tek tık seçim aynen çalışır.
                 delay: 150,
                 delayOnTouchOnly: true,
                 onEnd: (event) => {
-                    // Yerinde bırakıldıysa (sıra değişmedi) sunucuya gitme.
+                    // Yerinde bırakıldıysa (sıra değişmedi) sunucuya gitme;
+                    // o zaman trailing click de gerçek bir tıktır, seçimi yapar.
                     if (event.oldIndex === event.newIndex) {
                         return;
                     }
+
+                    // Sıralama değişti: bırakma anındaki click'i bastır ki
+                    // sürüklenen görsel seçimden düşmesin (ya da seçilmesin).
+                    suppressClick = true;
 
                     const ids = Array.from(
                         event.to.querySelectorAll('.merter-qa-pick')

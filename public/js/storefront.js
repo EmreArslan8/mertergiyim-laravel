@@ -319,8 +319,17 @@
         updateDots(index);
       }
 
-      // Masaüstü hover yalnızca ikinci görseli hazırlar.
+      // Masaüstü hover yalnızca ikinci görseli hazırlar. Görsel henüz
+      // inerken geçiş başlarsa ilk fotoğraf kaybolup beyaz alan görünürdü;
+      // geçiş yalnızca ikinci görsel yüklendiğinde (.ready) tetiklenir.
       gallery.addEventListener('mouseenter', function () {
+        var image = slides[1] ? slides[1].querySelector('img[data-src]') : null;
+        if (!image) return;
+
+        image.onload = function () {
+          slides[1].classList.add('ready');
+        };
+
         loadSlide(1);
       }, { once: true });
 
@@ -531,10 +540,48 @@
     var wrap = document.querySelector('[data-zoom-wrap]');
     var main = document.querySelector('[data-zoom-main]');
     var lens = document.querySelector('[data-zoom-lens]');
-    var galleryVideo = document.querySelector('[data-gallery-video]');
-    var galleryVideoElement = document.querySelector('[data-gallery-video-element]');
-    var galleryVideoIframe = document.querySelector('[data-gallery-video-iframe]');
+    var videoModal = document.querySelector('[data-video-modal]');
+    var videoModalElement = document.querySelector('[data-video-modal-element]');
+    var videoModalIframe = document.querySelector('[data-video-modal-iframe]');
+    var videoModalClose = document.querySelector('[data-video-modal-close]');
     if (!wrap) return;
+
+    // Video, kendi doğal oranında tam ekran modalda oynar: sabit 3:4 çerçeve
+    // bozulmaz, siyah bant olmaz, sayfa kaymaz.
+    function openVideoModal() {
+      if (!videoModal) return;
+      if (videoModalElement) {
+        videoModalElement.src = videoModalElement.getAttribute('data-video-src') || '';
+        videoModalElement.play();
+      }
+      if (videoModalIframe) {
+        videoModalIframe.src = videoModalIframe.getAttribute('data-video-src') || 'about:blank';
+      }
+      videoModal.hidden = false;
+      document.body.classList.add('has-video-modal');
+    }
+
+    function closeVideoModal() {
+      if (!videoModal) return;
+      if (videoModalElement) {
+        videoModalElement.pause();
+        videoModalElement.removeAttribute('src');
+        videoModalElement.load();
+      }
+      if (videoModalIframe) videoModalIframe.src = 'about:blank';
+      videoModal.hidden = true;
+      document.body.classList.remove('has-video-modal');
+    }
+
+    if (videoModalClose) videoModalClose.addEventListener('click', closeVideoModal);
+    if (videoModal) {
+      videoModal.addEventListener('click', function (event) {
+        if (event.target === videoModal) closeVideoModal();
+      });
+    }
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeVideoModal();
+    });
 
     var lensVisible = false;
 
@@ -627,14 +674,7 @@
       activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
     }
 
-    function stopGalleryVideo() {
-      if (galleryVideoElement) galleryVideoElement.pause();
-      if (galleryVideoIframe) galleryVideoIframe.src = 'about:blank';
-    }
-
     function showPhoto() {
-      stopGalleryVideo();
-      if (galleryVideo) galleryVideo.hidden = true;
       if (main) main.hidden = false;
       wrap.classList.remove('is-video');
     }
@@ -653,19 +693,11 @@
     });
 
     all('[data-video-thumb]').forEach(function (thumb) {
-      thumb.addEventListener('click', function () {
-        if (!galleryVideo) return;
+      thumb.addEventListener('click', openVideoModal);
+    });
 
-        lensVisible = false;
-        if (lens) lens.classList.remove('visible');
-        if (main) main.hidden = true;
-        galleryVideo.hidden = false;
-        wrap.classList.add('is-video');
-        if (galleryVideoIframe) {
-          galleryVideoIframe.src = galleryVideoIframe.getAttribute('data-video-src') || 'about:blank';
-        }
-        setActiveThumb(thumb);
-      });
+    all('[data-video-launch]').forEach(function (launch) {
+      launch.addEventListener('click', openVideoModal);
     });
   }
 

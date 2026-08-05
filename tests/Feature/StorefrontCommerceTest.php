@@ -222,13 +222,15 @@ class StorefrontCommerceTest extends TestCase
         $response = $this->get('/product/test-urun');
 
         $response->assertOk()
-            ->assertSee('data-gallery-video', escape: false)
-            ->assertSee('data-gallery-video-iframe', escape: false)
+            // Video artık çerçeve içinde oynamıyor; modalda açılıyor.
             ->assertSeeInOrder([
                 'data-thumb=',
                 'data-video-thumb',
                 'data-thumb=',
             ], escape: false)
+            ->assertSee('data-video-modal', escape: false)
+            ->assertSee('data-video-modal-iframe', escape: false)
+            ->assertDontSee('data-gallery-video', escape: false)
             ->assertDontSee('class="detail-video"', escape: false);
     }
 

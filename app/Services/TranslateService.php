@@ -55,6 +55,15 @@ class TranslateService
      */
     public function translateFields(array $texts): array
     {
+        // Uzun içerikler (blog yazısı, ürün açıklaması) 9 dile çevrilirken tek
+        // istek 20 sn'yi aşıp cURL 28 veriyordu; süre önce 45 sn'ye, sonra
+        // 120 sn'ye çıkarıldı (ölçüm: ~336 token/sn → 1000 kelimelik yazı
+        // ≈70 sn). Retry kasıtlı yok: 120 sn'lik üretim zaman aşımından sonra
+        // yeniden deneme aynı uzun üretimi sıfırdan başlatır. Zaman aşımı bu
+        // çağrıda Throwable olarak yönetimli yakalanır; kayıt engellenir,
+        // sistem çökmez. Aşılamayacak bütçeyi TranslatesJsonFields belirler.
+        set_time_limit(150);
+
         $source = array_filter(array_map(fn ($value) => trim((string) $value), $texts), fn ($value) => $value !== '');
 
         if ($source === []) {
@@ -83,12 +92,8 @@ class TranslateService
             .' same tags, same order, same nesting, no extra or missing tags, no added attributes.'
             .' Turkish texts: '.json_encode($source, JSON_UNESCAPED_UNICODE);
 
-        // Ad + açıklamayı 9 dile tek istekte çevirmek 8 sn'yi aşıp cURL 28
-        // (timeout) veriyordu; süre 20 sn'ye çıkarıldı ve geçici ağ/gecikme
-        // sorunlarında bir kez daha denensin diye retry eklendi.
         $response = Http::connectTimeout(5)
-            ->timeout(20)
-            ->retry(2, 500)
+            ->timeout(120)
             ->withHeaders(['x-goog-api-key' => (string) config('storefront.translation.api_key')])
             ->post($this->endpoint().$this->model().':generateContent', [
                 'contents' => [['parts' => [['text' => $prompt]]]],
@@ -152,7 +157,7 @@ class TranslateService
         }
 
         try {
-            $response = Http::timeout(30)
+            $response = Http::timeout(15)
                 ->withHeaders(['x-goog-api-key' => (string) config('storefront.translation.api_key')])
                 ->post($this->endpoint().$this->model().':generateContent', [
                     'contents' => [['parts' => [['text' => 'ping']]]],

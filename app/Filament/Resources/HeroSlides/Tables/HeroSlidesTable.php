@@ -12,6 +12,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class HeroSlidesTable
 {
@@ -33,10 +34,22 @@ class HeroSlidesTable
                     ->imageWidth('7rem')
                     ->imageHeight('3.9375rem')
                     ->extraImgAttributes(['class' => 'merter-thumb-wide', 'loading' => 'lazy'])
-                    ->getStateUsing(fn ($record) => Storefront::storageUrl('site', $record->image_path)),
+                    // Filament ImageColumn yalnızca mutlak URL'i doğrudan basar;
+                    // göreli "/storage/.." adresini disk yolu sanıp bozuyordu.
+                    // url() ile isteğin host'una göre mutlaklaştırıyoruz (Supabase
+                    // mutlak URL'i değişmeden geçer).
+                    ->getStateUsing(fn ($record) => $record->image_path
+                        ? url(Storefront::storageUrl('site', $record->image_path))
+                        : null),
                 TextColumn::make('title')
                     ->label('Başlık')
-                    ->getStateUsing(fn ($record) => str_replace("\n", ' / ', Multilingual::tr($record->title))),
+                    // title jsonb array (10 dil); getStateUsing tek HtmlString
+                    // döndürdüğü için Filament listeye çevirip 10 kez basmaz.
+                    // richText yalnızca tr'yi okuyup izinli etiketleri bırakır;
+                    // TextColumn state'i e() ile kaçırır ama HtmlString'i olduğu
+                    // gibi basar.
+                    ->getStateUsing(fn ($record) => new HtmlString(Storefront::richText($record->title, 'tr')))
+                    ->wrap(),
                 TextColumn::make('button_text')
                     ->label('Buton')
                     ->getStateUsing(fn ($record) => Multilingual::tr($record->button_text))

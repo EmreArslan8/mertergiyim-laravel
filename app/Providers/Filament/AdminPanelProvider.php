@@ -25,7 +25,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 class AdminPanelProvider extends PanelProvider
 {
     /** Tarayıcı önbelleğini kırmak için tema sürümü. */
-    public const THEME_VERSION = '88';
+    public const THEME_VERSION = '91';
 
     public function panel(Panel $panel): Panel
     {
