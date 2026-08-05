@@ -300,6 +300,16 @@ class TelegramScanDetail extends Page
         $this->flash('Ad üretilemedi: '.$message.' — adı elle yazabilir ya da "Yeniden üret"e basabilirsiniz.', 'danger');
     }
 
+    /**
+     * Zengin editör bileşeni (QuickAddDescriptionEditor) her değişiklikte
+     * açıklamayı bu olayla gönderir; kaydetme form.description'ı kullanır.
+     */
+    #[On('quick-add-description-updated')]
+    public function applyQuickAddDescription(string $description): void
+    {
+        $this->form['description'] = $description;
+    }
+
     public function nameGeneratorReady(): bool
     {
         return app(TelegramNameGenerator::class)->configured();

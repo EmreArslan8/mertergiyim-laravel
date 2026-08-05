@@ -94,7 +94,7 @@ body{background:var(--surface)}                             /* bg-slate-50 */
 .product-card-link:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
 .product-image{aspect-ratio:3/4;border-radius:0;background:var(--soft)}
 .product-card-gallery{position:absolute;z-index:2;inset:0}
-.product-card-slide{position:absolute;inset:0;display:block;opacity:0;transition:opacity .7s cubic-bezier(.4,0,.2,1)}
+.product-card-slide{position:absolute;inset:0;display:block;opacity:0;transition:opacity .45s cubic-bezier(.4,0,.2,1)}
 .product-card-slide:first-child{opacity:1}
 .product-card-slide img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.4,0,.2,1)}
 .product-card-dots{display:none}
@@ -171,10 +171,10 @@ body{background:var(--surface)}                             /* bg-slate-50 */
     .footer-contact-block{grid-column:1/-1}
   }
   /* Alternatif görsel yalnızca fotoğraf alanına gelindiğinde açılsın.
-     Kartın butonları hover olduğunda lazy ikinci görsel henüz yüklenmemişse
-     ilk fotoğraf kaybolup beyaz alan görünüyordu. */
+     İkinci görsel .ready olmadan geçiş başlamaz: görsel henüz yüklenirken
+     ilk fotoğraf kaybolup beyaz alan görünürdü. */
   .product-image:hover .product-card-slide:first-child:nth-last-child(n+2){opacity:0}
-  .product-image:hover .product-card-slide:nth-child(2){opacity:1}
+  .product-image:hover .product-card-slide:nth-child(2).ready{opacity:1}
   .product-image:hover .product-card-slide img{transform:scale(1.05)}
 }
 @media(min-width:768px) and (max-width:1023px){

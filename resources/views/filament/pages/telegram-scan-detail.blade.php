@@ -397,7 +397,12 @@
 
                         <label class="merter-qa-field">
                             <span>Açıklama</span>
-                            <textarea rows="4" wire:model="form.description"></textarea>
+                            {{-- Panelin kendi zengin editörü (TipTap) ayrı
+                                 bileşende koşar; değer her değişiklikte
+                                 form.description'a olayla iletilir. --}}
+                            @livewire('quick-add-description-editor',
+                                ['description' => (string) ($form['description'] ?? '')],
+                                key('qa-desc-'.$quickAddId))
                         </label>
 
                         <div class="merter-qa-cols">

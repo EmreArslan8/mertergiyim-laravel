@@ -319,8 +319,17 @@
         updateDots(index);
       }
 
-      // Masaüstü hover yalnızca ikinci görseli hazırlar.
+      // Masaüstü hover yalnızca ikinci görseli hazırlar. Görsel henüz
+      // inerken geçiş başlarsa ilk fotoğraf kaybolup beyaz alan görünürdü;
+      // geçiş yalnızca ikinci görsel yüklendiğinde (.ready) tetiklenir.
       gallery.addEventListener('mouseenter', function () {
+        var image = slides[1] ? slides[1].querySelector('img[data-src]') : null;
+        if (!image) return;
+
+        image.onload = function () {
+          slides[1].classList.add('ready');
+        };
+
         loadSlide(1);
       }, { once: true });
 
