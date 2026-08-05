@@ -6,7 +6,7 @@ use App\Filament\Pages\TelegramScanDetail;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Livewire\Component;
 
 /**
@@ -28,17 +28,17 @@ class QuickAddDescriptionEditor extends Component implements HasForms
         $this->description = $description;
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 RichEditor::make('description')
                     ->label('')
                     // Storefront'un izinli etiket listesiyle uyumlu araçlar.
                     ->toolbarButtons([
                         ['bold', 'italic', 'underline', 'strike'],
                         ['h2', 'h3'],
-                        ['ul', 'ol', 'blockquote', 'link'],
+                        ['bulletList', 'orderedList', 'blockquote', 'link'],
                         ['undo', 'redo', 'clearFormatting'],
                     ])
                     ->fileAttachments(false),
