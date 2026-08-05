@@ -45,6 +45,10 @@ class TelegramProductImporter
      */
     public function import(TelegramChannelProduct $record, array $data): Product
     {
+        // Çoklu görsel indirme PHP max_execution_time'ı (30 sn) aşabilir;
+        // fatal yerine görsel başına timeout'la (aşağıda 15 sn) zarifçe atlansın.
+        @set_time_limit(120);
+
         $name = trim((string) ($data['name'] ?? ''));
 
         if ($name === '') {
@@ -238,7 +242,7 @@ class TelegramProductImporter
         }
 
         try {
-            $response = Http::timeout(30)->connectTimeout(10)->get($url);
+            $response = Http::timeout(15)->connectTimeout(10)->get($url);
         } catch (ConnectionException) {
             return null;
         }

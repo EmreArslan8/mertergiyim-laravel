@@ -365,6 +365,15 @@
                                         </button>
                                     @endforeach
                                 </div>
+                                {{-- Kategoriler de renkler gibi: listede yoksa
+                                     buraya yazılıp tanımlanır ve seçili gelir. --}}
+                                <div class="merter-qa-newcat">
+                                    <button type="button" wire:click="addCategory">Kategori ekle ve seç</button>
+                                    <input type="text"
+                                           wire:model.blur="newCategoryName"
+                                           wire:keydown.enter="addCategory"
+                                           placeholder="Yeni kategori adı (ör. Kaban)">
+                                </div>
                             </div>
 
                             <label class="merter-qa-field">

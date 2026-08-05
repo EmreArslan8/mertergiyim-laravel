@@ -7098,6 +7098,35 @@ input[type='radio'].fi-radio-input:disabled:checked {
 }
 
 /* Modal içi bildirim: gövdenin üstünde yapışık kalır. */
+.merter-qa-newcat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.9rem 0;
+}
+
+.merter-qa-newcat input[type="text"] {
+    flex: 0 1 auto;
+    width: min(100%, 22rem);
+    min-width: 0;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid #e5e9ed;
+    border-radius: 0.5rem;
+}
+
+.merter-qa-newcat button {
+    flex-shrink: 0;
+    padding: 0.6rem 1rem;
+    border: 1px solid #171717;
+    border-radius: 0.5rem;
+    background: #171717;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
 .merter-qa-flash {
     position: sticky;
     top: 0;

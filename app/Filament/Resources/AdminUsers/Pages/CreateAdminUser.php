@@ -21,4 +21,10 @@ class CreateAdminUser extends CreateRecord
     {
         return 'Kullanıcılara dön';
     }
+
+    // Kayıt oluşturulduktan sonra düzenleme ekranına değil, yönetici listesine dön.
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

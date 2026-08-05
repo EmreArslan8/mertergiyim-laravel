@@ -313,6 +313,60 @@ class TelegramScanDetail extends Page
             : $categoryId;
     }
 
+    /** Yeni kategori kutusundaki ad. */
+    public string $newCategoryName = '';
+
+    /**
+     * Sistemde olmayan kategoriyi ekleyip seçer.
+     *
+     * Kanallar kategoriyi serbest yazıyor; kutularda olmayan bir kategori
+     * girildiğinde burada tanımlanıp katalogda kalıcı olur ve ürün için seçili gelir.
+     */
+    public function addCategory(): void
+    {
+        $name = trim($this->newCategoryName);
+
+        // İsim zorunlu: boşken sessizce dönmek "eklenmiyor ama hata da yok"
+        // gibi görünür; artık nedenini söylüyor.
+        if ($name === '') {
+            $this->flash('Kategori adı girin');
+
+            return;
+        }
+
+        // Aynı kategori ikinci kez oluşmasın: varsa onu seç.
+        $existing = Category::query()
+            ->whereRaw('LOWER(name) = ?', [mb_strtolower($name)])
+            ->first();
+
+        if ($existing instanceof Category) {
+            if (($this->form['category_id'] ?? null) !== $existing->getKey()) {
+                $this->selectCategory($existing->getKey());
+            }
+
+            $this->newCategoryName = '';
+
+            $this->flash('Bu kategori zaten vardı, seçildi.', 'success');
+
+            return;
+        }
+
+        $category = Category::create([
+            // Çeviri servisi çalışmazsa da kategori kaydedilsin; Türkçesi yeter.
+            'name_i18n' => rescue(
+                fn (): array => ['tr' => $name] + app(TranslateService::class)->translateText($name),
+                ['tr' => $name],
+                report: false,
+            ),
+            'active' => true,
+        ]);
+
+        $this->selectCategory($category->getKey());
+        $this->newCategoryName = '';
+
+        $this->flash('Kategori eklendi: '.$name, 'success');
+    }
+
     public function toggleColor(string $colorId): void
     {
         $selected = (array) ($this->form['color_ids'] ?? []);
