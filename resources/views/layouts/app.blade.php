@@ -152,7 +152,7 @@
 
     @include('storefront.partials.footer')
 
-    <script src="/js/storefront.js?v=20260803-2" defer></script>
+    <script src="/js/storefront.js?v=20260805-4" defer></script>
     @stack('scripts')
 </body>
 </html>

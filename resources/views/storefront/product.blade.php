@@ -19,7 +19,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="/css/product.css?v=20260804-2">
+    <link rel="stylesheet" href="/css/product.css?v=20260805-6">
     <link rel="stylesheet" href="/css/commerce.css?v=20260802-1">
 @endpush
 
@@ -38,23 +38,19 @@
                                 <span class="zoom-icon" aria-hidden="true">⌕</span>
                                 {{ $messages['gallery']['zoomHint'] ?? '' }}
                             </div>
-                        @elseif (! $hasVideo)
+                        @elseif ($hasVideo && $videoEmbedUrl)
+                            <button type="button" class="detail-video-launch" data-video-launch
+                                    aria-label="{{ $videoLabel }}: {{ $productName }}">
+                                <span class="detail-video-launch-play" aria-hidden="true">▶</span>
+                            </button>
+                        @elseif ($hasVideo)
+                            <button type="button" class="detail-video-launch" data-video-launch
+                                    aria-label="{{ $videoLabel }}: {{ $productName }}">
+                                <video src="{{ $videoUrl }}" muted playsinline preload="metadata" aria-hidden="true"></video>
+                                <span class="detail-video-launch-play" aria-hidden="true">▶</span>
+                            </button>
+                        @else
                             <div class="detail-image-empty">{{ $productName }}</div>
-                        @endif
-
-                        @if ($hasVideo)
-                            <div class="detail-gallery-video" data-gallery-video @if(count($gallery)) hidden @endif>
-                                @if ($videoEmbedUrl)
-                                    <iframe src="{{ count($gallery) ? 'about:blank' : $videoEmbedUrl }}"
-                                            data-gallery-video-iframe data-video-src="{{ $videoEmbedUrl }}"
-                                            title="{{ $videoLabel }}: {{ $productName }}" loading="lazy"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowfullscreen></iframe>
-                                @else
-                                    <video src="{{ $videoUrl }}" controls playsinline preload="metadata"
-                                           data-gallery-video-element></video>
-                                @endif
-                            </div>
                         @endif
                     </div>
                 </div>
@@ -245,6 +241,23 @@
                     @endforeach
                 </div>
             </section>
+        @endif
+        @if ($hasVideo)
+            <div class="video-modal" data-video-modal hidden>
+                <button type="button" class="video-modal-close" data-video-modal-close
+                        aria-label="{{ data_get($messages, 'gallery.close', 'Kapat') }}">✕</button>
+                <div class="video-modal-box">
+                    @if ($videoEmbedUrl)
+                        <iframe data-video-modal-iframe data-video-src="{{ $videoEmbedUrl }}"
+                                title="{{ $videoLabel }}: {{ $productName }}"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                    @else
+                        <video controls playsinline preload="none" data-video-modal-element
+                               data-video-src="{{ $videoUrl }}"></video>
+                    @endif
+                </div>
+            </div>
         @endif
     </main>
 @endsection

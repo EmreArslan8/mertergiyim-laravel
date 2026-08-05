@@ -7069,6 +7069,11 @@ input[type='radio'].fi-radio-input:disabled:checked {
     grid-column: 1 / -1;
 }
 
+/* Ürün adı da satırın tamamını kullansın; fiyat ve kod aşağıya iner. */
+.merter-qa-grid > .merter-qa-field:has(.merter-qa-inline) {
+    grid-column: 1 / -1;
+}
+
 .merter-qa-inline {
     display: flex;
     gap: 0.5rem;
