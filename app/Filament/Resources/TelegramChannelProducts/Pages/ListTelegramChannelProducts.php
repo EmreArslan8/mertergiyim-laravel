@@ -26,18 +26,21 @@ class ListTelegramChannelProducts extends ListRecords
             Action::make('scan')
                 ->label('Ürün çek')
                 ->icon(Heroicon::OutlinedArrowDownTray)
+                ->extraAttributes(['class' => 'merter-telegram-nav'])
                 ->url(fn (): string => TelegramScans::getUrl()),
 
             Action::make('channels')
                 ->label('Kanallar')
                 ->icon(Heroicon::OutlinedHashtag)
                 ->color('gray')
+                ->extraAttributes(['class' => 'merter-telegram-nav'])
                 ->url(fn (): string => TelegramChannelResource::getUrl()),
 
             Action::make('accounts')
                 ->label('Hesaplar')
                 ->icon(Heroicon::OutlinedKey)
                 ->color('gray')
+                ->extraAttributes(['class' => 'merter-telegram-nav'])
                 ->url(fn (): string => TelegramAccountResource::getUrl()),
         ];
     }

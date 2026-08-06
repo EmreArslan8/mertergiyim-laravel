@@ -395,8 +395,8 @@
                             </div>
                         </div>
 
-                        <label class="merter-qa-field">
-                            <span>Açıklama</span>
+                        <label class="merter- v">
+                          
                             {{-- Panelin kendi zengin editörü (TipTap) ayrı
                                  bileşende koşar; değer her değişiklikte
                                  form.description'a olayla iletilir. --}}

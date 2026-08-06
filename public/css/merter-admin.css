@@ -912,6 +912,30 @@ textarea.fi-input {
         white-space: nowrap;
     }
 
+    /* Telegram ürünleri listesi: üç gezinme butonu (Ürün çek / Kanallar /
+       Hesaplar) mobilde başlığın yanına sıkışıp başlığı dikey ezmesin diye
+       başlık üst satırda tam genişlik kalır, butonlar altında eşit üç sütun. */
+    .fi-header:has(.merter-telegram-nav) {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .fi-header:has(.merter-telegram-nav) .fi-header-heading {
+        width: 100%;
+    }
+
+    .fi-header-actions:has(.merter-telegram-nav) {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+
+    .fi-header-actions:has(.merter-telegram-nav) > .fi-btn {
+        width: 100%;
+        padding-inline: 0.5rem;
+    }
+
     .fi-page-content {
         min-width: 0;
         row-gap: 0.875rem;
