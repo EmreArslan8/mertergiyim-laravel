@@ -141,7 +141,7 @@ class MtProtoSource implements ChannelSource
 
             $messages[$key]['videos'][] = [
                 'url' => $media['url'],
-                'poster' => null,
+                'poster' => $media['poster'],
                 'duration' => $media['duration'],
             ];
         }
@@ -152,7 +152,7 @@ class MtProtoSource implements ChannelSource
     /**
      * Mesajın medyasını diske indirir.
      *
-     * @return array{type: string, url: string, duration: ?string}|null
+     * @return array{type: string, url: string, poster: ?string, duration: ?string}|null
      */
     private function download(string $username, array $row, mixed $api): ?array
     {
@@ -164,6 +164,7 @@ class MtProtoSource implements ChannelSource
 
         $isPhoto = $kind === 'messageMediaPhoto';
         $duration = null;
+        $poster = null;
 
         if (! $isPhoto) {
             $document = $row['media']['document'] ?? [];
@@ -205,10 +206,65 @@ class MtProtoSource implements ChannelSource
             }
         }
 
+        if (! $isPhoto) {
+            $poster = $this->downloadPoster($username, $row, $document, $disk, $bucket, $api);
+        }
+
         return [
             'type' => $isPhoto ? 'photo' : 'video',
             'url' => $disk->url($bucket.'/'.$relative),
+            'poster' => $poster,
             'duration' => $duration,
         ];
+    }
+
+    /**
+     * Videonun Telegram kapağını indirip poster yolunu döndürür.
+     *
+     * Videolar yalnızca dosya olarak iner; kapak karesi Telegram'ın
+     * mesajla birlikte gönderdiği küçük görsellerden (thumbs) seçilir.
+     * Kare yoksa ya da indirilemezse kapaksız kayıt bırakılır.
+     */
+    private function downloadPoster(
+        string $username,
+        array $row,
+        array $document,
+        mixed $disk,
+        string $bucket,
+        mixed $api,
+    ): ?string {
+        // Küçük karelerden (photoStrippedSize vb.) gerçek dosya çıkmıyor;
+        // yalnızca gerçek boyutlu photoSize kareleri indirilebilir.
+        $thumbs = array_filter(
+            $document['thumbs'] ?? [],
+            static fn (array $thumb): bool => ($thumb['_'] ?? '') === 'photoSize',
+        );
+
+        if ($thumbs === []) {
+            return null;
+        }
+
+        // Telegram çoklu kare veriyorsa en büyüğü kapak olur.
+        usort($thumbs, static fn (array $a, array $b): int => (int) (($b['w'] ?? 0) * ($b['h'] ?? 0)) - (int) (($a['w'] ?? 0) * ($a['h'] ?? 0)));
+
+        $posterRelative = $username.'/'.$row['id'].'_poster.jpg';
+
+        if (! $disk->exists($bucket.'/'.$posterRelative)) {
+            $disk->makeDirectory($bucket.'/'.$username);
+
+            try {
+                $api->downloadToFile($thumbs[0], $disk->path($bucket.'/'.$posterRelative));
+            } catch (Throwable $e) {
+                Log::warning('Telegram video kapağı indirilemedi', [
+                    'kanal' => $username,
+                    'mesaj' => $row['id'],
+                    'hata' => $e->getMessage(),
+                ]);
+
+                return null;
+            }
+        }
+
+        return $disk->url($bucket.'/'.$posterRelative);
     }
 }
